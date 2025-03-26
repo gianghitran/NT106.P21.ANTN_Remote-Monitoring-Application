@@ -10,7 +10,7 @@
 | *Multi Server* (0.5 điểm) | Chia nhiều server để xử lý dữ liệu từ Client, có thể dùng *Load Balancing*. |
 | *Cryptography* (0.5 điểm) | Mã hóa dữ liệu. |
 | *Demo via LAN* (0.5 điểm) | Cho phép Client kết nối Server qua *Local Network* (IP nội bộ). |
-| *Demo via Internet* (0.5 điểm) | Deploy Server trên *VPS* để Client kết nối qua *Internet*. |
+| *Demo via Internet* (0.5 điểm) | Deploy Server trên *VPS* để Client kết nối qua *Internet* (ngrox). |
 | *Load Balancing* (1 điểm) | Dùng *Nginx* hoặc *HAProxy* để phân tải giữa nhiều Server. |
 
 
