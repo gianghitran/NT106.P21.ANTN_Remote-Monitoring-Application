@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RemoteMonitoringApplication")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+001dbd1fa1b3d536b624ea967bcf20bb720a3d2a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2c66d22a480719c6d7434cd75dd2c350b24535c3")]
 [assembly: System.Reflection.AssemblyProductAttribute("RemoteMonitoringApplication")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RemoteMonitoringApplication")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

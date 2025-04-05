@@ -5,8 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RemoteMonitoringApplication.Login"
         mc:Ignorable="d"
-        Title="Login" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Login" Height="550" Width="800"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        AllowsTransparency="True"
+        MouseDown="Window_MouseDown">
+    <Window.Resources>
+        <FontFamily x:Key="MontserratFont">pack://application:,,,/RemoteMonitoringApplication;component/Fonts/#Montserrat</FontFamily>
+    </Window.Resources>
+    
+    <Border CornerRadius="15"
+            Background="#2C3639"
+            BorderThickness="3.5">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#A27B5C" Offset="0"/>
+                <GradientStop Color="#DCD7C9" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.BorderBrush>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Bearmote Login"
+                           Foreground="#DCD7C9"
+                           FontSize="12"
+                           FontFamily="Montserrat"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0"/>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>
