@@ -1,10 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\Daihoc\\Nam2\\HKII\\LTMCB\\Project\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\",
+  "WorkspaceRootPath": "D:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\Workspace\\App\\RemoteMonitoringApplication\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|e:\\daihoc\\nam2\\hkii\\ltmcb\\project\\nt106.p21.antn_remote-monitoring-application\\workspace\\app\\remotemonitoringapplication\\remotemonitoringapplication\\client\\client.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|d:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\workspace\\app\\remotemonitoringapplication\\remotemonitoringapplication\\login\\login.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|solutionrelative:remotemonitoringapplication\\login\\login.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|d:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\workspace\\app\\remotemonitoringapplication\\remotemonitoringapplication\\client\\client.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|solutionrelative:remotemonitoringapplication\\client\\client.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|d:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\workspace\\app\\remotemonitoringapplication\\remotemonitoringapplication\\server\\server.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|solutionrelative:remotemonitoringapplication\\server\\server.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,20 +22,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 2,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
@@ -39,14 +35,42 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Login.xaml",
+              "DocumentMoniker": "D:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Login\\Login.xaml",
+              "RelativeDocumentMoniker": "RemoteMonitoringApplication\\Login\\Login.xaml",
+              "ToolTip": "D:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Login\\Login.xaml",
+              "RelativeToolTip": "RemoteMonitoringApplication\\Login\\Login.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-04-05T16:59:02.791Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Server.xaml",
+              "DocumentMoniker": "D:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Server\\Server.xaml",
+              "RelativeDocumentMoniker": "RemoteMonitoringApplication\\Server\\Server.xaml",
+              "ToolTip": "D:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Server\\Server.xaml",
+              "RelativeToolTip": "RemoteMonitoringApplication\\Server\\Server.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-04-05T16:58:45.572Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Client.xaml",
-              "DocumentMoniker": "E:\\Daihoc\\Nam2\\HKII\\LTMCB\\Project\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Client\\Client.xaml",
+              "DocumentMoniker": "D:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Client\\Client.xaml",
               "RelativeDocumentMoniker": "RemoteMonitoringApplication\\Client\\Client.xaml",
-              "ToolTip": "E:\\Daihoc\\Nam2\\HKII\\LTMCB\\Project\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Client\\Client.xaml",
+              "ToolTip": "D:\\daihoc\\nam2\\hk2\\ltr_mang_cb\\project_ltmcb\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Client\\Client.xaml",
               "RelativeToolTip": "RemoteMonitoringApplication\\Client\\Client.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-04-03T02:26:44.267Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
             }
           ]
         }
