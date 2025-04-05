@@ -1,14 +1,10 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\ASUS\\Documents\\Nam2_Ki2\\ltmcb\\DoAn\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\",
+  "WorkspaceRootPath": "E:\\Daihoc\\Nam2\\HKII\\LTMCB\\Project\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|c:\\users\\asus\\documents\\nam2_ki2\\ltmcb\\doan\\nt106.p21.antn_remote-monitoring-application\\workspace\\app\\remotemonitoringapplication\\remotemonitoringapplication\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|solutionrelative:remotemonitoringapplication\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|c:\\users\\asus\\documents\\nam2_ki2\\ltmcb\\doan\\nt106.p21.antn_remote-monitoring-application\\workspace\\app\\remotemonitoringapplication\\remotemonitoringapplication\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|solutionrelative:remotemonitoringapplication\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|e:\\daihoc\\nam2\\hkii\\ltmcb\\project\\nt106.p21.antn_remote-monitoring-application\\workspace\\app\\remotemonitoringapplication\\remotemonitoringapplication\\client\\client.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{C26F6831-B7C4-461E-B566-0011755C423A}|RemoteMonitoringApplication\\RemoteMonitoringApplication.csproj|solutionrelative:remotemonitoringapplication\\client\\client.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,8 +14,12 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 5,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
@@ -39,26 +39,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Documents\\Nam2_Ki2\\ltmcb\\DoAn\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "RemoteMonitoringApplication\\MainWindow.xaml",
-              "ToolTip": "C:\\Users\\ASUS\\Documents\\Nam2_Ki2\\ltmcb\\DoAn\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\MainWindow.xaml",
-              "RelativeToolTip": "RemoteMonitoringApplication\\MainWindow.xaml",
+              "Title": "Client.xaml",
+              "DocumentMoniker": "E:\\Daihoc\\Nam2\\HKII\\LTMCB\\Project\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Client\\Client.xaml",
+              "RelativeDocumentMoniker": "RemoteMonitoringApplication\\Client\\Client.xaml",
+              "ToolTip": "E:\\Daihoc\\Nam2\\HKII\\LTMCB\\Project\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\Client\\Client.xaml",
+              "RelativeToolTip": "RemoteMonitoringApplication\\Client\\Client.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-03-27T03:03:53.706Z",
+              "WhenOpened": "2025-04-03T02:26:44.267Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Documents\\Nam2_Ki2\\ltmcb\\DoAn\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "RemoteMonitoringApplication\\MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\ASUS\\Documents\\Nam2_Ki2\\ltmcb\\DoAn\\NT106.P21.ANTN_Remote-Monitoring-Application\\Workspace\\App\\RemoteMonitoringApplication\\RemoteMonitoringApplication\\MainWindow.xaml.cs",
-              "RelativeToolTip": "RemoteMonitoringApplication\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-27T03:03:47.2Z"
             }
           ]
         }

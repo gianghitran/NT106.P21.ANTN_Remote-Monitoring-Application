@@ -6,7 +6,41 @@
         xmlns:local="clr-namespace:RemoteMonitoringApplication.Client"
         mc:Ignorable="d"
         Title="Client" Height="450" Width="800">
-    <Grid>
-        
+    <Grid Background="#FF2C3639">
+        <Image HorizontalAlignment="Left" Height="271" Margin="-51,-133,0,0" VerticalAlignment="Top" Width="415" Source="/Client/tt.png" RenderTransformOrigin="0.5,0.5">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-146.46"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+
+        <Canvas Margin="175,0,0,0" Background="#FFDCD7C9">
+            <Rectangle Height="100" Stroke="White" Canvas.Top="-30" Width="625" HorizontalAlignment="Center" VerticalAlignment="Top" RadiusX="26.807" RadiusY="26.807" Fill="White"/>
+            <Label Content="Home" Background="{x:Null}" Foreground="#FF000AA3" FontWeight="Bold" FontSize="28" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="53"/>
+            <Image Height="43" Canvas.Left="3" Canvas.Top="-2" Width="43" Source="/Client/home.png"/>
+            <Label Content="Welcome, User!" Background="{x:Null}" Foreground="Black" FontWeight="Bold" FontSize="20" Canvas.Left="10" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Top="70"/>
+            <Rectangle Height="88" Canvas.Top="112" Width="184" RadiusX="26.807" RadiusY="26.807" Fill="#FFE8E4DA" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="24"/>
+            <Label Content="Connect with ID" Background="{x:Null}" Foreground="Black" FontWeight="Bold" FontSize="16" Canvas.Left="30" Canvas.Top="112" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Label Content="Your ID: " Background="{x:Null}" Foreground="Black" FontSize="12" Canvas.Left="30" Canvas.Top="143" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label Content="Password:" Background="{x:Null}" Foreground="Black" FontSize="12" Canvas.Left="30" Canvas.Top="169" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            <Label Content="1 355 811 856" Background="{x:Null}" Foreground="Black" FontSize="12" Canvas.Left="108" Canvas.Top="143" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+            <Label Content="uoq1o2" Background="{x:Null}" Foreground="Black" FontSize="12" Canvas.Left="108" Canvas.Top="169" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        </Canvas>
+        <Label HorizontalAlignment="Left" Margin="48,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="20">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="White"><Run Text="ThreeBrears"/><LineBreak/><Run Text="Remote"/></TextBlock>
+        </Label>
+        <Ellipse HorizontalAlignment="Left" Height="51" VerticalAlignment="Top" Width="51" Margin="2,16,0,0">
+            <Ellipse.Fill>
+                <ImageBrush ImageSource="/Client/icon.png"/>
+            </Ellipse.Fill>
+        </Ellipse>
+        <Label Content="Home" HorizontalAlignment="Left" Margin="57,93,0,0" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontWeight="Bold" FontSize="20"/>
+        <Label Content="Remote" HorizontalAlignment="Left" Margin="49,142,0,0" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontWeight="Bold" FontSize="20"/>
+        <Label Content="History" HorizontalAlignment="Left" Margin="51,190,0,0" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontWeight="Bold" FontSize="20"/>
+
     </Grid>
 </Window>

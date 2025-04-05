@@ -53,7 +53,7 @@ namespace RemoteMonitoringApplication.Server {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/RemoteMonitoringApplication;V1.0.0.0;component/server/server.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/RemoteMonitoringApplication;component/server/server.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Server\Server.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
