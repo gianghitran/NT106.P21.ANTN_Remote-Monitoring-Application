@@ -22,5 +22,22 @@
         <Label HorizontalAlignment="Left" Margin="60,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="42" Width="261">
             <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="195" Height="61"><Run Text="SERVER"/><LineBreak/><Run/></TextBlock>
         </Label>
+
+        <Label HorizontalAlignment="Left" Margin="0,250,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Users Control"/><LineBreak/><Run/></TextBlock>
+        </Label>
+
+        <Label HorizontalAlignment="Left" Margin="0,350,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Connections"/><LineBreak/><Run/></TextBlock>
+        </Label>
+
+        <Label HorizontalAlignment="Left" Margin="0,450,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Logs"/><LineBreak/><Run/></TextBlock>
+        </Label>
+
+        <Label HorizontalAlignment="Left" Margin="0,550,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Settings"/><LineBreak/><Run/></TextBlock>
+        </Label>
+
     </Grid>
 </Window>
