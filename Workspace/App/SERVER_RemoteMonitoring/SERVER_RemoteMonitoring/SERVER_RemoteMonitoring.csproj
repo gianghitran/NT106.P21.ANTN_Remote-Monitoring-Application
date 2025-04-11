@@ -104,5 +104,17 @@
   <ItemGroup>
     <Resource Include="Server\icon.png" />
   </ItemGroup>
+  
+  <ItemGroup>
+
+	<None Remove="Server\minimize.png" />
+	<None Remove="Server\close.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+
+	<Resource Include="Server\minimize.png" />
+	<Resource Include="Server\close.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
