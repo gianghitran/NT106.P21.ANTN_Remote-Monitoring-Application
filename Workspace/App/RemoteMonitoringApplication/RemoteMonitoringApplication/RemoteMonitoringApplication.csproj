@@ -12,12 +12,18 @@
     <None Remove="Client\home.png" />
     <None Remove="Client\icon.png" />
     <None Remove="Client\tt.png" />
+
+	<None Remove="Login\minimize.png" />
+	<None Remove="Login\close.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Client\home.png" />
     <Resource Include="Client\icon.png" />
     <Resource Include="Client\tt.png" />
+
+	<Resource Include="Login\minimize.png" />
+	<Resource Include="Login\close.png" />
   </ItemGroup>
 
 	<ItemGroup>
