@@ -105,7 +105,7 @@
             </Grid>
             <Grid Panel.ZIndex="1">
                 
-            <Rectangle HorizontalAlignment="Left" Height="1176" Stroke="Black" VerticalAlignment="Center" Width="1704" Margin="261,0,0,0" Fill="#FFDCD7C9"/>
+            <Rectangle HorizontalAlignment="Left" Height="1176" Stroke="Black" VerticalAlignment="Center" Width="1704" Margin="255,0,0,0" Fill="#FFDCD7C9"/>
             <Label HorizontalAlignment="Left" Margin="250,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="42" Width="477">
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FF2C3639" Width="471"><Run Text="ThreeBrears"/><Run Language="vi-vn" Text=" "/><Run Text="Remote"/></TextBlock>
             </Label>
