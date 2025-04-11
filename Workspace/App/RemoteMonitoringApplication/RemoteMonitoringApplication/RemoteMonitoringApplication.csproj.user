@@ -8,8 +8,5 @@
     <Compile Update="Login\Login.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Server\Server.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
 </Project>
