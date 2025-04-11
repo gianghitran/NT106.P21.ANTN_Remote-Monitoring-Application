@@ -12,14 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace RemoteMonitoringApplication.Server
+namespace SERVER_RemoteMonitoring.Server
 {
     /// <summary>
-    /// Interaction logic for Server.xaml
+    /// Interaction logic for SERVER.xaml
     /// </summary>
-    public partial class Server : Window
+    public partial class SERVER : Window
     {
-        public Server()
+        public SERVER()
         {
             InitializeComponent();
         }

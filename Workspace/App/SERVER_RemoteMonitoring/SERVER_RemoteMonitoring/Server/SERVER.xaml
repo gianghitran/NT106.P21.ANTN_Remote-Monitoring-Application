@@ -1,0 +1,43 @@
+﻿<Window x:Class="SERVER_RemoteMonitoring.Server.SERVER"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SERVER_RemoteMonitoring.Server"
+        mc:Ignorable="d"
+        Title="Server" Height="1080" Width="1920">
+    <Grid Height="1080" Background="#FF2C3639">
+
+
+        <Rectangle HorizontalAlignment="Left" Height="1176" Stroke="Black" VerticalAlignment="Center" Width="1704" Margin="261,0,0,0" Fill="#FFDCD7C9"/>
+        <Label HorizontalAlignment="Left" Margin="250,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="42" Width="477">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FF2C3639" Width="471"><Run Text="ThreeBrears"/><Run Language="vi-vn" Text=" "/><Run Text="Remote"/></TextBlock>
+        </Label>
+        <Ellipse HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="50" Margin="20,20,0,0">
+            <Ellipse.Fill>
+                <ImageBrush ImageSource="/Server/icon.png"/>
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <Label HorizontalAlignment="Left" Margin="60,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="42" Width="261">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="195" Height="61"><Run Text="SERVER"/><LineBreak/><Run/></TextBlock>
+        </Label>
+
+        <Label HorizontalAlignment="Left" Margin="0,250,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Users Control"/><LineBreak/><Run/></TextBlock>
+        </Label>
+
+        <Label HorizontalAlignment="Left" Margin="0,350,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Connections"/><LineBreak/><Run/></TextBlock>
+        </Label>
+
+        <Label HorizontalAlignment="Left" Margin="0,450,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Logs"/><LineBreak/><Run/></TextBlock>
+        </Label>
+
+        <Label HorizontalAlignment="Left" Margin="0,550,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Settings"/><LineBreak/><Run/></TextBlock>
+        </Label>
+
+    </Grid>
+</Window>
