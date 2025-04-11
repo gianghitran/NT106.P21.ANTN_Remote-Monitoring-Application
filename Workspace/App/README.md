@@ -16,3 +16,23 @@
 > (Get file)
 
 
+### Server
+- Dashboard (Tổng quan): Hiển thị thông tin tổng quát như số lượng client đang online, logs, cảnh báo gần đây,...
+
+- Users Control:
+> Danh sách người dùng/client
+> Thêm/xóa/sửa thông tin client
+> Phân quyền điều khiển
+
+- Connections:
+> Hiển thị trạng thái kết nối theo thời gian thực
+> Thông tin IP, thời gian kết nối, phiên bản app,...
+
+- Logs & History:
+> Nhật ký hoạt động của client
+> Ghi nhận thời gian, thao tác, kết quả,...
+
+- Settings:
+
+> Cấu hình server
+> (Quản lý API key, giới hạn truy cập, cập nhật)
