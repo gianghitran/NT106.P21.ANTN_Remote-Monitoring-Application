@@ -17,12 +17,13 @@
 
 
 ### Server
-- Dashboard (Tổng quan): Hiển thị thông tin tổng quát như số lượng client đang online, logs, cảnh báo gần đây,...
+- Dashboard (Tab Home): Hiển thị thông tin tổng quát như số lượng client đang online, logs, cảnh báo gần đây,...
 
 - Users Control:
 > Danh sách người dùng/client
-> Thêm/xóa/sửa thông tin client
-> Phân quyền điều khiển
+> Status
+> Time kết nối
+> Cho phép server ngắt kết nối
 
 - Connections:
 > Hiển thị trạng thái kết nối theo thời gian thực
