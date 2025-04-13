@@ -111,8 +111,8 @@
             </Canvas>
 
             <!-- Sidebar & Labels -->
-            <Label HorizontalAlignment="Left" Margin="85,10,0,0" VerticalAlignment="Top" FontSize="32" FontFamily="Montserrat" FontWeight="Bold" Foreground="#DCD7C9">
-                <TextBlock x:Name="title" Cursor="Hand" MouseLeftButtonDown="title_MouseLeftButtonDown" TextWrapping="Wrap" TextAlignment="Center"><Run Text="ThreeBrears"/><LineBreak/><Run Text="Remote"/></TextBlock>
+            <Label HorizontalAlignment="Left" Margin="82,10,0,0" VerticalAlignment="Top" FontSize="32" FontFamily="Montserrat" FontWeight="Bold" Foreground="#DCD7C9">
+                <TextBlock x:Name="title" Cursor="Hand" MouseLeftButtonDown="title_MouseLeftButtonDown" TextWrapping="Wrap" TextAlignment="Center" FontSize="30"><Run Text="ThreeBrears"/><LineBreak/><Run Text="Remote"/></TextBlock>
             </Label>
 
             <Ellipse HorizontalAlignment="Left" Height="90" VerticalAlignment="Top" Width="90" Margin="0,10,0,0">
