@@ -41,5 +41,91 @@ namespace RemoteMonitoringApplication.Client
             Application.Current.Shutdown();
         }
 
+        private void lblScreen_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Screen.Visibility = Visibility.Visible;
+            CPU.Visibility = Visibility.Collapsed;
+            GPU.Visibility = Visibility.Collapsed;
+            RAM.Visibility = Visibility.Collapsed;
+            Disk.Visibility = Visibility.Collapsed;
+            Network.Visibility = Visibility.Collapsed;
+        }
+
+        private void lblCPU_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Screen.Visibility = Visibility.Collapsed;
+            CPU.Visibility = Visibility.Visible;
+            GPU.Visibility = Visibility.Collapsed;
+            RAM.Visibility = Visibility.Collapsed;
+            Disk.Visibility = Visibility.Collapsed;
+            Network.Visibility = Visibility.Collapsed;
+        }
+
+        private void lblGPU_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Screen.Visibility = Visibility.Collapsed;
+            CPU.Visibility = Visibility.Collapsed;
+            GPU.Visibility = Visibility.Visible;
+            RAM.Visibility = Visibility.Collapsed;
+            Disk.Visibility = Visibility.Collapsed;
+            Network.Visibility = Visibility.Collapsed;
+        }
+
+        private void lblRAM_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Screen.Visibility = Visibility.Collapsed;
+            CPU.Visibility = Visibility.Collapsed;
+            GPU.Visibility = Visibility.Collapsed;
+            RAM.Visibility = Visibility.Visible;
+            Disk.Visibility = Visibility.Collapsed;
+            Network.Visibility = Visibility.Collapsed;
+        }
+
+        private void lblDisk_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Screen.Visibility = Visibility.Collapsed;
+            CPU.Visibility = Visibility.Collapsed;
+            GPU.Visibility = Visibility.Collapsed;
+            RAM.Visibility = Visibility.Collapsed;
+            Disk.Visibility = Visibility.Visible;
+            Network.Visibility = Visibility.Collapsed;
+        }
+
+        private void lblNetwork_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Screen.Visibility = Visibility.Collapsed;
+            CPU.Visibility = Visibility.Collapsed;
+            GPU.Visibility = Visibility.Collapsed;
+            RAM.Visibility = Visibility.Collapsed;
+            Disk.Visibility = Visibility.Collapsed;
+            Network.Visibility = Visibility.Visible;
+        }
+
+        private void btnHome_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Home_1.Visibility = Visibility.Visible;
+            Home_2.Visibility = Visibility.Visible;
+            Remote.Visibility = Visibility.Collapsed;
+            
+        }
+
+        private void btnRemote_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Home_1.Visibility = Visibility.Collapsed;
+            Home_2.Visibility = Visibility.Collapsed;
+            Remote.Visibility = Visibility.Visible;
+        }
+
+        private void btnHistory_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void title_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Home_1.Visibility = Visibility.Visible;
+            Home_2.Visibility = Visibility.Visible;
+            Remote.Visibility = Visibility.Collapsed;
+        }
     }
 }
