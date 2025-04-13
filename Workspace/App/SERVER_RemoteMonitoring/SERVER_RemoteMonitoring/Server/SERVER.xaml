@@ -153,7 +153,7 @@
                             <ColumnDefinition Width="734*"/>
                             <ColumnDefinition Width="585*"/>
                         </Grid.ColumnDefinitions>
-                        <DataGrid Name="UserLogDataGrid" AutoGenerateColumns="False" BorderBrush="#A27B5C" BorderThickness="1" Background="#2C3639" Foreground="Black" Margin="294,20,0,-20" Grid.ColumnSpan="2">
+                        <DataGrid Name="UserLogDataGrid" AutoGenerateColumns="False" BorderBrush="#A27B5C" BorderThickness="1" Background="#2C3639" Foreground="Black" Margin="294,20,40,-20" Grid.ColumnSpan="2">
 
 
 
