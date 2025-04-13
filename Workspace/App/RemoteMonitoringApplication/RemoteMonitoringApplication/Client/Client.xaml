@@ -3,54 +3,204 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:RemoteMonitoringApplication.Client"
+        xmlns:local="clr-namespace:RemoteMonitoringApplication.Login"
         mc:Ignorable="d"
-        Title="Client" Height="1080" Width="1920">
-    <Grid Background="#FF2C3639">
-        <Image HorizontalAlignment="Left" Height="443" Margin="-76,-223,0,0" VerticalAlignment="Top" Width="591" Source="/Client/tt.png" RenderTransformOrigin="0.5,0.5">
-            <Image.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="-142.775"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Image.RenderTransform>
-        </Image>
+        Title="Client" Height="768" Width="1366"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        AllowsTransparency="True"
+        MouseDown="Window_MouseDown">
 
-        <Canvas Margin="283,0,0,0" Background="#FFDCD7C9">
-            <Rectangle Height="154" Stroke="White" Canvas.Top="-35" Width="1751" HorizontalAlignment="Center" VerticalAlignment="Top" RadiusX="26.807" RadiusY="26.807" Fill="White"/>
-            <Label Content="Home" Background="{x:Null}" Foreground="#FF000AA3" FontWeight="Bold" FontSize="48" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="146" Canvas.Top="18"/>
-            <Image Height="108" Canvas.Left="10" Canvas.Top="-12" Width="107" Source="/Client/home.png"/>
-            <Label Content="Welcome, User!" Background="{x:Null}" Foreground="Black" FontWeight="Bold" FontSize="36" Canvas.Left="10" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="130"/>
-            <Rectangle Height="171" Canvas.Top="343" Width="413" RadiusX="26.807" RadiusY="26.807" Fill="#FFE8E4DA" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="36"/>
-            <Label Content="Connect with ID" Background="{x:Null}" Foreground="Black" FontWeight="Bold" FontSize="24" Canvas.Left="42" Canvas.Top="343" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <Label Content="Your ID: " Background="{x:Null}" Foreground="Black" FontSize="22" Canvas.Left="42" Canvas.Top="428" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <Label Content="Password:" Background="{x:Null}" Foreground="Black" FontSize="22" Canvas.Left="42" Canvas.Top="472" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <Label Content="1 355 811 856" Background="{x:Null}" Foreground="Black" FontSize="22" Canvas.Left="183" Canvas.Top="428" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
-            <Label Content="uoq1o2" Background="{x:Null}" Foreground="Black" FontSize="22" Canvas.Left="183" Canvas.Top="472" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <Label Content="Your ID and password to share with your expert." Background="{x:Null}" Foreground="Black" FontSize="18" Canvas.Left="42" Canvas.Top="389" HorizontalAlignment="Left" VerticalAlignment="Top" FontStyle="Italic"/>
-            <Rectangle Height="171" Canvas.Top="343" Width="413" RadiusX="26.807" RadiusY="26.807" Fill="#FFE8E4DA" Canvas.Left="952" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label Content="Remote with ID" Background="{x:Null}" Foreground="Black" FontWeight="Bold" FontSize="24" Canvas.Left="958" Canvas.Top="343" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label Content="Partner ID: " Background="{x:Null}" Foreground="Black" FontSize="22" Canvas.Left="958" Canvas.Top="428" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label Content="Password:" Background="{x:Null}" Foreground="Black" FontSize="22" Canvas.Left="958" Canvas.Top="472" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label Content="Enter Partner ID and password to remote" Background="{x:Null}" Foreground="Black" FontSize="18" Canvas.Left="958" Canvas.Top="389" FontStyle="Italic" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label Content="Allow Remote Control" Background="{x:Null}" Foreground="Black" FontWeight="Bold" FontSize="36" Canvas.Left="42" Canvas.Top="249" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <Label Content="Control A Remote Computer" Background="{x:Null}" Foreground="Black" FontWeight="Bold" FontSize="36" Canvas.Left="958" Canvas.Top="249" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBox Canvas.Left="1108" TextWrapping="Wrap" Text="TextBox" Canvas.Top="432" Width="235" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBox Canvas.Left="1108" TextWrapping="Wrap" Text="TextBox" Canvas.Top="476" Width="235" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="22"/>
-        </Canvas>
-        <Label HorizontalAlignment="Left" Margin="85,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="20">
-            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="White" Width="193" FontSize="30"><Run Text="ThreeBrears"/><LineBreak/><Run Text="Remote"/></TextBlock>
-        </Label>
-        <Ellipse HorizontalAlignment="Left" Height="90" VerticalAlignment="Top" Width="90" Margin="10,10,0,0">
-            <Ellipse.Fill>
-                <ImageBrush ImageSource="/Client/icon.png"/>
-            </Ellipse.Fill>
-        </Ellipse>
-        <Label Content="Home" HorizontalAlignment="Left" Margin="61,189,0,0" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontWeight="Bold" FontSize="40"/>
-        <Label Content="Remote" HorizontalAlignment="Left" Margin="45,304,0,0" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontWeight="Bold" FontSize="40"/>
-        <Label Content="History" HorizontalAlignment="Left" Margin="48,410,0,0" VerticalAlignment="Top" Background="{x:Null}" Foreground="White" FontWeight="Bold" FontSize="40"/>
+    <Window.Resources>
+        <FontFamily x:Key="MontserratFont">pack://application:,,,/RemoteMonitoringApplication;component/Fonts/#Montserrat</FontFamily>
+    </Window.Resources>
 
-    </Grid>
+    <Border x:Name="MainBorder"
+            Background="#2C3639"
+            BorderThickness="3.5"
+            ClipToBounds="True">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#A27B5C" Offset="0"/>
+                <GradientStop Color="#DCD7C9" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.BorderBrush>
+
+        <Grid Background="#FF2C3639">
+            <!-- Header Bar -->
+            <Canvas x:Name="Home_1" Margin="283,0,-35,-26" Background="#FFDCD7C9">
+                <!-- Header & Info -->
+                <Rectangle Height="154" Stroke="White" Canvas.Top="-48" Width="1110"
+                           RadiusX="26.807" RadiusY="26.807" Fill="White"/>
+                <Label Content="Home" Foreground="#FF000AA3" FontSize="48"
+                       Canvas.Left="95" Canvas.Top="20" FontFamily="Montserrat" FontWeight="Bold"/>
+                <Image Height="74" Canvas.Left="10" Canvas.Top="10" Width="78" Source="/Client/home.png"/>
+                <Label Content="Welcome, User!" Foreground="Black" FontWeight="Bold" FontSize="30"
+                       Canvas.Left="10" Canvas.Top="111" FontFamily="Montserrat"/>
+
+                <!-- Allow Remote Control -->
+                <Rectangle Height="143" Canvas.Top="233" Width="343" RadiusX="26.807" RadiusY="26.807"
+                           Fill="#FFE8E4DA" Canvas.Left="21"/>
+                <Label Content="Allow Remote Control" FontSize="25" FontWeight="Bold"
+                       Canvas.Left="16" Canvas.Top="171" FontFamily="Montserrat"/>
+                <Label Content="Connect with ID" FontSize="20" FontWeight="Bold"
+                       Canvas.Left="27" Canvas.Top="240" FontFamily="Montserrat"/>
+                <Label Content="Your ID and password to share with your expert."
+                       FontSize="15" FontStyle="Italic" Canvas.Left="27" Canvas.Top="271" FontFamily="Montserrat"/>
+                <Label Content="Your ID: " Canvas.Left="27" Canvas.Top="302" FontSize="15" FontFamily="Montserrat"/>
+                <Label Content="1 355 811 856" Canvas.Left="136" Canvas.Top="302" FontSize="15" FontWeight="Bold" FontFamily="Montserrat"/>
+                <Label Content="Password:" Canvas.Left="27" Canvas.Top="346" FontSize="15" FontFamily="Montserrat"/>
+                <Label Content="uoq1o2" Canvas.Left="136" Canvas.Top="346" FontSize="15" FontWeight="Bold" FontFamily="Montserrat"/>
+
+                <!-- Remote Control -->
+                <Rectangle Height="143" Canvas.Top="233" Width="343" RadiusX="26.807" RadiusY="26.807"
+                           Fill="#FFE8E4DA" Canvas.Left="637"/>
+                <Label Content="Control A Remote Computer" FontSize="25" FontWeight="Bold"
+                       Canvas.Left="643" Canvas.Top="171" FontFamily="Montserrat"/>
+                <Label Content="Remote with ID" FontSize="20" FontWeight="Bold"
+                       Canvas.Left="643" Canvas.Top="240" FontFamily="Montserrat"/>
+                <Label Content="Enter Partner ID and password to remote"
+                       FontSize="15" FontStyle="Italic" Canvas.Left="643" Canvas.Top="271" FontFamily="Montserrat"/>
+                <Label Content="Partner ID: " Canvas.Left="643" Canvas.Top="302" FontSize="15" FontFamily="Montserrat"/>
+                <Label Content="Password:" Canvas.Left="643" Canvas.Top="346" FontSize="15" FontFamily="Montserrat"/>
+                <TextBox Canvas.Left="752" Canvas.Top="306" Width="213" FontSize="15" FontFamily="Montserrat"/>
+                <TextBox Canvas.Left="752" Canvas.Top="350" Width="213" FontSize="15" FontFamily="Montserrat"/>
+                <Rectangle Height="143" Canvas.Top="233" Width="343" RadiusX="26.807" RadiusY="26.807"
+                    Fill="#FFE8E4DA" Canvas.Left="21" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Content="Connect with ID" FontSize="20" FontWeight="Bold"
+                    Canvas.Left="27" Canvas.Top="240" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Content="Your ID and password to share with your expert."
+                    FontSize="15" FontStyle="Italic" Canvas.Left="27" Canvas.Top="271" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Content="Your ID: " Canvas.Left="27" Canvas.Top="302" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Content="1 355 811 856" Canvas.Left="136" Canvas.Top="302" FontSize="15" FontWeight="Bold" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Content="Password:" Canvas.Left="27" Canvas.Top="346" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Content="uoq1o2" Canvas.Left="136" Canvas.Top="346" FontSize="15" FontWeight="Bold" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Canvas>
+
+            <!-- Sidebar & Labels -->
+            <Label HorizontalAlignment="Left" Margin="85,10,0,0" VerticalAlignment="Top" FontSize="32" FontFamily="Montserrat" FontWeight="Bold" Foreground="#DCD7C9">
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center"><Run Text="ThreeBrears"/><LineBreak/><Run Text="Remote"/></TextBlock>
+            </Label>
+
+            <Ellipse HorizontalAlignment="Left" Height="90" VerticalAlignment="Top" Width="90" Margin="0,10,0,0">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="/Client/icon.png"/>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Label Content="Home" Margin="83,198,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Label Content="Remote" Margin="45,304,1137,381" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Label Content="History" Margin="73,438,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+            <!-- Button Controls -->
+            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0" Width="50" Height="40" Panel.ZIndex="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="25"/>
+                    <ColumnDefinition Width="25"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Minimize Button -->
+                <Button x:Name="btnMinimize"
+                        Grid.Column="0"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="btnMinimize_Click" Margin="8,-17,17,17" Grid.ColumnSpan="2">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#A27B5C"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#DCD7C9"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="18" Height="18" CornerRadius="9" Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Image Source="/Client/minimize.png" Width="18" Height="18" Margin="0,-11,0,0"/>
+                </Button>
+
+                <!-- Close Button -->
+                <Button x:Name="btnClose"
+                        Grid.Column="1"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="btnClose_Click" Margin="8,-17,-8,17">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#3F4E4F"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#DCD7C9"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Width="18" Height="18" CornerRadius="9" Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                    <Image Source="/Client/close.png" Width="16" Height="16"/>
+                </Button>
+            </Grid>
+            <Canvas x:Name="Home_2" Margin="283,394,0,0">
+                <Label Content="Remote Information" FontSize="25" FontWeight="Bold"
+        Canvas.Left="17" Canvas.Top="10" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Rectangle Height="142" Canvas.Top="49" Width="344" RadiusX="26.807" RadiusY="26.807"
+                    Fill="#FFE8E4DA" Canvas.Left="22" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Label Content="User" FontSize="20" FontWeight="Bold"
+                    Canvas.Left="28" Canvas.Top="55" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Label Content="Email:" Canvas.Left="28" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Label Content="Time start:" Canvas.Left="28" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Label Content="Operation system:" Canvas.Left="28" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Rectangle Height="142" Canvas.Top="49" Width="344" RadiusX="26.807" RadiusY="26.807"
+                    Fill="#FFE8E4DA" Canvas.Left="637" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="Partner" FontSize="20" FontWeight="Bold"
+                    Canvas.Left="643" Canvas.Top="55" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="Email:" Canvas.Left="643" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="Time start:" Canvas.Left="643" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="Operation system:" Canvas.Left="643" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Canvas>
+            <Canvas x:Name="Remote" Margin="283,0,0,0" Background="#DCD7C9">
+                <Rectangle Height="154" Stroke="White" Canvas.Top="-47" Width="1110"
+                    RadiusX="26.807" RadiusY="26.807" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Label Content="Remote" Foreground="#FF000AA3" FontSize="48"
+                    Canvas.Left="108" Canvas.Top="22" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Label Content="Screen" Foreground="#FF000AA3" FontSize="24"
+                    Canvas.Left="424" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="CPU" Foreground="#FF000AA3" FontSize="24"
+                    Canvas.Left="532" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="GPU" Foreground="#FF000AA3" FontSize="24"
+                    Canvas.Left="617" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="RAM" Foreground="#FF000AA3" FontSize="24"
+                    Canvas.Left="704" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="Disk" Foreground="#FF000AA3" FontSize="24"
+                    Canvas.Left="789" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="Network" Foreground="#FF000AA3" FontSize="24"
+                    Canvas.Left="874" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Canvas x:Name="Screen" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
+                    <Label Content="Partner Screen" Foreground="#FF000AA3" FontSize="36"
+                    Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
+
+                </Canvas>
+
+                <Canvas x:Name="Performance" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
+                    <Label Content="Performance" Foreground="#FF000AA3" FontSize="36"
+    Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
+
+                </Canvas>
+
+            </Canvas>
+        </Grid>
+    </Border>
 </Window>

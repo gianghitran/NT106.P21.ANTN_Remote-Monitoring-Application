@@ -18,8 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Client\close.png" />
     <Resource Include="Client\home.png" />
     <Resource Include="Client\icon.png" />
+    <Resource Include="Client\minimize.png" />
     <Resource Include="Client\tt.png" />
 
 	<Resource Include="Login\minimize.png" />
