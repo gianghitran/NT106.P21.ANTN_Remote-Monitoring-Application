@@ -24,13 +24,21 @@ namespace SERVER_RemoteMonitoring.Server
             InitializeComponent();
             List<User> users = new List<User>
             {
-                new User { ID = 1, UserName = "Alice", Email = "alice@example.com", IP = "192.168.1.2", Port = "8080", Role = "Connect", ConnectWith = "None", Details = "Alice get process list of Bob." },
+                new User { ID = 1, UserName = "Alice", Email = "alice@example.com", IP = "192.168.1.2", Port = "8080", Role = "Connect", ConnectWith = "None", Details = "Alice querry to Bob." },
                 new User { ID = 2, UserName = "Bob", Email = "bob@example.com", IP = "192.168.1.3", Port = "8081", Role = "Be connected", ConnectWith = "Alice", Details = "Bob connected to mornitoring Char." },
                 new User { ID = 3, UserName = "Charlie", Email = "charlie@example.com", IP = "192.168.1.4", Port = "8082", Role = "Be connected", ConnectWith = "Bob", Details = "Charlie offline." }
             };
 
+            List<Log> logs = new List<Log>
+            {
+                new Log { ID = "1", LogID = "1", Action = "Alice get process list of Bob.", Times = DateTime.Now },
+                new Log { ID = "2", LogID = "2", Action = "Bob connected to mornitoring Char.", Times = DateTime.Now },
+                new Log { ID = "3", LogID = "3", Action = "Charlie screen view Alice.", Times = DateTime.Now }
+            };
+
             // Gán dữ liệu vào DataGrid
             SettingsDataGrid.ItemsSource = users;
+            DashboardDataGrid.ItemsSource = logs;
         }
 
         public class User
@@ -60,15 +68,6 @@ namespace SERVER_RemoteMonitoring.Server
 
             // Điều hướng đến User
             public User User { get; set; }
-
-            // Gán giá trị Action từ Log cho Details trong User
-            //public void AssignActionToUserDetails()
-            //{
-            //    if (User != null)
-            //    {
-            //        User.Details = this.Action;      // Gán Action từ Log cho Details trong User
-            //    }
-            //}
         }
 
 
@@ -169,5 +168,6 @@ namespace SERVER_RemoteMonitoring.Server
             
         }
 
+        
     }
 }

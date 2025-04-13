@@ -148,36 +148,40 @@
                     <TextBlock Grid.Row="0" FontSize="36" FontFamily="Segoe UI Black" Foreground="#A27B5C" HorizontalAlignment="Left" VerticalAlignment="Top" Text="Dashboard"  Margin="698,73,0,0"/>
 
                     <!-- DataGrid Section -->
-                    <Grid Grid.Row="1" Margin="20">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="734*"/>
-                            <ColumnDefinition Width="585*"/>
-                        </Grid.ColumnDefinitions>
-                        <DataGrid Name="UserLogDataGrid" AutoGenerateColumns="False" BorderBrush="#A27B5C" BorderThickness="1" Background="#2C3639" Foreground="Black" Margin="294,20,40,-20" Grid.ColumnSpan="2">
+
+                    <DataGrid x:Name="DashboardDataGrid"  BorderBrush="#A27B5C" BorderThickness="1" Background="#2C3639" Foreground="Black" Margin="302,29,40,-606"
+
+                            AutoGenerateColumns="False" Grid.Row="1">
 
 
+                        <DataGrid.Columns>
+                            <!-- Column for User Count -->
+                            <DataGridTextColumn Header="LogID" Binding="{Binding LogID}" Width="50" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+                            <!-- Column for User -->
+                            <DataGridTextColumn Header="Log" Binding="{Binding Action}" Width="*"  >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
 
-                            <DataGrid.Columns>
-                                <!-- Column for User Count -->
-                                <DataGridTextColumn Header="Logs" Binding="{Binding Action}" Width="*" >
-                                    <DataGridTextColumn.HeaderStyle>
-                                        <Style TargetType="DataGridColumnHeader">
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </Style>
-                                    </DataGridTextColumn.HeaderStyle>
-                                </DataGridTextColumn>
-
-                                <!-- Column for Log -->
-                                <DataGridTextColumn Header="Time" Binding="{Binding Times}" Width="*" >
-                                    <DataGridTextColumn.HeaderStyle>
-                                        <Style TargetType="DataGridColumnHeader">
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </Style>
-                                    </DataGridTextColumn.HeaderStyle>
-                                </DataGridTextColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
+                            <!-- Column for Log -->
+                            <DataGridTextColumn Header="Time" Binding="{Binding Times}" Width="*" >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
 
             </StackPanel>
