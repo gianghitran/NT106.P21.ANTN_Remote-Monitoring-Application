@@ -32,28 +32,45 @@ namespace SERVER_RemoteMonitoring.Server
             // Gán dữ liệu vào DataGrid
             SettingsDataGrid.ItemsSource = users;
         }
+
         public class User
         {
             public int ID { get; set; }
             public string UserName { get; set; }
 
-
+            public string Password { get; set; }         // thêm Password
             public string Email { get; set; }           // thêm Email
             public string IP { get; set; }              // thêm IP
             public string Port { get; set; }            // thêm Port
             public string ConnectWith { get; set; }     // thêm ConnectWith
             public string Role { get; set; }            // điều khiển / bị điều khiển
-            public string Details { get; set; }         // mô tả thêm (Logs)
+            public string Details { get; set; }         // mô tả thêm 
 
+            // Mối quan hệ 1:N với Log
+            public List<Log> Logs { get; set; }         // Danh sách các bản ghi nhật ký liên kết với User
         }
+
+
         public class Log
         {
-            public string ID { get; set; }
+            public string ID { get; set; }  // Khóa ngoại liên kết User
             public string LogID { get; set; }
-
             public string Action { get; set; }
             public DateTime Times { get; set; }
+
+            // Điều hướng đến User
+            public User User { get; set; }
+
+            // Gán giá trị Action từ Log cho Details trong User
+            //public void AssignActionToUserDetails()
+            //{
+            //    if (User != null)
+            //    {
+            //        User.Details = this.Action;      // Gán Action từ Log cho Details trong User
+            //    }
+            //}
         }
+
 
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
