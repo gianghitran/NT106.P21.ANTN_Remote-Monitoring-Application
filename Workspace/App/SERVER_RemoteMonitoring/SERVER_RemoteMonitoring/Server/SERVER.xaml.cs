@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static SERVER_RemoteMonitoring.Server.SERVER;
 
 namespace SERVER_RemoteMonitoring.Server
 {
@@ -29,16 +31,57 @@ namespace SERVER_RemoteMonitoring.Server
                 new User { ID = 3, UserName = "Charlie", Email = "charlie@example.com", IP = "192.168.1.4", Port = "8082", Role = "Be connected", ConnectWith = "Bob", Details = "Charlie offline." }
             };
 
+            // Tạo danh sách logs, mỗi log gán đúng user từ danh sách
             List<Log> logs = new List<Log>
-            {
-                new Log { ID = "1", LogID = "1", Action = "Alice get process list of Bob.", Times = DateTime.Now },
-                new Log { ID = "2", LogID = "2", Action = "Bob connected to mornitoring Char.", Times = DateTime.Now },
-                new Log { ID = "3", LogID = "3", Action = "Charlie screen view Alice.", Times = DateTime.Now }
+            { 
+                new Log
+                {
+                    ID=1,
+                    LogID = "1",
+                    Action = "Alice get process list of Bob.",
+                    NameResources="file.txt",
+                    Times = DateTime.Now,
+                    User = users.First(u => u.ID == 1),
+
+                },
+                new Log
+                {
+                    ID = 2,
+                    LogID = "2",
+                    Action = "Bob connected to monitoring Char.",
+                    NameResources="file.txt",
+
+                    Times = DateTime.Now,
+                    User = users.First(u => u.ID == 2), 
+                },
+                new Log
+                {
+                    ID = 3,
+                    LogID = "3",
+                    Action = "Charlie screen view Alice.",
+                    NameResources="file.txt",
+
+                    Times = DateTime.Now,
+                    User = users.First(u => u.ID == 3), 
+                }
             };
+
+            foreach (var log in logs)
+            {
+                log.User.LastAction = log.Times;
+                log.User.LastActionDe = log.Action;
+
+            }
+
 
             // Gán dữ liệu vào DataGrid
             SettingsDataGrid.ItemsSource = users;
             DashboardDataGrid.ItemsSource = logs;
+            UserControlDataGrid.ItemsSource = users;
+            ConnectionsDataGrid.ItemsSource = users;
+            LogsDataGrid.ItemsSource = logs;
+
+
         }
 
         public class User
@@ -53,6 +96,9 @@ namespace SERVER_RemoteMonitoring.Server
             public string ConnectWith { get; set; }     // thêm ConnectWith
             public string Role { get; set; }            // điều khiển / bị điều khiển
             public string Details { get; set; }         // mô tả thêm 
+            public DateTime LastAction { get; set; }          // trạng thái kết nối
+            public string LastActionDe { get; set; }          // trạng thái kết nối
+
 
             // Mối quan hệ 1:N với Log
             public List<Log> Logs { get; set; }         // Danh sách các bản ghi nhật ký liên kết với User
@@ -61,9 +107,11 @@ namespace SERVER_RemoteMonitoring.Server
 
         public class Log
         {
-            public string ID { get; set; }  // Khóa ngoại liên kết User
+            public int ID { get; set; }  // Khóa ngoại liên kết User
             public string LogID { get; set; }
             public string Action { get; set; }
+            public string NameResources { get; set; }
+
             public DateTime Times { get; set; }
 
             // Điều hướng đến User

@@ -134,10 +134,11 @@
                 <Label x:Name="SettingsControl" HorizontalAlignment="Left" Margin="0,550,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261" MouseDown="SettingsControl_Click" Cursor="Hand">
                     <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Settings"/><LineBreak/><Run/></TextBlock>
                 </Label>
+                
             </Grid>
 
             <!-- HOME -->
-            <StackPanel x:Name="Home" Panel.ZIndex="1000">
+            <StackPanel x:Name="Home" Panel.ZIndex="1000" Visibility="Visible">
 
                 <Grid Margin="0,0,0,20">
                     <Grid.RowDefinitions>
@@ -189,43 +190,12 @@
             <!-- USER CONTROL -->
 
             <StackPanel x:Name="UserControl_Table" Panel.ZIndex="100" Visibility="Collapsed">
-                <DataGrid
-        HorizontalAlignment="Right"
-        Margin="0,100,100,0"
-        Height="592"
-        Width="913"
-        AutoGenerateColumns="False">
-                    <DataGrid.Resources>
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                            <Setter Property="FontWeight" Value="Bold"/>
-                        </Style>
-
-                        <Style x:Key="CenterCellStyle" TargetType="TextBlock">
-                            <Setter Property="HorizontalAlignment" Value="Center"/>
-                            <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="TextAlignment" Value="Center"/>
-                        </Style>
-                    </DataGrid.Resources>
-
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="30" />
-                        <DataGridTextColumn Header="User A" Binding="{Binding UserName}" Width="*" />
-                        <DataGridTextColumn Header="User B" Binding="{Binding ConnectWith}" Width="*" />
-                        <DataGridTextColumn Header="Status" Binding="{Binding Details}" Width="*" />
-                        <DataGridTextColumn Header="Time" Binding="{Binding Times}" Width="*" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </StackPanel>
-
-            <!-- Connections -->
-            <StackPanel x:Name="Connections" Panel.ZIndex="100" Visibility="Collapsed">
-                <DataGrid
+                <DataGrid x:Name="UserControlDataGrid"
                     HorizontalAlignment="Right"
                     Margin="0,100,100,0"
                     Height="592"
                     Width="913"
+
                     AutoGenerateColumns="False">
                     <DataGrid.Resources>
                         <Style TargetType="DataGridColumnHeader">
@@ -242,26 +212,64 @@
                     </DataGrid.Resources>
 
                     <DataGrid.Columns>
+                        
                         <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="30" />
-                        <DataGridTextColumn Header="Users" Binding="{Binding UserA}" Width="*" />
-                        <DataGridTextColumn Header="IP" Binding="{Binding UserB}" Width="*" />
-                        <DataGridTextColumn Header="Port" Binding="{Binding Status}" Width="*" />
-                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
-                        <DataGridTextColumn Header="Time" Binding="{Binding Time}" Width="*" />
+                        <DataGridTextColumn Header="User A" Binding="{Binding UserName}" Width="*" />
+                        <DataGridTextColumn Header="Connect With" Binding="{Binding ConnectWith}" Width="*" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding Details}" Width="*" />
+                        <DataGridTextColumn Header="Time" Binding="{Binding LastAction}" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
+            </StackPanel>
+
+            <!-- Connections -->
+            <StackPanel x:Name="Connections" Panel.ZIndex="100" Visibility="Collapsed">
+                <DataGrid
+                    x:Name="ConnectionsDataGrid"
+                    HorizontalAlignment="Right"
+                    Margin="0,100,100,0"
+                    Height="592"
+                    Width="913"
+                    AutoGenerateColumns="False">
+                   
+                        <DataGrid.Resources>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </Style>
+
+                        <Style x:Key="CenterCellStyle" TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.Resources>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="30" />
+                        <DataGridTextColumn Header="Users" Binding="{Binding UserName}" Width="*" />
+                        <DataGridTextColumn Header="IP" Binding="{Binding IP}" Width="*" />
+                        <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="*" />
+                        <DataGridTextColumn Header="Newest Status" Binding="{Binding LastActionDe}" Width="*" />
+                        <DataGridTextColumn Header="Time" Binding="{Binding LastAction}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+               
             </StackPanel>
 
 
 
             <!-- Logs -->
             <StackPanel x:Name="Logs" Panel.ZIndex="100" Visibility="Collapsed">
+                
                 <DataGrid
-         HorizontalAlignment="Right"
-         Margin="0,100,100,0"
-         Height="592"
-         Width="913"
-         AutoGenerateColumns="False">
+                    x:Name="LogsDataGrid"
+                     HorizontalAlignment="Right"
+                     Margin="0,100,550,0"
+                     Height="592"
+                     Width="501"
+                     AutoGenerateColumns="False">
                     <DataGrid.Resources>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -278,10 +286,22 @@
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="LogID" Binding="{Binding LogID}" Width="50" />
-                        <DataGridTextColumn Header="Event" Binding="{Binding Times}" Width="*" />
+                        <DataGridTextColumn Header="Event" Binding="{Binding Action}" Width="*" />
+                        <DataGridTextColumn Header="Resources" Binding="{Binding NameResources}" Width="*" />
+
                     </DataGrid.Columns>
                 </DataGrid>
+
+                <RichTextBox Margin="0,-590,-800,0" Height="592" Width="470">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="RichTextBox Hiển thị nội dung chi tiết của file"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+
             </StackPanel>
+            
 
 
 
