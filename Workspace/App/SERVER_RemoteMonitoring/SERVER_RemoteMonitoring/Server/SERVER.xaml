@@ -104,38 +104,114 @@
 
             </Grid>
             <Grid Panel.ZIndex="1">
-                
-            <Rectangle HorizontalAlignment="Left" Height="1176" Stroke="Black" VerticalAlignment="Center" Width="1704" Margin="255,0,0,0" Fill="#FFDCD7C9"/>
-            <Label HorizontalAlignment="Left" Margin="250,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="42" Width="477">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FF2C3639" Width="471"><Run Text="ThreeBrears"/><Run Language="vi-vn" Text=" "/><Run Text="Remote"/></TextBlock>
-            </Label>
-            <Ellipse HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="50" Margin="20,20,0,0">
-                <Ellipse.Fill>
-                    <ImageBrush ImageSource="/Server/icon.png"/>
-                </Ellipse.Fill>
-            </Ellipse>
 
-            <Label HorizontalAlignment="Left" Margin="60,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="42" Width="261">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="195" Height="61"><Run Text="SERVER"/><LineBreak/><Run/></TextBlock>
-            </Label>
+                <Rectangle  HorizontalAlignment="Left" Height="1176" Stroke="Black" VerticalAlignment="Center" Width="1704" Margin="255,0,0,0" Fill="#FFDCD7C9"/>
+                <Label HorizontalAlignment="Left" Margin="250,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="42" Width="477">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FF2C3639" Width="471"><Run Text="ThreeBrears"/><Run Language="vi-vn" Text=" "/><Run Text="Remote"/></TextBlock>
+                </Label>
+                <Ellipse HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="50" Margin="20,20,0,0">
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="/Server/icon.png"/>
+                    </Ellipse.Fill>
+                </Ellipse>
 
-            <Label HorizontalAlignment="Left" Margin="0,250,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Users Control"/><LineBreak/><Run/></TextBlock>
-            </Label>
+                <Label x:Name="HomeClick" HorizontalAlignment="Left" Margin="60,10,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="42" Width="261" MouseDown="HomeClick_Click" Cursor="Hand">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="195" Height="61"><Run Text="SERVER"/><LineBreak/><Run/></TextBlock>
+                </Label>
 
-            <Label HorizontalAlignment="Left" Margin="0,350,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Connections"/><LineBreak/><Run/></TextBlock>
-            </Label>
+                <Label x:Name="UserControl" HorizontalAlignment="Left" Margin="0,250,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261" MouseDown="UserControl_Click" Cursor="Hand">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Users Control"/><LineBreak/><Run/></TextBlock>
+                </Label>
 
-            <Label HorizontalAlignment="Left" Margin="0,450,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Logs"/><LineBreak/><Run/></TextBlock>
-            </Label>
+                <Label HorizontalAlignment="Left" Margin="0,350,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Connections"/><LineBreak/><Run/></TextBlock>
+                </Label>
 
-            <Label HorizontalAlignment="Left" Margin="0,550,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
-                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Settings"/><LineBreak/><Run/></TextBlock>
-            </Label>
+                <Label HorizontalAlignment="Left" Margin="0,450,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Logs"/><LineBreak/><Run/></TextBlock>
+                </Label>
+
+                <Label HorizontalAlignment="Left" Margin="0,550,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Settings"/><LineBreak/><Run/></TextBlock>
+                </Label>
+            </Grid>
+            <!-- HOME -->
+            <StackPanel x:Name="Home" Panel.ZIndex="1000">
+
+                <Grid Margin="0,0,0,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" FontSize="36" FontFamily="Segoe UI Black" Foreground="#FFDCD7C9" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Dashboard"/>
+
+                    <!-- DataGrid Section -->
+                    <Grid Grid.Row="1" Margin="20">
+                        <DataGrid Name="UserLogDataGrid" AutoGenerateColumns="False" BorderBrush="#A27B5C" BorderThickness="1" Background="#2C3639" Foreground="Black" Margin="294,20,0,-20">
+
+
+
+                            <DataGrid.Columns>
+                                <!-- Column for User Count -->
+                                    <DataGridTextColumn Header="Users" Binding="{Binding UserCount}" Width="*" >
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
+
+                                    <!-- Column for Log -->
+                                    <DataGridTextColumn Header="Logs" Binding="{Binding LogMessage}" Width="*" >
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+                                    </DataGridTextColumn>
+                                </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
                 </Grid>
+
+            </StackPanel>
+
+            <!-- USER CONTROL -->
+
+            <StackPanel x:Name="UserControl_Table" Panel.ZIndex="100" Visibility="Collapsed">
+                <DataGrid
+        HorizontalAlignment="Right"
+        Margin="0,100,100,0"
+        Height="592"
+        Width="913"
+        AutoGenerateColumns="False">
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        </Style>
+                        <Style x:Key="CenterCellStyle" TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="30" />
+                        <DataGridTextColumn Header="User A" Binding="{Binding UserA}" Width="*" />
+                        <DataGridTextColumn Header="User B" Binding="{Binding UserB}" Width="*" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" />
+                        <DataGridTextColumn Header="Time" Binding="{Binding Time}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+
+
+
+
         </Grid>
-            
+
+
     </Border>
 </Window>

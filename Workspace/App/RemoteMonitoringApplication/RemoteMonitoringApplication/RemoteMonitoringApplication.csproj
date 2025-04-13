@@ -13,8 +13,11 @@
     <None Remove="Client\icon.png" />
     <None Remove="Client\tt.png" />
 
-	<None Remove="Login\minimize.png" />
-	<None Remove="Login\close.png" />
+	<None Remove="Images\Icons\minimize.png" />
+	<None Remove="Images\Icons\close.png" />
+	<None Remove="Images\Icons\user.png" />
+    <None Remove="Images\Icons\password.png" />
+	<None Remove="Images\Icons\email.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,11 +27,18 @@
     <Resource Include="Client\minimize.png" />
     <Resource Include="Client\tt.png" />
 
-	<Resource Include="Login\minimize.png" />
-	<Resource Include="Login\close.png" />
+	<Resource Include="Images\Icons\minimize.png" />
+	<Resource Include="Images\Icons\close.png" />
+	<Resource Include="Images\Icons\user.png" />
+	<Resource Include="Images\Icons\password.png" />
+	<Resource Include="Images\Icons\email.png" />
   </ItemGroup>
 
 	<ItemGroup>
 		<Resource Include="Font\Montserrat.ttf" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Images\Icons\" />
 	</ItemGroup>
 </Project>

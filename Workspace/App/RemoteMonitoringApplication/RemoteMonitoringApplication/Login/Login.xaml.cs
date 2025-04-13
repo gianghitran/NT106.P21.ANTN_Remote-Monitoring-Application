@@ -41,5 +41,25 @@ namespace RemoteMonitoringApplication.Login
         {
             Application.Current.Shutdown();
         }
+
+        private void btnLogin_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void navRegister_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Application.Current.Windows.OfType<Register.Register>().Any())
+            {
+                Application.Current.Windows.OfType<Register.Register>().First().Show();
+            }
+            else
+            {
+                Register.Register registerWindow = new Register.Register();
+                registerWindow.Show();
+                registerWindow.Activate();
+            }
+            this.Hide();
+        }
     }
 }
