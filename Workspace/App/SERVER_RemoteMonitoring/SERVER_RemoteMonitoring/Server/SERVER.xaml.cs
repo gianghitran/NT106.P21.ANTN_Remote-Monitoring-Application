@@ -40,5 +40,21 @@ namespace SERVER_RemoteMonitoring.Server
         {
             Application.Current.Shutdown();
         }
+
+
+        private void HomeClick_Click(object sender, MouseButtonEventArgs e)
+        {
+            Home.Visibility = Visibility.Visible;
+
+            UserControl_Table.Visibility = Visibility.Collapsed;
+        }
+        private void UserControl_Click(object sender, MouseButtonEventArgs e)
+        {
+            UserControl_Table.Visibility = Visibility.Visible;
+            Home.Visibility = Visibility.Collapsed;
+        }
+        
+
+
     }
 }
