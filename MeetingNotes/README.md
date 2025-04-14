@@ -71,3 +71,25 @@
 
 *Tổng thời gian*: ---
 
+
+
+
+## Phân công công việc
+- Frontend: WPF (.NET)
+- C#
+
+  
+|           | Công việc| Nhân sự          |
+|-----------|----------|------------------|
+| Fontend | Login | Trần Trọng Nghĩa |
+| Fontend | Client | Nguyễn Đa Vít |
+| Fontend | Server | Trần Gia Nghi |
+| Backend | Các thông điệp từ máy bị theo dõi | Trần Gia Nghi |
+| Backend | Giao tiếp Client | Nguyễn Đa Vít |
+| Backend | Giao tiếp server + phân quyền + Login | Trần Trọng Nghĩa |
+| Mở rộng | Load Balancing |  |
+| Demo via Internet | Ngrox/localtonet | |
+
+
+
+
