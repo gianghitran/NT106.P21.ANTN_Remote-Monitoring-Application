@@ -3,15 +3,15 @@
 |----------------------|--------------------------|
 | *App Logic + Socket Logic* (5 điểm) | Dùng *TCP Socket* hoặc *WebSockets* để giao tiếp giữa Client & Server. |
 | *I/O (File, Network …)* (0.5 điểm) | Ghi file log bằng StreamWriter trong C#.  <br> Gửi dữ liệu qua mạng bằng HttpClient. |
-| *Database* (0.5 điểm) | Lưu trữ dữ liệu trong *SQLite*.  <br> Dùng *Entity Framework* để quản lý dữ liệu. |
+| *Database* (0.5 điểm) | Lưu trữ dữ liệu trong *SQLite*. lưu dashboard|
 | *Thread* (0.5 điểm) | Dùng Thread hoặc Task.Run() để chạy các tiến trình nền như theo dõi phím bấm, màn hình. |
 | *Sign up/Sign in* (0.5 điểm) | Tạo form đăng nhập với *WPF*.  <br> Lưu user vào Database. |
 | *Multi Client* (0.5 điểm) | Nhiều Client gửi dữ liệu về Server bằng *Sockets* hoặc *REST API*. |
 | *Multi Server* (0.5 điểm) | Chia nhiều server để xử lý dữ liệu từ Client, có thể dùng *Load Balancing*. |
 | *Cryptography* (0.5 điểm) | Mã hóa dữ liệu. |
 | *Demo via LAN* (0.5 điểm) | Cho phép Client kết nối Server qua *Local Network* (IP nội bộ). |
-| *Demo via Internet* (0.5 điểm) | Deploy Server trên *VPS* để Client kết nối qua *Internet* (ngrox). |
-| *Load Balancing* (1 điểm) | Dùng *Nginx* hoặc *HAProxy* để phân tải giữa nhiều Server. |
+| *Demo via Internet* (0.5 điểm) | (ngrox)/localtonet. |
+| *Load Balancing* (1 điểm) | nginx - Local: tạo note giữa client và server. |
 
 
 # Roadmap:
@@ -87,8 +87,10 @@
 | Backend | Các thông điệp từ máy bị theo dõi | Trần Gia Nghi |
 | Backend | Giao tiếp Client | Nguyễn Đa Vít |
 | Backend | Giao tiếp server + phân quyền + Login | Trần Trọng Nghĩa |
+| Backend | Database - sqllite | Trần Gia Nghi |
+| Cryptography | RSA + AES | Nguyễn Đa Vít |
 | Mở rộng | Load Balancing |  |
-| Demo via Internet | Ngrox/localtonet | |
+| Mở rộng | Demo via Internet : Ngrox/localtonet | |
 
 
 
