@@ -108,6 +108,38 @@
                          VerticalContentAlignment="Center"
                          Canvas.Left="740" Canvas.Top="302" Width="224" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <Label Content="Password:" Canvas.Left="643" Canvas.Top="342" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.539,0.161"/>
+                <Button x:Name="btnConnect"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Content="Connect"
+                    FontSize="18"
+                    Foreground="#DCD7C9"
+                    FontFamily="Montserrat"
+                    FontWeight="Medium"
+                    VerticalContentAlignment="Center"
+                    Click="btnConnect_Click" Canvas.Top="386" Canvas.Left="734" HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Background" Value="#A27B5C"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#DCD7C9"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Width="150" Height="40"
+                                CornerRadius="20"
+                                Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </Canvas>
 
             <!-- Sidebar & Labels -->
@@ -121,9 +153,9 @@
                 </Ellipse.Fill>
             </Ellipse>
 
-            <Label x:Name="btnHome" Cursor="Hand" MouseLeftButtonDown="btnHome_MouseLeftButtonDown" Content="Home" Margin="83,198,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <Label x:Name="btnRemote" Cursor="Hand" MouseLeftButtonDown="btnRemote_MouseLeftButtonDown" Content="Remote" Margin="45,304,1137,381" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Label x:Name="btnHistory" Cursor="Hand" MouseLeftButtonDown="btnHistory_MouseLeftButtonDown" Content="History" Margin="73,438,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Label x:Name="btnHome" HorizontalContentAlignment="Center" Cursor="Hand" MouseLeftButtonDown="btnHome_MouseLeftButtonDown" Content="Home" Margin="54,196,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="159"/>
+            <Label x:Name="btnRemote" HorizontalContentAlignment="Center" Cursor="Hand" MouseLeftButtonDown="btnRemote_MouseLeftButtonDown" Content="Remote" Margin="66,313,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="135"/>
+            <Label x:Name="btnHistory" HorizontalContentAlignment="Center" Cursor="Hand" MouseLeftButtonDown="btnHistory_MouseLeftButtonDown" Content="History" Margin="59,438,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="149"/>
 
             <!-- Button Controls -->
             <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0" Width="50" Height="40" Panel.ZIndex="10">
@@ -192,75 +224,423 @@
                 <Label Content="User" FontSize="20" FontWeight="Bold"
                     Canvas.Left="28" Canvas.Top="55" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <Label Content="Email:" Canvas.Left="28" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Label Content="Time start:" Canvas.Left="28" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Label Content="IP:" Canvas.Left="28" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <Label Content="Operation system:" Canvas.Left="28" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <Rectangle Height="142" Canvas.Top="49" Width="344" RadiusX="26.807" RadiusY="26.807"
                     Fill="#FFE8E4DA" Canvas.Left="637" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <Label Content="Partner" FontSize="20" FontWeight="Bold"
                     Canvas.Left="643" Canvas.Top="55" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <Label Content="Email:" Canvas.Left="643" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label Content="Time start:" Canvas.Left="643" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label Content="IP:" Canvas.Left="643" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 <Label Content="Operation system:" Canvas.Left="643" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label x:Name="usrEmail" Content="" Canvas.Left="82" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label x:Name="usrIP" Content="" Canvas.Left="82" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Label x:Name="usrOS" Content="" Canvas.Left="163" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Label x:Name="ptnEmail" Content="" Canvas.Left="703" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label x:Name="ptnIP" Content="" Canvas.Left="703" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Label x:Name="ptnOS" Content="" Canvas.Left="778" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Button x:Name="btnDisconnect"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Content="Disconnect"
+                    FontSize="18"
+                    Foreground="#DCD7C9"
+                    FontFamily="Montserrat"
+                    FontWeight="Medium"
+                    VerticalContentAlignment="Center"
+                    Click="btnDisconnect_Click" Canvas.Top="214" Canvas.Left="734" HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Background" Value="#A27B5C"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#DCD7C9"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Width="150" Height="40"
+                                CornerRadius="20"
+                                Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </Canvas>
-            <Canvas x:Name="Remote" Visibility="Collapsed" Margin="283,0,0,0" Background="#DCD7C9">
+            <Canvas x:Name="Remote" Margin="283,0,0,0" Background="#DCD7C9">
                 <Rectangle Height="154" Stroke="White" Canvas.Top="-47" Width="1110"
                     RadiusX="26.807" RadiusY="26.807" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <Label Content="Remote" Foreground="#FF000AA3" FontSize="48"
                     Canvas.Left="108" Canvas.Top="22" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 <Label x:Name="lblScreen" Cursor="Hand" Content="Screen" MouseLeftButtonDown="lblScreen_MouseLeftButtonDown" Foreground="#FF000AA3" FontSize="24"
                     Canvas.Left="424" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="lblCPU" Cursor="Hand" Content="CPU" MouseLeftButtonDown="lblCPU_MouseLeftButtonDown" Foreground="#FF000AA3" FontSize="24"
-                    Canvas.Left="532" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="lblGPU" Cursor="Hand" Content="GPU" MouseLeftButtonDown="lblGPU_MouseLeftButtonDown" Foreground="#FF000AA3" FontSize="24"
-                    Canvas.Left="617" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="lblRAM" Cursor="Hand" Content="RAM" MouseLeftButtonDown="lblRAM_MouseLeftButtonDown" Foreground="#FF000AA3" FontSize="24"
-                    Canvas.Left="704" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="lblDisk" Cursor="Hand" Content="Disk" MouseLeftButtonDown="lblDisk_MouseLeftButtonDown" Foreground="#FF000AA3" FontSize="24"
-                    Canvas.Left="789" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="lblNetwork" Cursor="Hand" Content="Network" Foreground="#FF000AA3" FontSize="24"
-                    Canvas.Left="874" Canvas.Top="36" MouseLeftButtonDown="lblNetwork_MouseLeftButtonDown" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label x:Name="lblPerformance" Cursor="Hand" Content="Performance" Foreground="#FF000AA3" FontSize="24"
+                    Canvas.Left="619" Canvas.Top="36" MouseLeftButtonDown="lblPerformance_MouseLeftButtonDown" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <Label x:Name="lblTaskManager" MouseLeftButtonDown="lblTaskManager_MouseLeftButtonDown" Cursor="Hand" Content="Task Manager" Foreground="#FF000AA3" FontSize="24"
+                    Canvas.Left="862" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
 
                 <!-- Screen -->
 
-                <Canvas x:Name="Screen" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
+                <Canvas x:Name="Screen" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
                     <Label Content="Partner Screen" Foreground="#FF000AA3" FontSize="36"
                     Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
+                    <Border x:Name="MediaBorder"
+                            Background="#2C3639"
+                            BorderThickness="3.5"
+                            ClipToBounds="True"
+                            CornerRadius="10"
+                            Padding="5"
+                            Canvas.Left="89" 
+                            Canvas.Top="100">
+                        <Border.BorderBrush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#A27B5C" Offset="0"/>
+                                <GradientStop Color="#DCD7C9" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+                        <MediaElement x:Name="videoScreen" Height="464" Width="855"/>
+                    </Border>
+
+                    <Button x:Name="btnPlay"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Content="Play"
+                            FontSize="18"
+                            Foreground="#DCD7C9"
+                            FontFamily="Montserrat"
+                            FontWeight="Medium"
+                            VerticalContentAlignment="Center"
+                            Click="btnPlay_Click" Canvas.Top="599" Canvas.Left="344" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#DCD7C9"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Width="80" Height="40"
+                CornerRadius="20"
+                Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button x:Name="btnPause"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Content="Pause"
+                        FontSize="18"
+                        Foreground="#DCD7C9"
+                        FontFamily="Montserrat"
+                        FontWeight="Medium"
+                        VerticalContentAlignment="Center"
+                        Click="btnPlay_Click" Canvas.Top="599" Canvas.Left="480" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#DCD7C9"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Width="80" Height="40"
+                                    CornerRadius="20"
+                                    Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button x:Name="btnStop"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Content="Stop"
+                        FontSize="18"
+                        Foreground="#DCD7C9"
+                        FontFamily="Montserrat"
+                        FontWeight="Medium"
+                        VerticalContentAlignment="Center"
+                        Click="btnStop_Click" Canvas.Top="599" Canvas.Left="620" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#DCD7C9"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Width="80" Height="40"
+                                    CornerRadius="20"
+                                    Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Canvas>
+
+                <!-- Performance -->
+                <Canvas x:Name="Performance" Background="#DCD7C9" Height="649" Width="1066" HorizontalAlignment="Left" Canvas.Top="112" VerticalAlignment="Center" Canvas.Left="10">
+                    <Label Content="Performance" Foreground="#FF000AA3" FontSize="36"
+                        Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
+
+
+                    <!-- CPU -->
+                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="70" Canvas.Top="104" Height="132" Width="364">
+                        <StackPanel>
+                            <TextBlock Text="CPU Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
+                            <ProgressBar x:Name="cpuBar" Height="20" Maximum="100" Value="40" Foreground="#A27B5C"/>
+                            <TextBlock x:Name="cpuText" Text="40%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
+                            <TextBlock x:Name="cpuDetailsText" Text="Speed: 3.2GHz | Processes: 112 | Threads: 1536" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat Thin"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Memory -->
+                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="578" Canvas.Top="324" Height="125" Width="331">
+                        <StackPanel>
+                            <TextBlock Text="Memory Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
+                            <ProgressBar x:Name="memoryBar" Height="20" Maximum="100" Value="65" Foreground="#A27B5C"/>
+                            <TextBlock x:Name="memoryText" Text="65%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
+                            <TextBlock x:Name="memoryDetailsText" Text="In use: 7.8 GB | Available: 8.2 GB" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat Thin"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Disk -->
+                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="578" Canvas.Top="104" Height="132" Width="331">
+                        <StackPanel>
+                            <TextBlock Text="Disk Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
+                            <ProgressBar x:Name="diskBar" Height="20" Maximum="100" Value="20" Foreground="#A27B5C"/>
+                            <TextBlock x:Name="diskText" Text="20%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
+                            <TextBlock x:Name="diskDetailsText" Text="Read: 55 MB/s | Write: 12 MB/s" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat Thin"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Wifi -->
+                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="372" Canvas.Top="504" HorizontalAlignment="Left" Height="86" VerticalAlignment="Center" Width="322">
+                        <StackPanel>
+                            <TextBlock Text="Network Usage (WiFi)" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
+                            <TextBlock x:Name="wifiText" Text="Download: 1.2 MB/s | Upload: 0.5 MB/s" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- GPU -->
+                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="70" Canvas.Top="324" HorizontalAlignment="Left" VerticalAlignment="Center" Height="125" Width="364">
+                        <StackPanel>
+                            <TextBlock Text="GPU Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
+                            <ProgressBar x:Name="gpuBar" Height="20" Maximum="100" Value="30" Foreground="#A27B5C"/>
+                            <TextBlock x:Name="gpuText" Text="30%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
+                            <TextBlock x:Name="gpuDetailsText" Text="GPU Memory: 2.1 GB / 6 GB" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat Thin"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Button x:Name="btnTaskSync"
+                             BorderThickness="0"
+                             Cursor="Hand"
+                             Content="Sync"
+                             FontSize="18"
+                             Foreground="#DCD7C9"
+                             FontFamily="Montserrat"
+                             FontWeight="Medium"
+                             VerticalContentAlignment="Center"
+                             Click="btnTaskSync_Click" Canvas.Top="17" Canvas.Left="874" HorizontalAlignment="Center" VerticalAlignment="Top">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#D9A57B"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Width="150" Height="40"
+                     CornerRadius="20"
+                     Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                         VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
 
                 </Canvas>
 
-                <!-- CPU -->
-
-                <Canvas x:Name="CPU" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
-                    <Label Content="CPU" Foreground="#FF000AA3" FontSize="36"
+                <!-- Performance -->
+                <Canvas x:Name="Task_Manager" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1066" HorizontalAlignment="Left" Canvas.Top="112" VerticalAlignment="Center" Canvas.Left="10">
+                    <Label Content="Task Manager" Foreground="#FF000AA3" FontSize="36"
                             Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
+                    <Border CornerRadius="0"
+                BorderBrush="Black"
+                BorderThickness="1"
+                Background="#FFE8E4DA"
+                Padding="0"
+                Width="990"
+                Height="501"
+                Canvas.Top="94"
+                Canvas.Left="34" HorizontalAlignment="Left" VerticalAlignment="Center">
+
+                        <DataGrid x:Name="ProcessDataGrid"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      ItemsSource="{Binding Processes}"
+                      SelectedItem="{Binding SelectedProcess}"
+                      FontFamily="Montserrat"
+                      FontSize="14"
+                      GridLinesVisibility="All"
+                      Background="Transparent"
+                      Foreground="#A27B5C"
+                      RowBackground="White"
+                      AlternatingRowBackground="#F5F5F5"
+                      BorderThickness="0"
+                      HeadersVisibility="Column"
+                      CanUserResizeColumns="True"
+                      CanUserReorderColumns="False"
+                      CanUserSortColumns="True" Margin="-1,-1,-1,0">
+
+                            <DataGrid.Resources>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                    <Setter Property="BorderBrush" Value="#D3CFC4"/>
+                                    <Setter Property="Padding" Value="8,4"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="#A27B5C"/>
+
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="#D9A57B"/>
+                                            <Setter Property="Foreground" Value="Black"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.Resources>
+
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="Background" Value="#A27B5C"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="FontFamily" Value="Montserrat"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="Height" Value="32"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="DataGridColumnHeader">
+                                                <Grid>
+                                                    <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="Black"
+                                                BorderThickness="0,0,1,1"
+                                                CornerRadius="0"
+                                                SnapsToDevicePixels="True"/>
+                                                    <Grid>
+                                                        <ContentPresenter HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"
+                                                              SnapsToDevicePixels="True"/>
+                                                        <Path x:Name="SortArrow" Visibility="Collapsed" Fill="White" HorizontalAlignment="Right" Margin="5" Width="10" Height="6" Stretch="Uniform">
+                                                            <Path.Data>
+                                                                <PathGeometry Figures="M 0 0 L 1 0 L 0.5 1 Z" />
+                                                            </Path.Data>
+                                                        </Path>
+                                                    </Grid>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="SortDirection" Value="Ascending">
+                                                        <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                                        <Setter TargetName="SortArrow" Property="RenderTransform">
+                                                            <Setter.Value>
+                                                                <RotateTransform Angle="180" CenterX="5" CenterY="3"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                    <Trigger Property="SortDirection" Value="Descending">
+                                                        <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Binding="{Binding ProcessName}" Width="2*"/>
+                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*"/>
+                                <DataGridTextColumn Header="CPU" Binding="{Binding CPU}" Width="*"/>
+                                <DataGridTextColumn Header="Memory" Binding="{Binding Memory}" Width="*"/>
+                                <DataGridTextColumn Header="Disk" Binding="{Binding Disk}" Width="*"/>
+                                <DataGridTextColumn Header="Network" Binding="{Binding NetWork}" Width="*"/>
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+                    </Border>
+
+                    <Button x:Name="btnPerformanceSync"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Content="Sync"
+                            FontSize="18"
+                            Foreground="#DCD7C9"
+                            FontFamily="Montserrat"
+                            FontWeight="Medium"
+                            VerticalContentAlignment="Center"
+                            Click="btnPerformanceSync_Click" Canvas.Top="17" Canvas.Left="874" HorizontalAlignment="Center" VerticalAlignment="Top">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#D9A57B"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Width="150" Height="40"
+                                        CornerRadius="20"
+                                        Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
 
                 </Canvas>
 
-                <!-- GPU -->
-                <Canvas x:Name="GPU" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
-                    <Label Content="GPU" Foreground="#FF000AA3" FontSize="36"
-                        Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
-
-                </Canvas>
-                <!-- RAM -->
-                <Canvas x:Name="RAM" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
-                    <Label Content="RAM" Foreground="#FF000AA3" FontSize="36"
-                        Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
-
-                </Canvas>
-
-                <!-- Disk -->
-                <Canvas x:Name="Disk" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
-                    <Label Content="Disk" Foreground="#FF000AA3" FontSize="36"
-                        Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
-
-                </Canvas>
-                <!-- Network -->
-                <Canvas x:Name="Network" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
-                    <Label Content="Network" Foreground="#FF000AA3" FontSize="36"
-                        Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
-
-                </Canvas>
 
 
             </Canvas>
