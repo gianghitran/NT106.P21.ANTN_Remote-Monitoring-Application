@@ -2,16 +2,16 @@
 | *Tiêu chí*          | *Cách thực hiện trong C#* |
 |----------------------|--------------------------|
 | *App Logic + Socket Logic* (5 điểm) | Dùng *TCP Socket* hoặc *WebSockets* để giao tiếp giữa Client & Server. |
-| *I/O (File, Network …)* (0.5 điểm) | Ghi file log bằng StreamWriter trong C#.  <br> Gửi dữ liệu qua mạng bằng HttpClient. |
-| *Database* (0.5 điểm) | Lưu trữ dữ liệu trong *SQLite* hoặc *MySQL*.  <br> Dùng *Entity Framework* để quản lý dữ liệu. |
+| *I/O (File, Network …)* (0.5 điểm) | Ghi file log bằng StreamWriter trong C#.  <br> Gửi dữ liệu qua mạng bằng TCPClient. |
+| *Database* (0.5 điểm) | Lưu trữ dữ liệu trong *SQLite*. lưu dashboard|
 | *Thread* (0.5 điểm) | Dùng Thread hoặc Task.Run() để chạy các tiến trình nền như theo dõi phím bấm, màn hình. |
-| *Sign up/Sign in* (0.5 điểm) | Tạo form đăng nhập với *WinForms/WPF*.  <br> Lưu user vào Database. |
-| *Multi Client* (0.5 điểm) | Nhiều Client gửi dữ liệu về Server bằng *Sockets* hoặc *REST API*. |
+| *Sign up/Sign in* (0.5 điểm) | Tạo form đăng nhập với *WPF*.  <br> Lưu user vào Database. |
+| *Multi Client* (0.5 điểm) | Nhiều Client gửi dữ liệu về Server bằng *TCPSockets* . |
 | *Multi Server* (0.5 điểm) | Chia nhiều server để xử lý dữ liệu từ Client, có thể dùng *Load Balancing*. |
 | *Cryptography* (0.5 điểm) | Mã hóa dữ liệu. |
 | *Demo via LAN* (0.5 điểm) | Cho phép Client kết nối Server qua *Local Network* (IP nội bộ). |
-| *Demo via Internet* (0.5 điểm) | Deploy Server trên *VPS* để Client kết nối qua *Internet* (ngrox). |
-| *Load Balancing* (1 điểm) | Dùng *Nginx* hoặc *HAProxy* để phân tải giữa nhiều Server. |
+| *Demo via Internet* (0.5 điểm) | (ngrox)/localtonet. |
+| *Load Balancing* (1 điểm) | nginx - Local: tạo node giữa client và server. |
 
 
 # Roadmap:
@@ -20,7 +20,7 @@
 | Công việc | Mô tả |
 |-----------|-------|
 | Xác định yêu cầu hệ thống | Client & Server hoạt động thế nào? |
-| Chọn công nghệ | UI: WPF, Server: ASP.NET Core, Database: MySQL/SQLite |
+| Chọn công nghệ | UI: WPF, Server: ASP.NET Core, Database: SQLite |
 | Thiết kế kiến trúc | Vẽ sơ đồ luồng dữ liệu |
 
 ### Giai đoạn 2: Xây dựng Client cơ bản 
@@ -34,16 +34,16 @@
 ## Giai đoạn 3: Xây dựng Server cơ bản 
 | Công việc | Mô tả |
 |-----------|-------|
-| Tạo API nhận dữ liệu | ASP.NET Core Web API nhận màn hình, bàn phím |
-| Lưu trữ dữ liệu | Lưu ảnh & log vào MySQL/SQLite |
+| Tạo API nhận dữ liệu | video,log,process list, process dump, info systems, cpu, ram,... |
+| Lưu trữ dữ liệu | Lưu ảnh & log vào SQLite |
 | Test Server | Kiểm thử với nhiều Client |
 
 ### Giai đoạn 4: Xây dựng Dashboard giám sát 
 | Công việc | Mô tả |
 |-----------|-------|
 | Giao diện Dashboard | Hiển thị danh sách Client |
-| Xem màn hình Client | Load ảnh từ Server |
-| Xem lịch sử nhập liệu | Hiển thị log bàn phím |
+| Xem màn hình Client | Load video từ Server |
+| Xem lịch sử nhập liệu | Hiển thị log, info, process,... |
 
 ### Giai đoạn 5: Cải thiện hiệu suất & bảo mật 
 | Công việc | Mô tả |
@@ -57,7 +57,7 @@
 |-----------|-------|
 | Test nhiều Client | Đảm bảo Server hoạt động ổn định |
 | Tối ưu UI/UX | Cải thiện trải nghiệm người dùng |
-| Đưa lên VPS | Triển khai Server lên Cloud |
+| Internet | Triển khai |
 
 ## Tổng kết Roadmap
 | Giai đoạn | Công việc | Thời gian dự kiến |
@@ -70,4 +70,28 @@
 | *6* | Kiểm thử & triển khai |  |
 
 *Tổng thời gian*: ---
+
+
+
+
+## Phân công công việc
+- Frontend: WPF (.NET)
+- C#
+
+  
+|           | Công việc| Nhân sự          |
+|-----------|----------|------------------|
+| Fontend | Login | Trần Trọng Nghĩa |
+| Fontend | Client | Nguyễn Đa Vít |
+| Fontend | Server | Trần Gia Nghi |
+| Backend | Các thông điệp từ máy bị theo dõi | Trần Gia Nghi |
+| Backend | Giao tiếp Client | Nguyễn Đa Vít |
+| Backend | Giao tiếp server + phân quyền + Login | Trần Trọng Nghĩa |
+| Backend | Database - sqllite | Trần Gia Nghi |
+| Cryptography | RSA + AES | Nguyễn Đa Vít |
+| Mở rộng | Load Balancing |  |
+| Mở rộng | Demo via Internet : Ngrox/localtonet | |
+
+
+
 
