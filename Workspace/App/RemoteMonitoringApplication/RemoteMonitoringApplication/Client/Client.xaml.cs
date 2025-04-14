@@ -97,12 +97,14 @@ namespace RemoteMonitoringApplication.Client
         {
             Screen.Visibility = Visibility.Visible;
             Performance.Visibility = Visibility.Collapsed;
+            Task_Manager.Visibility = Visibility.Collapsed;
         }
 
         private void lblPerformance_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Screen.Visibility = Visibility.Collapsed;
             Performance.Visibility = Visibility.Visible;
+            Task_Manager.Visibility = Visibility.Collapsed;
         }
 
         private void btnHome_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -168,7 +170,9 @@ namespace RemoteMonitoringApplication.Client
 
         private void lblTaskManager_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
+            Screen.Visibility = Visibility.Collapsed;
+            Task_Manager.Visibility = Visibility.Visible;
+            Performance.Visibility = Visibility.Collapsed;
         }
 
         private void btnTaskSync_Click(object sender, RoutedEventArgs e)

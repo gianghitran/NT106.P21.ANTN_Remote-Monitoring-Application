@@ -123,7 +123,7 @@
                             <Setter Property="Background" Value="#A27B5C"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#DCD7C9"/>
+                                    <Setter Property="Background" Value="#D9A57B"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -254,7 +254,7 @@
                             <Setter Property="Background" Value="#A27B5C"/>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#DCD7C9"/>
+                                    <Setter Property="Background" Value="#D9A57B"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -272,7 +272,7 @@
                     </Button.Template>
                 </Button>
             </Canvas>
-            <Canvas x:Name="Remote" Margin="283,0,0,0" Background="#DCD7C9">
+            <Canvas x:Name="Remote" Visibility="Collapsed" Margin="283,0,0,0" Background="#DCD7C9">
                 <Rectangle Height="154" Stroke="White" Canvas.Top="-47" Width="1110"
                     RadiusX="26.807" RadiusY="26.807" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                 <Label Content="Remote" Foreground="#FF000AA3" FontSize="48"
@@ -287,7 +287,7 @@
 
                 <!-- Screen -->
 
-                <Canvas x:Name="Screen" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
+                <Canvas x:Name="Screen" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
                     <Label Content="Partner Screen" Foreground="#FF000AA3" FontSize="36"
                     Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
                     <Border x:Name="MediaBorder"
@@ -406,7 +406,7 @@
                 </Canvas>
 
                 <!-- Performance -->
-                <Canvas x:Name="Performance" Background="#DCD7C9" Height="649" Width="1066" HorizontalAlignment="Left" Canvas.Top="112" VerticalAlignment="Center" Canvas.Left="10">
+                <Canvas x:Name="Performance" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1066" HorizontalAlignment="Left" Canvas.Top="112" VerticalAlignment="Center" Canvas.Left="10">
                     <Label Content="Performance" Foreground="#FF000AA3" FontSize="36"
                         Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
 
@@ -414,48 +414,48 @@
                     <!-- CPU -->
                     <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="70" Canvas.Top="104" Height="132" Width="364">
                         <StackPanel>
-                            <TextBlock Text="CPU Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
+                            <TextBlock Text="CPU Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
                             <ProgressBar x:Name="cpuBar" Height="20" Maximum="100" Value="40" Foreground="#A27B5C"/>
-                            <TextBlock x:Name="cpuText" Text="40%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
-                            <TextBlock x:Name="cpuDetailsText" Text="Speed: 3.2GHz | Processes: 112 | Threads: 1536" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat Thin"/>
+                            <TextBlock x:Name="cpuText" Text="40%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
+                            <TextBlock x:Name="cpuDetailsText" Text="Speed: 3.2GHz | Processes: 112 | Threads: 1536" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Memory -->
                     <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="578" Canvas.Top="324" Height="125" Width="331">
                         <StackPanel>
-                            <TextBlock Text="Memory Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
+                            <TextBlock Text="Memory Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
                             <ProgressBar x:Name="memoryBar" Height="20" Maximum="100" Value="65" Foreground="#A27B5C"/>
-                            <TextBlock x:Name="memoryText" Text="65%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
-                            <TextBlock x:Name="memoryDetailsText" Text="In use: 7.8 GB | Available: 8.2 GB" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat Thin"/>
+                            <TextBlock x:Name="memoryText" Text="65%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
+                            <TextBlock x:Name="memoryDetailsText" Text="In use: 7.8 GB | Available: 8.2 GB" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Disk -->
                     <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="578" Canvas.Top="104" Height="132" Width="331">
                         <StackPanel>
-                            <TextBlock Text="Disk Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
+                            <TextBlock Text="Disk Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
                             <ProgressBar x:Name="diskBar" Height="20" Maximum="100" Value="20" Foreground="#A27B5C"/>
-                            <TextBlock x:Name="diskText" Text="20%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
-                            <TextBlock x:Name="diskDetailsText" Text="Read: 55 MB/s | Write: 12 MB/s" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat Thin"/>
+                            <TextBlock x:Name="diskText" Text="20%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
+                            <TextBlock x:Name="diskDetailsText" Text="Read: 55 MB/s | Write: 12 MB/s" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Wifi -->
                     <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="372" Canvas.Top="504" HorizontalAlignment="Left" Height="86" VerticalAlignment="Center" Width="322">
                         <StackPanel>
-                            <TextBlock Text="Network Usage (WiFi)" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
-                            <TextBlock x:Name="wifiText" Text="Download: 1.2 MB/s | Upload: 0.5 MB/s" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
+                            <TextBlock Text="Network Usage (WiFi)" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
+                            <TextBlock x:Name="wifiText" Text="Download: 1.2 MB/s | Upload: 0.5 MB/s" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
                         </StackPanel>
                     </Border>
 
                     <!-- GPU -->
                     <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="70" Canvas.Top="324" HorizontalAlignment="Left" VerticalAlignment="Center" Height="125" Width="364">
                         <StackPanel>
-                            <TextBlock Text="GPU Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat Thin"/>
+                            <TextBlock Text="GPU Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
                             <ProgressBar x:Name="gpuBar" Height="20" Maximum="100" Value="30" Foreground="#A27B5C"/>
-                            <TextBlock x:Name="gpuText" Text="30%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat Thin" FontSize="16"/>
-                            <TextBlock x:Name="gpuDetailsText" Text="GPU Memory: 2.1 GB / 6 GB" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat Thin"/>
+                            <TextBlock x:Name="gpuText" Text="30%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
+                            <TextBlock x:Name="gpuDetailsText" Text="GPU Memory: 2.1 GB / 6 GB" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat"/>
                         </StackPanel>
                     </Border>
 
@@ -494,7 +494,7 @@
 
                 </Canvas>
 
-                <!-- Performance -->
+                <!-- Task Manager -->
                 <Canvas x:Name="Task_Manager" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1066" HorizontalAlignment="Left" Canvas.Top="112" VerticalAlignment="Center" Canvas.Left="10">
                     <Label Content="Task Manager" Foreground="#FF000AA3" FontSize="36"
                             Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
