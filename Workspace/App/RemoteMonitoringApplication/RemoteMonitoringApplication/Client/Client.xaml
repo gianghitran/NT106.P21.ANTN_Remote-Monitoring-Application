@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RemoteMonitoringApplication.Login"
         mc:Ignorable="d"
-        Title="Client" Height="768" Width="1366"
+        Title="Client"
+        Height="768"
+        Width="1366"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
@@ -22,71 +24,205 @@
             BorderThickness="3.5"
             ClipToBounds="True">
         <Border.BorderBrush>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#A27B5C" Offset="0"/>
-                <GradientStop Color="#DCD7C9" Offset="1"/>
+            <LinearGradientBrush StartPoint="0,0"
+                                 EndPoint="1,1">
+                <GradientStop Color="#A27B5C"
+                              Offset="0"/>
+                <GradientStop Color="#DCD7C9"
+                              Offset="1"/>
             </LinearGradientBrush>
         </Border.BorderBrush>
 
         <Grid Background="#FF2C3639">
             <!-- Header Bar -->
-            <Canvas x:Name="Home_1" Margin="283,0,-35,-26" Background="#FFDCD7C9">
+            <Canvas x:Name="Home_1"
+                    Margin="283,0,-35,-26"
+                    Background="#FFDCD7C9">
                 <!-- Header & Info -->
-                <Rectangle Height="154" Stroke="White" Canvas.Top="-48" Width="1110"
-                           RadiusX="26.807" RadiusY="26.807" Fill="White"/>
-                <Label Content="Home" Foreground="#FF000AA3" FontSize="48"
-                       Canvas.Left="95" Canvas.Top="20" FontFamily="Montserrat" FontWeight="Bold"/>
-                <Image Height="74" Canvas.Left="10" Canvas.Top="10" Width="78" Source="/Client/home.png"/>
-                <Label Content="Welcome, User!" Foreground="Black" FontWeight="Bold" FontSize="30"
-                       Canvas.Left="10" Canvas.Top="111" FontFamily="Montserrat"/>
+                <Rectangle Height="154"
+                           Stroke="White"
+                           Canvas.Top="-48"
+                           Width="1110"
+                           RadiusX="26.807"
+                           RadiusY="26.807"
+                           Fill="White"/>
+                <Label Content="Home"
+                       Foreground="#FF000AA3"
+                       FontSize="48"
+                       Canvas.Left="95"
+                       Canvas.Top="20"
+                       FontFamily="{StaticResource MontserratFont}"
+                       FontWeight="Bold"/>
+                <Image Height="74"
+                       Canvas.Left="10"
+                       Canvas.Top="10"
+                       Width="78"
+                       Source="/Client/home.png"/>
+                <Label Content="Welcome, User!"
+                       Foreground="Black"
+                       FontWeight="Bold"
+                       FontSize="30"
+                       Canvas.Left="10"
+                       Canvas.Top="111"
+                       FontFamily="{StaticResource MontserratFont}"/>
 
                 <!-- Allow Remote Control -->
-                <Rectangle Height="143" Canvas.Top="233" Width="343" RadiusX="26.807" RadiusY="26.807"
-                           Fill="#FFE8E4DA" Canvas.Left="21"/>
-                <Label Content="Allow Remote Control" FontSize="25" FontWeight="Bold"
-                       Canvas.Left="16" Canvas.Top="171" FontFamily="Montserrat"/>
-                <Label Content="Connect with ID" FontSize="20" FontWeight="Bold"
-                       Canvas.Left="27" Canvas.Top="240" FontFamily="Montserrat"/>
+                <Rectangle Height="143"
+                           Canvas.Top="233"
+                           Width="343"
+                           RadiusX="26.807"
+                           RadiusY="26.807"
+                           Fill="#FFE8E4DA"
+                           Canvas.Left="21"/>
+                <Label Content="Allow Remote Control"
+                       FontSize="25"
+                       FontWeight="Bold"
+                       Canvas.Left="16"
+                       Canvas.Top="171"
+                       FontFamily="{StaticResource MontserratFont}"/>
+                <Label Content="Connect with ID"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Canvas.Left="27"
+                       Canvas.Top="240"
+                       FontFamily="{StaticResource MontserratFont}"/>
                 <Label Content="Your ID and password to share with your expert."
-                       FontSize="15" FontStyle="Italic" Canvas.Left="27" Canvas.Top="271" FontFamily="Montserrat"/>
-                <Label Content="Your ID: " Canvas.Left="27" Canvas.Top="302" FontSize="15" FontFamily="Montserrat"/>
-                <Label Content="1 355 811 856" Canvas.Left="136" Canvas.Top="302" FontSize="15" FontWeight="Bold" FontFamily="Montserrat"/>
-                <Label Content="Password:" Canvas.Left="27" Canvas.Top="346" FontSize="15" FontFamily="Montserrat"/>
-                <Label Content="uoq1o2" Canvas.Left="136" Canvas.Top="346" FontSize="15" FontWeight="Bold" FontFamily="Montserrat"/>
+                       FontSize="15"
+                       FontStyle="Italic"
+                       Canvas.Left="27"
+                       Canvas.Top="271"
+                       FontFamily="{StaticResource MontserratFont}"/>
+                <Label Content="Your ID: "
+                       Canvas.Left="27"
+                       Canvas.Top="302"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"/>
+                <Label Content="1 355 811 856"
+                       Canvas.Left="136"
+                       Canvas.Top="302"
+                       FontSize="15"
+                       FontWeight="Bold"
+                       FontFamily="{StaticResource MontserratFont}"/>
+                <Label Content="Password:"
+                       Canvas.Left="27"
+                       Canvas.Top="346"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"/>
+                <Label Content="uoq1o2"
+                       Canvas.Left="136"
+                       Canvas.Top="346"
+                       FontSize="15"
+                       FontWeight="Bold"
+                       FontFamily="{StaticResource MontserratFont}"/>
 
                 <!-- Remote Control -->
-                <Rectangle Height="143" Canvas.Top="233" Width="343" RadiusX="26.807" RadiusY="26.807"
-                           Fill="#FFE8E4DA" Canvas.Left="637"/>
-                <Label Content="Control A Remote Computer" FontSize="25" FontWeight="Bold"
-                       Canvas.Left="643" Canvas.Top="171" FontFamily="Montserrat"/>
-                <Label Content="Remote with ID" FontSize="20" FontWeight="Bold"
-                       Canvas.Left="643" Canvas.Top="240" FontFamily="Montserrat"/>
+                <Rectangle Height="143"
+                           Canvas.Top="233"
+                           Width="343"
+                           RadiusX="26.807"
+                           RadiusY="26.807"
+                           Fill="#FFE8E4DA"
+                           Canvas.Left="637"/>
+                <Label Content="Control A Remote Computer"
+                       FontSize="25"
+                       FontWeight="Bold"
+                       Canvas.Left="643"
+                       Canvas.Top="171"
+                       FontFamily="{StaticResource MontserratFont}"/>
+                <Label Content="Remote with ID"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Canvas.Left="643"
+                       Canvas.Top="240"
+                       FontFamily="{StaticResource MontserratFont}"/>
                 <Label Content="Enter Partner ID and password to remote"
-                       FontSize="15" FontStyle="Italic" Canvas.Left="643" Canvas.Top="271" FontFamily="Montserrat"/>
-                <Label Content="Partner ID: " Canvas.Left="643" Canvas.Top="302" FontSize="15" FontFamily="Montserrat"/>
+                       FontSize="15"
+                       FontStyle="Italic"
+                       Canvas.Left="643"
+                       Canvas.Top="271"
+                       FontFamily="{StaticResource MontserratFont}"/>
+                <Label Content="Partner ID: "
+                       Canvas.Left="643"
+                       Canvas.Top="302"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"/>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                 </Grid>
-                <Rectangle Height="143" Canvas.Top="233" Width="343" RadiusX="26.807" RadiusY="26.807"
-                    Fill="#FFE8E4DA" Canvas.Left="21" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <Label Content="Connect with ID" FontSize="20" FontWeight="Bold"
-                    Canvas.Left="27" Canvas.Top="240" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Rectangle Height="143"
+                           Canvas.Top="233"
+                           Width="343"
+                           RadiusX="26.807"
+                           RadiusY="26.807"
+                           Fill="#FFE8E4DA"
+                           Canvas.Left="21"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+                <Label Content="Connect with ID"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Canvas.Left="27"
+                       Canvas.Top="240"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
                 <Label Content="Your ID and password to share with your expert."
-                    FontSize="15" FontStyle="Italic" Canvas.Left="27" Canvas.Top="271" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <Label Content="Your ID: " Canvas.Left="27" Canvas.Top="302" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <Label Content="1 355 811 856" Canvas.Left="136" Canvas.Top="302" FontSize="15" FontWeight="Bold" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <Label Content="Password:" Canvas.Left="27" Canvas.Top="346" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <Label Content="uoq1o2" Canvas.Left="136" Canvas.Top="346" FontSize="15" FontWeight="Bold" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                       FontSize="15"
+                       FontStyle="Italic"
+                       Canvas.Left="27"
+                       Canvas.Top="271"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+                <Label Content="Your ID: "
+                       Canvas.Left="27"
+                       Canvas.Top="302"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+                <Label Content="1 355 811 856"
+                       Canvas.Left="136"
+                       Canvas.Top="302"
+                       FontSize="15"
+                       FontWeight="Bold"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+                <Label Content="Password:"
+                       Canvas.Left="27"
+                       Canvas.Top="346"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+                <Label Content="uoq1o2"
+                       Canvas.Left="136"
+                       Canvas.Top="346"
+                       FontSize="15"
+                       FontWeight="Bold"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
 
-                <Line X1="0" Y1="50" X2="1200" Y2="50" Stroke="#A27B5C"
-                    StrokeThickness="2" Canvas.Left="27" Canvas.Top="381" HorizontalAlignment="Left" VerticalAlignment="Center" Width="970"/>
+                <Line X1="0"
+                      Y1="50"
+                      X2="1200"
+                      Y2="50"
+                      Stroke="#A27B5C"
+                      StrokeThickness="2"
+                      Canvas.Left="27"
+                      Canvas.Top="381"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      Width="970"/>
                 <PasswordBox x:Name="txtPassword"
                              FontSize="13"
                              FontWeight="Medium"
-                             FontFamily="Montserrat"
+                             FontFamily="{StaticResource MontserratFont}"
                              Background="#FFE8E4DA"
                              Foreground="#A27B5C"
                              CaretBrush="Black"
@@ -94,11 +230,15 @@
                              BorderThickness="0,0,0,1"
                              Height="28"
                              VerticalContentAlignment="Center"
-                             Canvas.Left="740" Canvas.Top="342" Width="224" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                             Canvas.Left="740"
+                             Canvas.Top="342"
+                             Width="224"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Top"/>
                 <TextBox x:Name="txtUser"
                          FontSize="13"
                          FontWeight="Medium"
-                         FontFamily="Montserrat"
+                         FontFamily="{StaticResource MontserratFont}"
                          Background="#FFE8E4DA"
                          Foreground="#A27B5C"
                          CaretBrush="Black"
@@ -106,24 +246,42 @@
                          BorderThickness="0,0,0,1"
                          Height="28"
                          VerticalContentAlignment="Center"
-                         Canvas.Left="740" Canvas.Top="302" Width="224" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <Label Content="Password:" Canvas.Left="643" Canvas.Top="342" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.539,0.161"/>
+                         Canvas.Left="740"
+                         Canvas.Top="302"
+                         Width="224"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"/>
+                <Label Content="Password:"
+                       Canvas.Left="643"
+                       Canvas.Top="342"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       RenderTransformOrigin="0.539,0.161"/>
                 <Button x:Name="btnConnect"
-                    BorderThickness="0"
-                    Cursor="Hand"
-                    Content="Connect"
-                    FontSize="18"
-                    Foreground="#DCD7C9"
-                    FontFamily="Montserrat"
-                    FontWeight="Medium"
-                    VerticalContentAlignment="Center"
-                    Click="btnConnect_Click" Canvas.Top="386" Canvas.Left="734" HorizontalAlignment="Center" VerticalAlignment="Top">
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Content="Connect"
+                        FontSize="18"
+                        Foreground="#DCD7C9"
+                        FontFamily="{StaticResource MontserratFont}"
+                        FontWeight="Medium"
+                        VerticalContentAlignment="Center"
+                        Click="btnConnect_Click"
+                        Canvas.Top="386"
+                        Canvas.Left="734"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#A27B5C"/>
+                            <Setter Property="Background"
+                                    Value="#A27B5C"/>
                             <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#D9A57B"/>
+                                <Trigger Property="IsMouseOver"
+                                         Value="True">
+                                    <Setter Property="Background"
+                                            Value="#D9A57B"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -131,11 +289,12 @@
 
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
-                            <Border Width="150" Height="40"
-                                CornerRadius="20"
-                                Background="{TemplateBinding Background}">
+                            <Border Width="150"
+                                    Height="40"
+                                    CornerRadius="20"
+                                    Background="{TemplateBinding Background}">
                                 <ContentPresenter HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"/>
+                                                  VerticalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
@@ -143,22 +302,78 @@
             </Canvas>
 
             <!-- Sidebar & Labels -->
-            <Label HorizontalAlignment="Left" Margin="82,10,0,0" VerticalAlignment="Top" FontSize="32" FontFamily="Montserrat" FontWeight="Bold" Foreground="#DCD7C9">
-                <TextBlock x:Name="title" Cursor="Hand" MouseLeftButtonDown="title_MouseLeftButtonDown" TextWrapping="Wrap" TextAlignment="Center" FontSize="30"><Run Text="ThreeBrears"/><LineBreak/><Run Text="Remote"/></TextBlock>
+            <Label HorizontalAlignment="Left"
+                   Margin="82,10,0,0"
+                   VerticalAlignment="Top"
+                   FontSize="32"
+                   FontFamily="{StaticResource MontserratFont}"
+                   FontWeight="Bold"
+                   Foreground="#DCD7C9">
+                <TextBlock x:Name="title"
+                           Cursor="Hand"
+                           MouseLeftButtonDown="title_MouseLeftButtonDown"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           FontSize="30"><Run Text="ThreeBrears"/><LineBreak/><Run Text="Remote"/></TextBlock>
             </Label>
 
-            <Ellipse HorizontalAlignment="Left" Height="90" VerticalAlignment="Top" Width="90" Margin="0,10,0,0">
+            <Ellipse HorizontalAlignment="Left"
+                     Height="90"
+                     VerticalAlignment="Top"
+                     Width="90"
+                     Margin="0,10,0,0">
                 <Ellipse.Fill>
                     <ImageBrush ImageSource="/Client/icon.png"/>
                 </Ellipse.Fill>
             </Ellipse>
 
-            <Label x:Name="btnHome" HorizontalContentAlignment="Center" Cursor="Hand" MouseLeftButtonDown="btnHome_MouseLeftButtonDown" Content="Home" Margin="54,196,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="159"/>
-            <Label x:Name="btnRemote" HorizontalContentAlignment="Center" Cursor="Hand" MouseLeftButtonDown="btnRemote_MouseLeftButtonDown" Content="Remote" Margin="66,313,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="135"/>
-            <Label x:Name="btnHistory" HorizontalContentAlignment="Center" Cursor="Hand" MouseLeftButtonDown="btnHistory_MouseLeftButtonDown" Content="History" Margin="59,438,0,0" FontSize="32" FontWeight="Bold" Foreground="#DCD7C9" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top" Width="149"/>
+            <Label x:Name="btnHome"
+                   HorizontalContentAlignment="Center"
+                   Cursor="Hand"
+                   MouseLeftButtonDown="btnHome_MouseLeftButtonDown"
+                   Content="Home"
+                   Margin="54,196,0,0"
+                   FontSize="32"
+                   FontWeight="Bold"
+                   Foreground="#DCD7C9"
+                   FontFamily="{StaticResource MontserratFont}"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Width="159"/>
+            <Label x:Name="btnRemote"
+                   HorizontalContentAlignment="Center"
+                   Cursor="Hand"
+                   MouseLeftButtonDown="btnRemote_MouseLeftButtonDown"
+                   Content="Remote"
+                   Margin="66,313,0,0"
+                   FontSize="32"
+                   FontWeight="Bold"
+                   Foreground="#DCD7C9"
+                   FontFamily="{StaticResource MontserratFont}"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Width="135"/>
+            <Label x:Name="btnHistory"
+                   HorizontalContentAlignment="Center"
+                   Cursor="Hand"
+                   MouseLeftButtonDown="btnHistory_MouseLeftButtonDown"
+                   Content="History"
+                   Margin="59,438,0,0"
+                   FontSize="32"
+                   FontWeight="Bold"
+                   Foreground="#DCD7C9"
+                   FontFamily="{StaticResource MontserratFont}"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Width="149"/>
 
             <!-- Button Controls -->
-            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0" Width="50" Height="40" Panel.ZIndex="10">
+            <Grid HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  Margin="0,10,10,0"
+                  Width="50"
+                  Height="40"
+                  Panel.ZIndex="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="25"/>
                     <ColumnDefinition Width="25"/>
@@ -169,25 +384,37 @@
                         Grid.Column="0"
                         BorderThickness="0"
                         Cursor="Hand"
-                        Click="btnMinimize_Click" Margin="8,-17,17,17" Grid.ColumnSpan="2">
+                        Click="btnMinimize_Click"
+                        Margin="8,-17,17,17"
+                        Grid.ColumnSpan="2">
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="#A27B5C"/>
+                            <Setter Property="Background"
+                                    Value="#A27B5C"/>
                             <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#DCD7C9"/>
+                                <Trigger Property="IsMouseOver"
+                                         Value="True">
+                                    <Setter Property="Background"
+                                            Value="#DCD7C9"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Border Width="18" Height="18" CornerRadius="9" Background="{TemplateBinding Background}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Width="18"
+                                    Height="18"
+                                    CornerRadius="9"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
-                    <Image Source="/Client/minimize.png" Width="18" Height="18" Margin="0,-11,0,0"/>
+                    <Image Source="/Client/minimize.png"
+                           Width="18"
+                           Height="18"
+                           Margin="0,-11,0,0"/>
                 </Button>
 
                 <!-- Close Button -->
@@ -195,66 +422,194 @@
                         Grid.Column="1"
                         BorderThickness="0"
                         Cursor="Hand"
-                        Click="btnClose_Click" Margin="8,-17,-8,17">
+                        Click="btnClose_Click"
+                        Margin="8,-17,-8,17">
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="#3F4E4F"/>
+                            <Setter Property="Background"
+                                    Value="#3F4E4F"/>
                             <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#DCD7C9"/>
+                                <Trigger Property="IsMouseOver"
+                                         Value="True">
+                                    <Setter Property="Background"
+                                            Value="#DCD7C9"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Border Width="18" Height="18" CornerRadius="9" Background="{TemplateBinding Background}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border Width="18"
+                                    Height="18"
+                                    CornerRadius="9"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
-                    <Image Source="/Client/close.png" Width="16" Height="16"/>
+                    <Image Source="/Client/close.png"
+                           Width="16"
+                           Height="16"/>
                 </Button>
             </Grid>
-            <Canvas x:Name="Home_2" Margin="283,438,0,0">
-                <Label Content="Remote Information" FontSize="25" FontWeight="Bold"
-        Canvas.Left="17" Canvas.Top="10" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Rectangle Height="142" Canvas.Top="49" Width="344" RadiusX="26.807" RadiusY="26.807"
-                    Fill="#FFE8E4DA" Canvas.Left="22" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <Label Content="User" FontSize="20" FontWeight="Bold"
-                    Canvas.Left="28" Canvas.Top="55" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <Label Content="Email:" Canvas.Left="28" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Label Content="IP:" Canvas.Left="28" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <Label Content="Operation system:" Canvas.Left="28" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <Rectangle Height="142" Canvas.Top="49" Width="344" RadiusX="26.807" RadiusY="26.807"
-                    Fill="#FFE8E4DA" Canvas.Left="637" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label Content="Partner" FontSize="20" FontWeight="Bold"
-                    Canvas.Left="643" Canvas.Top="55" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label Content="Email:" Canvas.Left="643" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label Content="IP:" Canvas.Left="643" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label Content="Operation system:" Canvas.Left="643" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="usrEmail" Content="" Canvas.Left="82" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="usrIP" Content="" Canvas.Left="82" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <Label x:Name="usrOS" Content="" Canvas.Left="163" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Label x:Name="ptnEmail" Content="" Canvas.Left="703" Canvas.Top="92" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="ptnIP" Content="" Canvas.Left="703" Canvas.Top="120" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <Label x:Name="ptnOS" Content="" Canvas.Left="778" Canvas.Top="148" FontSize="15" FontFamily="Montserrat" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Canvas x:Name="Home_2"
+                    Margin="283,438,0,0">
+                <Label Content="Remote Information"
+                       FontSize="25"
+                       FontWeight="Bold"
+                       Canvas.Left="17"
+                       Canvas.Top="10"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Rectangle Height="142"
+                           Canvas.Top="49"
+                           Width="344"
+                           RadiusX="26.807"
+                           RadiusY="26.807"
+                           Fill="#FFE8E4DA"
+                           Canvas.Left="22"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Top"/>
+                <Label Content="User"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Canvas.Left="28"
+                       Canvas.Top="55"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"/>
+                <Label Content="Email:"
+                       Canvas.Left="28"
+                       Canvas.Top="92"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"/>
+                <Label Content="IP:"
+                       Canvas.Left="28"
+                       Canvas.Top="120"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"/>
+                <Label Content="Operation system:"
+                       Canvas.Left="28"
+                       Canvas.Top="148"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"/>
+                <Rectangle Height="142"
+                           Canvas.Top="49"
+                           Width="344"
+                           RadiusX="26.807"
+                           RadiusY="26.807"
+                           Fill="#FFE8E4DA"
+                           Canvas.Left="637"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
+                <Label Content="Partner"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Canvas.Left="643"
+                       Canvas.Top="55"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Label Content="Email:"
+                       Canvas.Left="643"
+                       Canvas.Top="92"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Label Content="IP:"
+                       Canvas.Left="643"
+                       Canvas.Top="120"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Label Content="Operation system:"
+                       Canvas.Left="643"
+                       Canvas.Top="148"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Label x:Name="usrEmail"
+                       Content=""
+                       Canvas.Left="82"
+                       Canvas.Top="92"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Label x:Name="usrIP"
+                       Content=""
+                       Canvas.Left="82"
+                       Canvas.Top="120"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"/>
+                <Label x:Name="usrOS"
+                       Content=""
+                       Canvas.Left="163"
+                       Canvas.Top="148"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"/>
+                <Label x:Name="ptnEmail"
+                       Content=""
+                       Canvas.Left="703"
+                       Canvas.Top="92"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Label x:Name="ptnIP"
+                       Content=""
+                       Canvas.Left="703"
+                       Canvas.Top="120"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"/>
+                <Label x:Name="ptnOS"
+                       Content=""
+                       Canvas.Left="778"
+                       Canvas.Top="148"
+                       FontSize="15"
+                       FontFamily="{StaticResource MontserratFont}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"/>
                 <Button x:Name="btnDisconnect"
-                    BorderThickness="0"
-                    Cursor="Hand"
-                    Content="Disconnect"
-                    FontSize="18"
-                    Foreground="#DCD7C9"
-                    FontFamily="Montserrat"
-                    FontWeight="Medium"
-                    VerticalContentAlignment="Center"
-                    Click="btnDisconnect_Click" Canvas.Top="214" Canvas.Left="734" HorizontalAlignment="Center" VerticalAlignment="Top">
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Content="Disconnect"
+                        FontSize="18"
+                        Foreground="#DCD7C9"
+                        FontFamily="{StaticResource MontserratFont}"
+                        FontWeight="Medium"
+                        VerticalContentAlignment="Center"
+                        Click="btnDisconnect_Click"
+                        Canvas.Top="214"
+                        Canvas.Left="734"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#A27B5C"/>
+                            <Setter Property="Background"
+                                    Value="#A27B5C"/>
                             <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#D9A57B"/>
+                                <Trigger Property="IsMouseOver"
+                                         Value="True">
+                                    <Setter Property="Background"
+                                            Value="#D9A57B"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -262,49 +617,115 @@
 
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
-                            <Border Width="150" Height="40"
-                                CornerRadius="20"
-                                Background="{TemplateBinding Background}">
+                            <Border Width="150"
+                                    Height="40"
+                                    CornerRadius="20"
+                                    Background="{TemplateBinding Background}">
                                 <ContentPresenter HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"/>
+                                                  VerticalAlignment="Center"/>
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
             </Canvas>
-            <Canvas x:Name="Remote" Visibility="Collapsed" Margin="283,0,0,0" Background="#DCD7C9">
-                <Rectangle Height="154" Stroke="White" Canvas.Top="-47" Width="1110"
-                    RadiusX="26.807" RadiusY="26.807" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                <Label Content="Remote" Foreground="#FF000AA3" FontSize="48"
-                    Canvas.Left="108" Canvas.Top="22" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Label x:Name="lblScreen" Cursor="Hand" Content="Screen" MouseLeftButtonDown="lblScreen_MouseLeftButtonDown" Foreground="#FF000AA3" FontSize="24"
-                    Canvas.Left="424" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="lblPerformance" Cursor="Hand" Content="Performance" Foreground="#FF000AA3" FontSize="24"
-                    Canvas.Left="619" Canvas.Top="36" MouseLeftButtonDown="lblPerformance_MouseLeftButtonDown" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                <Label x:Name="lblTaskManager" MouseLeftButtonDown="lblTaskManager_MouseLeftButtonDown" Cursor="Hand" Content="Task Manager" Foreground="#FF000AA3" FontSize="24"
-                    Canvas.Left="862" Canvas.Top="36" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Canvas x:Name="Remote"
+                    Visibility="Collapsed"
+                    Margin="283,0,0,0"
+                    Background="#DCD7C9">
+                <Rectangle Height="154"
+                           Stroke="White"
+                           Canvas.Top="-47"
+                           Width="1110"
+                           RadiusX="26.807"
+                           RadiusY="26.807"
+                           Fill="White"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Top"/>
+                <Label Content="Remote"
+                       Foreground="#FF000AA3"
+                       FontSize="48"
+                       Canvas.Left="108"
+                       Canvas.Top="22"
+                       FontFamily="{StaticResource MontserratFont}"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"/>
+                <Label x:Name="lblScreen"
+                       Cursor="Hand"
+                       Content="Screen"
+                       MouseLeftButtonDown="lblScreen_MouseLeftButtonDown"
+                       Foreground="#FF000AA3"
+                       FontSize="24"
+                       Canvas.Left="424"
+                       Canvas.Top="36"
+                       FontFamily="{StaticResource MontserratFont}"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Label x:Name="lblPerformance"
+                       Cursor="Hand"
+                       Content="Performance"
+                       Foreground="#FF000AA3"
+                       FontSize="24"
+                       Canvas.Left="619"
+                       Canvas.Top="36"
+                       MouseLeftButtonDown="lblPerformance_MouseLeftButtonDown"
+                       FontFamily="{StaticResource MontserratFont}"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Label x:Name="lblTaskManager"
+                       MouseLeftButtonDown="lblTaskManager_MouseLeftButtonDown"
+                       Cursor="Hand"
+                       Content="Task Manager"
+                       Foreground="#FF000AA3"
+                       FontSize="24"
+                       Canvas.Left="862"
+                       Canvas.Top="36"
+                       FontFamily="{StaticResource MontserratFont}"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
 
 
                 <!-- Screen -->
 
-                <Canvas x:Name="Screen" Background="#DCD7C9" Height="649" Width="1076" HorizontalAlignment="Center" Canvas.Top="112" VerticalAlignment="Top">
-                    <Label Content="Partner Screen" Foreground="#FF000AA3" FontSize="36"
-                    Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
+                <Canvas x:Name="Screen"
+                        Background="#DCD7C9"
+                        Height="649"
+                        Width="1076"
+                        HorizontalAlignment="Center"
+                        Canvas.Top="112"
+                        VerticalAlignment="Top">
+                    <Label Content="Partner Screen"
+                           Foreground="#FF000AA3"
+                           FontSize="36"
+                           Canvas.Top="10"
+                           FontFamily="{StaticResource MontserratFont}"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Canvas.Left="10"/>
                     <Border x:Name="MediaBorder"
                             Background="#2C3639"
                             BorderThickness="3.5"
                             ClipToBounds="True"
                             CornerRadius="10"
                             Padding="5"
-                            Canvas.Left="89" 
+                            Canvas.Left="89"
                             Canvas.Top="100">
                         <Border.BorderBrush>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#A27B5C" Offset="0"/>
-                                <GradientStop Color="#DCD7C9" Offset="1"/>
+                            <LinearGradientBrush StartPoint="0,0"
+                                                 EndPoint="1,1">
+                                <GradientStop Color="#A27B5C"
+                                              Offset="0"/>
+                                <GradientStop Color="#DCD7C9"
+                                              Offset="1"/>
                             </LinearGradientBrush>
                         </Border.BorderBrush>
-                        <MediaElement x:Name="videoScreen" Height="464" Width="855"/>
+                        <MediaElement x:Name="videoScreen"
+                                      Height="464"
+                                      Width="855"/>
                     </Border>
 
                     <Button x:Name="btnPlay"
@@ -313,16 +734,23 @@
                             Content="Play"
                             FontSize="18"
                             Foreground="#DCD7C9"
-                            FontFamily="Montserrat"
+                            FontFamily="{StaticResource MontserratFont}"
                             FontWeight="Medium"
                             VerticalContentAlignment="Center"
-                            Click="btnPlay_Click" Canvas.Top="599" Canvas.Left="344" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            Click="btnPlay_Click"
+                            Canvas.Top="599"
+                            Canvas.Left="344"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Setter Property="Background"
+                                        Value="#A27B5C"/>
                                 <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#DCD7C9"/>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="#DCD7C9"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -330,31 +758,39 @@
 
                         <Button.Template>
                             <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Width="80" Height="40"
-                CornerRadius="20"
-                Background="{TemplateBinding Background}">
+                                <Border Width="80"
+                                        Height="40"
+                                        CornerRadius="20"
+                                        Background="{TemplateBinding Background}">
                                     <ContentPresenter HorizontalAlignment="Center"
-                    VerticalAlignment="Center"/>
+                                                      VerticalAlignment="Center"/>
                                 </Border>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
                     <Button x:Name="btnPause"
-                        BorderThickness="0"
-                        Cursor="Hand"
-                        Content="Pause"
-                        FontSize="18"
-                        Foreground="#DCD7C9"
-                        FontFamily="Montserrat"
-                        FontWeight="Medium"
-                        VerticalContentAlignment="Center"
-                        Click="btnPlay_Click" Canvas.Top="599" Canvas.Left="480" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Content="Pause"
+                            FontSize="18"
+                            Foreground="#DCD7C9"
+                            FontFamily="{StaticResource MontserratFont}"
+                            FontWeight="Medium"
+                            VerticalContentAlignment="Center"
+                            Click="btnPlay_Click"
+                            Canvas.Top="599"
+                            Canvas.Left="480"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Setter Property="Background"
+                                        Value="#A27B5C"/>
                                 <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#DCD7C9"/>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="#DCD7C9"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -362,31 +798,39 @@
 
                         <Button.Template>
                             <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Width="80" Height="40"
-                                    CornerRadius="20"
-                                    Background="{TemplateBinding Background}">
+                                <Border Width="80"
+                                        Height="40"
+                                        CornerRadius="20"
+                                        Background="{TemplateBinding Background}">
                                     <ContentPresenter HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"/>
+                                                      VerticalAlignment="Center"/>
                                 </Border>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
                     <Button x:Name="btnStop"
-                        BorderThickness="0"
-                        Cursor="Hand"
-                        Content="Stop"
-                        FontSize="18"
-                        Foreground="#DCD7C9"
-                        FontFamily="Montserrat"
-                        FontWeight="Medium"
-                        VerticalContentAlignment="Center"
-                        Click="btnStop_Click" Canvas.Top="599" Canvas.Left="620" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Content="Stop"
+                            FontSize="18"
+                            Foreground="#DCD7C9"
+                            FontFamily="{StaticResource MontserratFont}"
+                            FontWeight="Medium"
+                            VerticalContentAlignment="Center"
+                            Click="btnStop_Click"
+                            Canvas.Top="599"
+                            Canvas.Left="620"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Setter Property="Background"
+                                        Value="#A27B5C"/>
                                 <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#DCD7C9"/>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="#DCD7C9"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -394,11 +838,12 @@
 
                         <Button.Template>
                             <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Width="80" Height="40"
-                                    CornerRadius="20"
-                                    Background="{TemplateBinding Background}">
+                                <Border Width="80"
+                                        Height="40"
+                                        CornerRadius="20"
+                                        Background="{TemplateBinding Background}">
                                     <ContentPresenter HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"/>
+                                                      VerticalAlignment="Center"/>
                                 </Border>
                             </ControlTemplate>
                         </Button.Template>
@@ -406,75 +851,211 @@
                 </Canvas>
 
                 <!-- Performance -->
-                <Canvas x:Name="Performance" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1066" HorizontalAlignment="Left" Canvas.Top="112" VerticalAlignment="Center" Canvas.Left="10">
-                    <Label Content="Performance" Foreground="#FF000AA3" FontSize="36"
-                        Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
+                <Canvas x:Name="Performance"
+                        Visibility="Collapsed"
+                        Background="#DCD7C9"
+                        Height="649"
+                        Width="1066"
+                        HorizontalAlignment="Left"
+                        Canvas.Top="112"
+                        VerticalAlignment="Center"
+                        Canvas.Left="10">
+                    <Label Content="Performance"
+                           Foreground="#FF000AA3"
+                           FontSize="36"
+                           Canvas.Top="10"
+                           FontFamily="{StaticResource MontserratFont}"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Canvas.Left="10"/>
 
 
                     <!-- CPU -->
-                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="70" Canvas.Top="104" Height="132" Width="364">
+                    <Border Padding="10"
+                            CornerRadius="10"
+                            Background="#F0F0F0"
+                            Canvas.Left="70"
+                            Canvas.Top="104"
+                            Height="132"
+                            Width="364">
                         <StackPanel>
-                            <TextBlock Text="CPU Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
-                            <ProgressBar x:Name="cpuBar" Height="20" Maximum="100" Value="40" Foreground="#A27B5C"/>
-                            <TextBlock x:Name="cpuText" Text="40%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
-                            <TextBlock x:Name="cpuDetailsText" Text="Speed: 3.2GHz | Processes: 112 | Threads: 1536" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat"/>
+                            <TextBlock Text="CPU Usage"
+                                       FontWeight="Bold"
+                                       FontSize="24"
+                                       Foreground="#A27B5C"
+                                       FontFamily="{StaticResource MontserratFont}"/>
+                            <ProgressBar x:Name="cpuBar"
+                                         Height="20"
+                                         Maximum="100"
+                                         Value="40"
+                                         Foreground="#A27B5C"/>
+                            <TextBlock x:Name="cpuText"
+                                       Text="40%"
+                                       HorizontalAlignment="Right"
+                                       Margin="0,5,0,0"
+                                       FontFamily="{StaticResource MontserratFont}"
+                                       FontSize="16"/>
+                            <TextBlock x:Name="cpuDetailsText"
+                                       Text="Speed: 3.2GHz | Processes: 112 | Threads: 1536"
+                                       FontSize="16"
+                                       Foreground="Gray"
+                                       Margin="0,5,0,0"
+                                       FontFamily="{StaticResource MontserratFont}"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Memory -->
-                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="578" Canvas.Top="324" Height="125" Width="331">
+                    <Border Padding="10"
+                            CornerRadius="10"
+                            Background="#F0F0F0"
+                            Canvas.Left="578"
+                            Canvas.Top="324"
+                            Height="125"
+                            Width="331">
                         <StackPanel>
-                            <TextBlock Text="Memory Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
-                            <ProgressBar x:Name="memoryBar" Height="20" Maximum="100" Value="65" Foreground="#A27B5C"/>
-                            <TextBlock x:Name="memoryText" Text="65%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
-                            <TextBlock x:Name="memoryDetailsText" Text="In use: 7.8 GB | Available: 8.2 GB" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat"/>
+                            <TextBlock Text="Memory Usage"
+                                       FontWeight="Bold"
+                                       FontSize="24"
+                                       Foreground="#A27B5C"
+                                       FontFamily="{StaticResource MontserratFont}"/>
+                            <ProgressBar x:Name="memoryBar"
+                                         Height="20"
+                                         Maximum="100"
+                                         Value="65"
+                                         Foreground="#A27B5C"/>
+                            <TextBlock x:Name="memoryText"
+                                       Text="65%"
+                                       HorizontalAlignment="Right"
+                                       Margin="0,5,0,0"
+                                       FontFamily="{StaticResource MontserratFont}"
+                                       FontSize="16"/>
+                            <TextBlock x:Name="memoryDetailsText"
+                                       Text="In use: 7.8 GB | Available: 8.2 GB"
+                                       FontSize="16"
+                                       Foreground="Gray"
+                                       Margin="0,5,0,0"
+                                       FontFamily="{StaticResource MontserratFont}"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Disk -->
-                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="578" Canvas.Top="104" Height="132" Width="331">
+                    <Border Padding="10"
+                            CornerRadius="10"
+                            Background="#F0F0F0"
+                            Canvas.Left="578"
+                            Canvas.Top="104"
+                            Height="132"
+                            Width="331">
                         <StackPanel>
-                            <TextBlock Text="Disk Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
-                            <ProgressBar x:Name="diskBar" Height="20" Maximum="100" Value="20" Foreground="#A27B5C"/>
-                            <TextBlock x:Name="diskText" Text="20%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
-                            <TextBlock x:Name="diskDetailsText" Text="Read: 55 MB/s | Write: 12 MB/s" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat"/>
+                            <TextBlock Text="Disk Usage"
+                                       FontWeight="Bold"
+                                       FontSize="24"
+                                       Foreground="#A27B5C"
+                                       FontFamily="{StaticResource MontserratFont}"/>
+                            <ProgressBar x:Name="diskBar"
+                                         Height="20"
+                                         Maximum="100"
+                                         Value="20"
+                                         Foreground="#A27B5C"/>
+                            <TextBlock x:Name="diskText"
+                                       Text="20%"
+                                       HorizontalAlignment="Right"
+                                       Margin="0,5,0,0"
+                                       FontFamily="{StaticResource MontserratFont}"
+                                       FontSize="16"/>
+                            <TextBlock x:Name="diskDetailsText"
+                                       Text="Read: 55 MB/s | Write: 12 MB/s"
+                                       FontSize="16"
+                                       Foreground="Gray"
+                                       Margin="0,5,0,0"
+                                       FontFamily="{StaticResource MontserratFont}"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Wifi -->
-                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="372" Canvas.Top="504" HorizontalAlignment="Left" Height="86" VerticalAlignment="Center" Width="322">
+                    <Border Padding="10"
+                            CornerRadius="10"
+                            Background="#F0F0F0"
+                            Canvas.Left="372"
+                            Canvas.Top="504"
+                            HorizontalAlignment="Left"
+                            Height="86"
+                            VerticalAlignment="Center"
+                            Width="322">
                         <StackPanel>
-                            <TextBlock Text="Network Usage (WiFi)" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
-                            <TextBlock x:Name="wifiText" Text="Download: 1.2 MB/s | Upload: 0.5 MB/s" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
+                            <TextBlock Text="Network Usage (WiFi)"
+                                       FontWeight="Bold"
+                                       FontSize="24"
+                                       Foreground="#A27B5C"
+                                       FontFamily="{StaticResource MontserratFont}"/>
+                            <TextBlock x:Name="wifiText"
+                                       Text="Download: 1.2 MB/s | Upload: 0.5 MB/s"
+                                       Margin="0,5,0,0"
+                                       FontFamily="{StaticResource MontserratFont}"
+                                       FontSize="16"/>
                         </StackPanel>
                     </Border>
 
                     <!-- GPU -->
-                    <Border Padding="10" CornerRadius="10" Background="#F0F0F0" Canvas.Left="70" Canvas.Top="324" HorizontalAlignment="Left" VerticalAlignment="Center" Height="125" Width="364">
+                    <Border Padding="10"
+                            CornerRadius="10"
+                            Background="#F0F0F0"
+                            Canvas.Left="70"
+                            Canvas.Top="324"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Height="125"
+                            Width="364">
                         <StackPanel>
-                            <TextBlock Text="GPU Usage" FontWeight="Bold" FontSize="24" Foreground="#A27B5C" FontFamily="Montserrat"/>
-                            <ProgressBar x:Name="gpuBar" Height="20" Maximum="100" Value="30" Foreground="#A27B5C"/>
-                            <TextBlock x:Name="gpuText" Text="30%" HorizontalAlignment="Right" Margin="0,5,0,0" FontFamily="Montserrat" FontSize="16"/>
-                            <TextBlock x:Name="gpuDetailsText" Text="GPU Memory: 2.1 GB / 6 GB" FontSize="16" Foreground="Gray" Margin="0,5,0,0" FontFamily="Montserrat"/>
+                            <TextBlock Text="GPU Usage"
+                                       FontWeight="Bold"
+                                       FontSize="24"
+                                       Foreground="#A27B5C"
+                                       FontFamily="{StaticResource MontserratFont}"/>
+                            <ProgressBar x:Name="gpuBar"
+                                         Height="20"
+                                         Maximum="100"
+                                         Value="30"
+                                         Foreground="#A27B5C"/>
+                            <TextBlock x:Name="gpuText"
+                                       Text="30%"
+                                       HorizontalAlignment="Right"
+                                       Margin="0,5,0,0"
+                                       FontFamily="{StaticResource MontserratFont}"
+                                       FontSize="16"/>
+                            <TextBlock x:Name="gpuDetailsText"
+                                       Text="GPU Memory: 2.1 GB / 6 GB"
+                                       FontSize="16"
+                                       Foreground="Gray"
+                                       Margin="0,5,0,0"
+                                       FontFamily="{StaticResource MontserratFont}"/>
                         </StackPanel>
                     </Border>
 
                     <Button x:Name="btnTaskSync"
-                             BorderThickness="0"
-                             Cursor="Hand"
-                             Content="Sync"
-                             FontSize="18"
-                             Foreground="#DCD7C9"
-                             FontFamily="Montserrat"
-                             FontWeight="Medium"
-                             VerticalContentAlignment="Center"
-                             Click="btnTaskSync_Click" Canvas.Top="17" Canvas.Left="874" HorizontalAlignment="Center" VerticalAlignment="Top">
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Content="Sync"
+                            FontSize="18"
+                            Foreground="#DCD7C9"
+                            FontFamily="{StaticResource MontserratFont}"
+                            FontWeight="Medium"
+                            VerticalContentAlignment="Center"
+                            Click="btnTaskSync_Click"
+                            Canvas.Top="17"
+                            Canvas.Left="874"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Setter Property="Background"
+                                        Value="#A27B5C"/>
                                 <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#D9A57B"/>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="#D9A57B"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -482,11 +1063,12 @@
 
                         <Button.Template>
                             <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Width="150" Height="40"
-                     CornerRadius="20"
-                     Background="{TemplateBinding Background}">
+                                <Border Width="150"
+                                        Height="40"
+                                        CornerRadius="20"
+                                        Background="{TemplateBinding Background}">
                                     <ContentPresenter HorizontalAlignment="Center"
-                         VerticalAlignment="Center"/>
+                                                      VerticalAlignment="Center"/>
                                 </Border>
                             </ControlTemplate>
                         </Button.Template>
@@ -495,51 +1077,79 @@
                 </Canvas>
 
                 <!-- Task Manager -->
-                <Canvas x:Name="Task_Manager" Visibility="Collapsed" Background="#DCD7C9" Height="649" Width="1066" HorizontalAlignment="Left" Canvas.Top="112" VerticalAlignment="Center" Canvas.Left="10">
-                    <Label Content="Task Manager" Foreground="#FF000AA3" FontSize="36"
-                            Canvas.Top="10" FontFamily="Montserrat" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="10"/>
+                <Canvas x:Name="Task_Manager"
+                        Visibility="Collapsed"
+                        Background="#DCD7C9"
+                        Height="649"
+                        Width="1066"
+                        HorizontalAlignment="Left"
+                        Canvas.Top="112"
+                        VerticalAlignment="Center"
+                        Canvas.Left="10">
+                    <Label Content="Task Manager"
+                           Foreground="#FF000AA3"
+                           FontSize="36"
+                           Canvas.Top="10"
+                           FontFamily="{StaticResource MontserratFont}"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Canvas.Left="10"/>
                     <Border CornerRadius="0"
-                BorderBrush="Black"
-                BorderThickness="1"
-                Background="#FFE8E4DA"
-                Padding="0"
-                Width="990"
-                Height="501"
-                Canvas.Top="94"
-                Canvas.Left="34" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            BorderBrush="Black"
+                            BorderThickness="1"
+                            Background="#FFE8E4DA"
+                            Padding="0"
+                            Width="990"
+                            Height="501"
+                            Canvas.Top="94"
+                            Canvas.Left="34"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
 
                         <DataGrid x:Name="ProcessDataGrid"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      ItemsSource="{Binding Processes}"
-                      SelectedItem="{Binding SelectedProcess}"
-                      FontFamily="Montserrat"
-                      FontSize="14"
-                      GridLinesVisibility="All"
-                      Background="Transparent"
-                      Foreground="#A27B5C"
-                      RowBackground="White"
-                      AlternatingRowBackground="#F5F5F5"
-                      BorderThickness="0"
-                      HeadersVisibility="Column"
-                      CanUserResizeColumns="True"
-                      CanUserReorderColumns="False"
-                      CanUserSortColumns="True" Margin="-1,-1,-1,0">
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  ItemsSource="{Binding Processes}"
+                                  SelectedItem="{Binding SelectedProcess}"
+                                  FontFamily="{StaticResource MontserratFont}"
+                                  FontSize="14"
+                                  GridLinesVisibility="All"
+                                  Background="Transparent"
+                                  Foreground="#A27B5C"
+                                  RowBackground="White"
+                                  AlternatingRowBackground="#F5F5F5"
+                                  BorderThickness="0"
+                                  HeadersVisibility="Column"
+                                  CanUserResizeColumns="True"
+                                  CanUserReorderColumns="False"
+                                  CanUserSortColumns="True"
+                                  Margin="-1,-1,-1,0">
 
                             <DataGrid.Resources>
                                 <Style TargetType="DataGridCell">
-                                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
-                                    <Setter Property="BorderBrush" Value="#D3CFC4"/>
-                                    <Setter Property="Padding" Value="8,4"/>
-                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="Foreground" Value="#A27B5C"/>
+                                    <Setter Property="BorderThickness"
+                                            Value="0,0,1,1"/>
+                                    <Setter Property="BorderBrush"
+                                            Value="#D3CFC4"/>
+                                    <Setter Property="Padding"
+                                            Value="8,4"/>
+                                    <Setter Property="HorizontalContentAlignment"
+                                            Value="Center"/>
+                                    <Setter Property="VerticalContentAlignment"
+                                            Value="Center"/>
+                                    <Setter Property="Background"
+                                            Value="Transparent"/>
+                                    <Setter Property="Foreground"
+                                            Value="#A27B5C"/>
 
                                     <Style.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="#D9A57B"/>
-                                            <Setter Property="Foreground" Value="Black"/>
+                                        <Trigger Property="IsSelected"
+                                                 Value="True">
+                                            <Setter Property="Background"
+                                                    Value="#D9A57B"/>
+                                            <Setter Property="Foreground"
+                                                    Value="Black"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -547,44 +1157,67 @@
 
                             <DataGrid.ColumnHeaderStyle>
                                 <Style TargetType="DataGridColumnHeader">
-                                    <Setter Property="Background" Value="#A27B5C"/>
-                                    <Setter Property="Foreground" Value="White"/>
-                                    <Setter Property="FontWeight" Value="Bold"/>
-                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                    <Setter Property="FontFamily" Value="Montserrat"/>
-                                    <Setter Property="FontSize" Value="14"/>
-                                    <Setter Property="Height" Value="32"/>
+                                    <Setter Property="Background"
+                                            Value="#A27B5C"/>
+                                    <Setter Property="Foreground"
+                                            Value="White"/>
+                                    <Setter Property="FontWeight"
+                                            Value="Bold"/>
+                                    <Setter Property="HorizontalContentAlignment"
+                                            Value="Center"/>
+                                    <Setter Property="FontFamily"
+                                            Value="{StaticResource MontserratFont}"/>
+                                    <Setter Property="FontSize"
+                                            Value="14"/>
+                                    <Setter Property="Height"
+                                            Value="32"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="DataGridColumnHeader">
                                                 <Grid>
                                                     <Border Background="{TemplateBinding Background}"
-                                                BorderBrush="Black"
-                                                BorderThickness="0,0,1,1"
-                                                CornerRadius="0"
-                                                SnapsToDevicePixels="True"/>
+                                                            BorderBrush="Black"
+                                                            BorderThickness="0,0,1,1"
+                                                            CornerRadius="0"
+                                                            SnapsToDevicePixels="True"/>
                                                     <Grid>
                                                         <ContentPresenter HorizontalAlignment="Center"
-                                                              VerticalAlignment="Center"
-                                                              SnapsToDevicePixels="True"/>
-                                                        <Path x:Name="SortArrow" Visibility="Collapsed" Fill="White" HorizontalAlignment="Right" Margin="5" Width="10" Height="6" Stretch="Uniform">
+                                                                          VerticalAlignment="Center"
+                                                                          SnapsToDevicePixels="True"/>
+                                                        <Path x:Name="SortArrow"
+                                                              Visibility="Collapsed"
+                                                              Fill="White"
+                                                              HorizontalAlignment="Right"
+                                                              Margin="5"
+                                                              Width="10"
+                                                              Height="6"
+                                                              Stretch="Uniform">
                                                             <Path.Data>
-                                                                <PathGeometry Figures="M 0 0 L 1 0 L 0.5 1 Z" />
+                                                                <PathGeometry Figures="M 0 0 L 1 0 L 0.5 1 Z"/>
                                                             </Path.Data>
                                                         </Path>
                                                     </Grid>
                                                 </Grid>
                                                 <ControlTemplate.Triggers>
-                                                    <Trigger Property="SortDirection" Value="Ascending">
-                                                        <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
-                                                        <Setter TargetName="SortArrow" Property="RenderTransform">
+                                                    <Trigger Property="SortDirection"
+                                                             Value="Ascending">
+                                                        <Setter TargetName="SortArrow"
+                                                                Property="Visibility"
+                                                                Value="Visible"/>
+                                                        <Setter TargetName="SortArrow"
+                                                                Property="RenderTransform">
                                                             <Setter.Value>
-                                                                <RotateTransform Angle="180" CenterX="5" CenterY="3"/>
+                                                                <RotateTransform Angle="180"
+                                                                                 CenterX="5"
+                                                                                 CenterY="3"/>
                                                             </Setter.Value>
                                                         </Setter>
                                                     </Trigger>
-                                                    <Trigger Property="SortDirection" Value="Descending">
-                                                        <Setter TargetName="SortArrow" Property="Visibility" Value="Visible"/>
+                                                    <Trigger Property="SortDirection"
+                                                             Value="Descending">
+                                                        <Setter TargetName="SortArrow"
+                                                                Property="Visibility"
+                                                                Value="Visible"/>
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -594,12 +1227,24 @@
                             </DataGrid.ColumnHeaderStyle>
 
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name" Binding="{Binding ProcessName}" Width="2*"/>
-                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*"/>
-                                <DataGridTextColumn Header="CPU" Binding="{Binding CPU}" Width="*"/>
-                                <DataGridTextColumn Header="Memory" Binding="{Binding Memory}" Width="*"/>
-                                <DataGridTextColumn Header="Disk" Binding="{Binding Disk}" Width="*"/>
-                                <DataGridTextColumn Header="Network" Binding="{Binding NetWork}" Width="*"/>
+                                <DataGridTextColumn Header="Name"
+                                                    Binding="{Binding ProcessName}"
+                                                    Width="2*"/>
+                                <DataGridTextColumn Header="Status"
+                                                    Binding="{Binding Status}"
+                                                    Width="*"/>
+                                <DataGridTextColumn Header="CPU"
+                                                    Binding="{Binding CPU}"
+                                                    Width="*"/>
+                                <DataGridTextColumn Header="Memory"
+                                                    Binding="{Binding Memory}"
+                                                    Width="*"/>
+                                <DataGridTextColumn Header="Disk"
+                                                    Binding="{Binding Disk}"
+                                                    Width="*"/>
+                                <DataGridTextColumn Header="Network"
+                                                    Binding="{Binding NetWork}"
+                                                    Width="*"/>
                             </DataGrid.Columns>
 
                         </DataGrid>
@@ -611,16 +1256,23 @@
                             Content="Sync"
                             FontSize="18"
                             Foreground="#DCD7C9"
-                            FontFamily="Montserrat"
+                            FontFamily="{StaticResource MontserratFont}"
                             FontWeight="Medium"
                             VerticalContentAlignment="Center"
-                            Click="btnPerformanceSync_Click" Canvas.Top="17" Canvas.Left="874" HorizontalAlignment="Center" VerticalAlignment="Top">
+                            Click="btnPerformanceSync_Click"
+                            Canvas.Top="17"
+                            Canvas.Left="874"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#A27B5C"/>
+                                <Setter Property="Background"
+                                        Value="#A27B5C"/>
                                 <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#D9A57B"/>
+                                    <Trigger Property="IsMouseOver"
+                                             Value="True">
+                                        <Setter Property="Background"
+                                                Value="#D9A57B"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -628,11 +1280,12 @@
 
                         <Button.Template>
                             <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Width="150" Height="40"
+                                <Border Width="150"
+                                        Height="40"
                                         CornerRadius="20"
                                         Background="{TemplateBinding Background}">
                                     <ContentPresenter HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"/>
+                                                      VerticalAlignment="Center"/>
                                 </Border>
                             </ControlTemplate>
                         </Button.Template>
