@@ -64,7 +64,7 @@
                         </ControlTemplate>
                     </Button.Template>
 
-                    <Image Source="/Server/minimize.png"
+                    <Image Source="minimize.png"
                         Width="18"
                         Height="18"
                         Margin="0,-11,0,0"/>
@@ -97,7 +97,7 @@
                             </Border>
                         </ControlTemplate>
                     </Button.Template>
-                    <Image Source="/Server/close.png"
+                    <Image Source="close.png"
                         Width="16"
                         Height="16"/>
                 </Button>
@@ -111,7 +111,7 @@
                 </Label>
                 <Ellipse HorizontalAlignment="Left" Height="50" VerticalAlignment="Top" Width="50" Margin="20,20,0,0">
                     <Ellipse.Fill>
-                        <ImageBrush ImageSource="/Server/icon.png"/>
+                        <ImageBrush ImageSource="icon.png"/>
                     </Ellipse.Fill>
                 </Ellipse>
 
