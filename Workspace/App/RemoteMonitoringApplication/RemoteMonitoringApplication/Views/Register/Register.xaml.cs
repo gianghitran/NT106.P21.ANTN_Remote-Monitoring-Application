@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace RemoteMonitoringApplication.Register
+namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
     /// Interaction logic for Register.xaml
@@ -49,13 +49,14 @@ namespace RemoteMonitoringApplication.Register
 
         private void navLogin_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Application.Current.Windows.OfType<Login.Login>().Any())
+
+            if (Application.Current.Windows.OfType<Login>().Any())
             {
-                Application.Current.Windows.OfType<Login.Login>().First().Show();
+                Application.Current.Windows.OfType<Login>().First().Show();
             }
             else
             {
-                Login.Login loginWindow = new Login.Login();
+                Login loginWindow = new Login();
                 loginWindow.Show();
                 loginWindow.Activate();
             }
