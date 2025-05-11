@@ -61,6 +61,13 @@
     <Compile Include="Data\DatabaseService.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Services\ClientConnectionWS.cs" />
+    <Compile Include="Services\AuthService.cs" />
+    <Compile Include="Services\ClientHandler.cs" />
+    <Compile Include="Services\SessionManager.cs" />
+    <Compile Include="Services\UserSession.cs" />
+    <Compile Include="Services\WebsocketServer.cs" />
+    <Compile Include="ViewModels\ConnectionsViewModel.cs" />
     <Compile Include="Views\Server\SERVER.xaml.cs">
       <DependentUpon>SERVER.xaml</DependentUpon>
     </Compile>
@@ -118,11 +125,11 @@
     <Resource Include="Views\Server\minimize.png" />
     <Resource Include="Views\Server\close.png" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Services\" />
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next">
+      <Version>4.0.3</Version>
+    </PackageReference>
     <PackageReference Include="sqlite-net-pcl">
       <Version>1.9.172</Version>
     </PackageReference>
@@ -140,6 +147,9 @@
     </PackageReference>
     <PackageReference Include="System.Memory">
       <Version>4.6.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>9.0.4</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
