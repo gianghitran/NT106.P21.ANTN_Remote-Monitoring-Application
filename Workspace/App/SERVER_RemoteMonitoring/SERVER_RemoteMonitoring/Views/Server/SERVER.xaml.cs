@@ -24,6 +24,7 @@ namespace SERVER_RemoteMonitoring.Server
         public SERVER()
         {
             InitializeComponent();
+            
             List<User> users = new List<User>
             {
                 new User { ID = 1, UserName = "Alice", Email = "alice@example.com", IP = "192.168.1.2", Port = "8080", Role = "Connect", ConnectWith = "None", Details = "Alice querry to Bob." },

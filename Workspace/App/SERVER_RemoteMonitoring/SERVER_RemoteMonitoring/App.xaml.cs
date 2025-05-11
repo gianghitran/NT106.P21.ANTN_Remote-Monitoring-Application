@@ -1,5 +1,6 @@
 ﻿using SERVER_RemoteMonitoring.Data;
 using SERVER_RemoteMonitoring.Server;
+using SERVER_RemoteMonitoring.Services;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -17,6 +18,19 @@ namespace SERVER_RemoteMonitoring
     {
         static DatabaseService _databaseService;
 
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            MessageBox.Show("Starting the server...");
+            await StartWSServerAsync();
+            await GetDatabaseServiceAsync();
+            MessageBox.Show("Database initialized successfully.");
+            // Initialize the server
+            var _server = new SERVER();
+            _server.Show();
+        }
+
         public static async Task<DatabaseService> GetDatabaseServiceAsync()
         {
             if (_databaseService == null)
@@ -28,18 +42,12 @@ namespace SERVER_RemoteMonitoring
             return _databaseService;
         }
 
-        protected override async void OnStartup(StartupEventArgs e)
+        private async Task StartWSServerAsync()
         {
-            base.OnStartup(e);
-
-
-            MessageBox.Show("Starting the server...");
-            await GetDatabaseServiceAsync();
-            MessageBox.Show("Database initialized successfully.");
-            // Initialize the server
-            var _server = new SERVER();
-            _server.Show();
+            var db = await GetDatabaseServiceAsync();
+            var authService = new AuthService(db);
+            var _wsServer = new WebsocketServer(authService);
+            await Task.Run(() => _wsServer.Start());
         }
-
     }
 }
