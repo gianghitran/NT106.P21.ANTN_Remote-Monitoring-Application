@@ -13,30 +13,11 @@ public partial class App : Application
 {
     static WebSocketConnectServer _connect = new WebSocketConnectServer("ws://localhost:8080");
 
-    public class RegisterMessage
-    {
-        public string command { get; set; }
-        public string username { get; set; }
-        public string email { get; set; }
-        public string password { get; set; }
-    }
-
-    public class LoginMessage
-    {
-        public string command { get; set; }
-        public string username { get; set; }
-        public string password { get; set; }
-    }
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
         
         await ConnectToServer();
-
-        // Check if register is working
-
-        // Check if login is working
-
 
         var loginWindow = new Login();
         loginWindow.Show();
