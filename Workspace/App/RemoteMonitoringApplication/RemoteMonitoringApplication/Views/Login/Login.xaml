@@ -1,9 +1,9 @@
-﻿<Window x:Class="RemoteMonitoringApplication.Login.Login"
+﻿<Window x:Class="RemoteMonitoringApplication.Views.Login"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:RemoteMonitoringApplication.Login"
+        xmlns:local="clr-namespace:RemoteMonitoringApplication.Views"
         mc:Ignorable="d"
         Title="Login" Height="550" Width="800"
         WindowStyle="None"
@@ -119,7 +119,7 @@
                         Grid.Row="1"
                         Orientation="Vertical"
                         Margin="0,35,0,0">
-                <Image Source="/Client/icon.png"
+                <Image Source="/Images/Icons/icon.png"
                        Width="100" Height="100"/>
 
                 <TextBlock Text="BEARMOTE"
@@ -143,7 +143,7 @@
                            FontFamily="Montserrat"
                            Margin="0,35,0,0"/>
 
-                <TextBox x:Name="txtUser"
+                <TextBox Text= "{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="13"
                          FontWeight="Medium"
                          FontFamily="Montserrat"
@@ -172,6 +172,7 @@
                            Margin="0,20,0,0"/>
 
                 <PasswordBox x:Name="txtPassword"
+                     PasswordChanged="PasswordInput_PasswordChanged"
                      FontSize="13"
                      FontWeight="Medium"
                      FontFamily="Montserrat"
@@ -203,7 +204,7 @@
                         VerticalContentAlignment="Center"
                         Grid.Column="2"
                         Margin="0,35,0,0"
-                        Click="btnLogin_Click">
+                        Command="{Binding LoginCommand}">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Background" Value="#3F4E4F"/>

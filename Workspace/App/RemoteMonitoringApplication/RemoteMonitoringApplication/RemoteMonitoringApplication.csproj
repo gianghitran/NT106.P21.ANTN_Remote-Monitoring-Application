@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Client\home.png" />
-    <None Remove="Client\icon.png" />
-    <None Remove="Client\tt.png" />
+    <None Remove="Views\Client\home.png" />
+    <None Remove="Views\Client\icon.png" />
+    <None Remove="Views\Client\tt.png" />
 
 	<None Remove="Images\Icons\minimize.png" />
 	<None Remove="Images\Icons\close.png" />
@@ -21,11 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Client\close.png" />
-    <Resource Include="Client\home.png" />
-    <Resource Include="Client\icon.png" />
-    <Resource Include="Client\minimize.png" />
-    <Resource Include="Client\tt.png" />
+    <Resource Include="Views\Client\close.png" />
+    <Resource Include="Images\Icons\home.png" />
+    <Resource Include="Images\Icons\icon.png" />
+    <Resource Include="Views\Client\minimize.png" />
+    <Resource Include="Images\Icons\tt.png" />
 
 	<Resource Include="Images\Icons\minimize.png" />
 	<Resource Include="Images\Icons\close.png" />
@@ -36,9 +36,5 @@
 
 	<ItemGroup>
 		<Resource Include="Font\Montserrat.ttf" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Images\Icons\" />
 	</ItemGroup>
 </Project>
