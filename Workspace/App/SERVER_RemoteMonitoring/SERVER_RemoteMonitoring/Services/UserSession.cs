@@ -11,7 +11,7 @@ namespace SERVER_RemoteMonitoring.Services
         public string username { get; set; }
         public string email { get; set; }
         public string role { get; set; } // e.g., "Admin", "User"
-        public int userId { get; set; }
+        public int id { get; set; }
 
         public bool IsAuthenticated => !string.IsNullOrEmpty(username);
 
@@ -20,7 +20,7 @@ namespace SERVER_RemoteMonitoring.Services
             username = null;
             email = null;
             role = null;
-            userId = 0;
+            id = 0;
         }
 
     }

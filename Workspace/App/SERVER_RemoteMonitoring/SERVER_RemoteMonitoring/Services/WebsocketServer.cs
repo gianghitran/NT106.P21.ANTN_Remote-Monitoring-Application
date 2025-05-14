@@ -42,7 +42,7 @@ namespace SERVER_RemoteMonitoring.Services
                 {
                     var webSocketContext = await context.AcceptWebSocketAsync(null);
                     var client = new ClientConnectionWS(webSocketContext.WebSocket);
-                    MessageBox.Show("Client connected: " + client.Id);
+                    //MessageBox.Show("Client connected: " + client.Id);
                     _clients.Add(client);
                     Console.WriteLine("Client connected: " + client.Id);
                     _ = Task.Run(() => HandleClient(client));
@@ -52,25 +52,42 @@ namespace SERVER_RemoteMonitoring.Services
 
         private async Task HandleClient(ClientConnectionWS client)
         {
+            bool authenticated = false;
+
             try
             {
                 var handler = new ClientHandler(client, _authservice, _sessionManager);
-                var authenticated = await handler.ProcessAsync();
 
-                if (authenticated)
+                while (!authenticated)
                 {
-                    Console.WriteLine("Client authenticated: " + client.Id);
+                    if (client._webSocket.State != WebSocketState.Open)
+                    {
+                        Console.WriteLine("Client disconnected before authentication: " + client.Id);
+                        return;
+                    }
 
-                    var session = _sessionManager.GetSession(client.Id);
-                    client.Session = session;
+                    authenticated = await handler.ProcessAsync();
 
-                    await client.SendMessageAsync("Welcome to the WebSocket server!");
-                    await client.ListenForMessageAsync();
-                }
-                else
-                {
-                    Console.WriteLine("Client authentication failed: " + client.Id);
-                    await client.SendMessageAsync("Authentication failed.");
+                    if (authenticated)
+                    {
+                        Console.WriteLine("Client authenticated: " + client.Id);
+
+                        var session = _sessionManager.GetSession(client.Id);
+                        client.Session = session;
+
+                        await client.SendMessageAsync("Welcome to the WebSocket server!");
+                        await client.ListenForMessageAsync(); // Lắng nghe đến khi client đóng
+                    }
+                    else
+                    {
+                        Console.WriteLine("Client authentication failed: " + client.Id);
+
+                        // Nếu WebSocket vẫn mở, gửi phản hồi
+                        if (client._webSocket.State == WebSocketState.Open)
+                        {
+                            await client.SendMessageAsync("Authentication failed.");
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -79,12 +96,16 @@ namespace SERVER_RemoteMonitoring.Services
             }
             finally
             {
-                //await client.CloseAsync();
-                _sessionManager.RemoveSession(client.Id);
-                _clients.Remove(client);
-                Console.WriteLine("Client disconnected: " + client.Id);
+                // Chỉ cleanup nếu client đã thật sự ngắt kết nối hoặc gặp lỗi
+                if (client._webSocket.State != WebSocketState.Open)
+                {
+                    _sessionManager.RemoveSession(client.Id);
+                    _clients.Remove(client);
+                    Console.WriteLine("Client disconnected: " + client.Id);
+                }
             }
         }
+
 
         public async void Stop()
         {

@@ -57,12 +57,11 @@ namespace SERVER_RemoteMonitoring.Services
             return null;
         }
 
-        public async Task SendMessageAsync(object message)
+        public async Task SendMessageAsync(string message)
         {
             if (_webSocket.State == WebSocketState.Open)
             {
-                var jsonMessage = System.Text.Json.JsonSerializer.Serialize(message);
-                var buffer = Encoding.UTF8.GetBytes(jsonMessage);
+                var buffer = Encoding.UTF8.GetBytes(message);
                 var segment = new ArraySegment<byte>(buffer);
                 await _webSocket.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
             }

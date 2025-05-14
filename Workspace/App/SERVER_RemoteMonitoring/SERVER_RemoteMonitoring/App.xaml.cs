@@ -22,10 +22,10 @@ namespace SERVER_RemoteMonitoring
         {
             base.OnStartup(e);
 
-            MessageBox.Show("Starting the server...");
+            //MessageBox.Show("Starting the server...");
             await StartWSServerAsync();
             await GetDatabaseServiceAsync();
-            MessageBox.Show("Database initialized successfully.");
+            //MessageBox.Show("Database initialized successfully.");
             // Initialize the server
             var _server = new SERVER();
             _server.Show();

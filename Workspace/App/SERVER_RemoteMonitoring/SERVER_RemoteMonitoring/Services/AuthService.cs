@@ -32,8 +32,6 @@ namespace SERVER_RemoteMonitoring.Services
 
             var isValid = BCrypt.Net.BCrypt.Verify(password, user?.Password); // Verify the password
 
-            MessageBox.Show($"Password: {password} \nHashed Password: {user?.Password} \nIs Valid: {isValid}");
-
             return isValid;
         }
 
