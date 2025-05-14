@@ -19,7 +19,9 @@ public partial class App : Application
         
         await ConnectToServer();
 
-        var loginWindow = new Login();
+        var _authService = new AuthService(_connect.GetClient());
+
+        var loginWindow = new Login(_authService);
         loginWindow.Show();
     }
     protected override void OnExit(ExitEventArgs e)

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using RemoteMonitoringApplication.Services;
+using RemoteMonitoringApplication.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +21,32 @@ namespace RemoteMonitoringApplication.Views
     /// </summary>
     public partial class Login : Window
     {
-        public Login()
+        private readonly AuthService _auth;
+        public Login(AuthService auth)
         {
             InitializeComponent();
+            _auth = auth;
+            var viewModel = new ViewModels.LoginViewModel(_auth);
+            viewModel.NavigateToClientAction = () =>
+            {
+                Client clientWindow = new Client();
+                clientWindow.Show();
+                clientWindow.Activate();
+                (this.DataContext as ViewModels.LoginViewModel)?.Reset();
+                this.ClearPassword();
+                this.Hide();
+            };
+            
+            this.DataContext = viewModel;
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            if (DataContext is ViewModels.LoginViewModel viewModel)
+            {
+                viewModel.Dispose();
+            }
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -51,15 +76,32 @@ namespace RemoteMonitoringApplication.Views
         {
             if (Application.Current.Windows.OfType<Register>().Any())
             {
-                Application.Current.Windows.OfType<Register>().First().Show();
+                var registerWindow = Application.Current.Windows.OfType<Register>().First();
+                registerWindow.Show();
+                (registerWindow.DataContext as RegisterViewModel)?.Reset();
             }
             else
             {
-                Register registerWindow = new Register();
+                Register registerWindow = new Register(_auth);
                 registerWindow.Show();
                 registerWindow.Activate();
+                (registerWindow.DataContext as RegisterViewModel)?.Reset();
             }
+            this.ClearPassword();
             this.Hide();
+        }
+
+        private void PasswordInput_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ViewModels.LoginViewModel viewModel)
+            {
+                viewModel.Password = txtPassword.Password;
+            }
+        }
+
+        public void ClearPassword()
+        {
+            txtPassword.Clear();
         }
     }
 }

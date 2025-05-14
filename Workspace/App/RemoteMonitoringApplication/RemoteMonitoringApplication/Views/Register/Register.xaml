@@ -118,9 +118,9 @@
             <StackPanel Width="250"
                     Grid.Row="1"
                     Orientation="Vertical"
-                    Margin="0,35,0,0">
+                    Margin="0,0,0,0">
                 <Image Source="/Images/Icons/icon.png"
-                   Width="100" Height="100"/>
+                   Width="80" Height="80"/>
 
                 <TextBlock Text="BEARMOTE"
                        Foreground="#DCD7C9"
@@ -143,7 +143,7 @@
                        FontFamily="Montserrat"
                        Margin="0,15,0,0"/>
 
-                <TextBox x:Name="txtUser"
+                <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                      FontSize="13"
                      FontWeight="Medium"
                      FontFamily="Montserrat"
@@ -171,7 +171,7 @@
                            FontFamily="Montserrat"
                            Margin="0,20,0,0"/>
 
-                <TextBox x:Name="txtEmail"
+                <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="13"
                          FontWeight="Medium"
                          FontFamily="Montserrat"
@@ -201,6 +201,7 @@
                 
 
                 <PasswordBox x:Name="txtPassword"
+                 PasswordChanged="txtPassword_PasswordChanged"
                  FontSize="13"
                  FontWeight="Medium"
                  FontFamily="Montserrat"
@@ -220,6 +221,35 @@
                     </PasswordBox.Background>
                 </PasswordBox>
 
+                <TextBlock Text="Confirm Password"
+                       Foreground="#DCD7C9"
+                       FontSize="12"
+                       FontWeight="Medium"
+                       FontFamily="Montserrat"
+                       Margin="0,20,0,0"/>
+
+                <PasswordBox x:Name="txtConfirmPassword"
+                 PasswordChanged="txtConfirmPassword_PasswordChanged"
+                 FontSize="13"
+                 FontWeight="Medium"
+                 FontFamily="Montserrat"
+                 Foreground="White"
+                 CaretBrush="LightGray"
+                 BorderBrush="DarkGray"
+                 BorderThickness="0,0,0,1"
+                 Height="28"
+                 VerticalContentAlignment="Center"
+                 Margin="0,5,0,0"
+                 Padding="30,0,0,0">
+
+                    <PasswordBox.Background>
+                    <ImageBrush ImageSource="/Images/Icons/password.png"
+                                Stretch="None"
+                                AlignmentX="Left"/>
+                </PasswordBox.Background>
+                </PasswordBox>
+
+
                 <Button x:Name="btnRegister"
                     BorderThickness="0"
                     Cursor="Hand"
@@ -231,7 +261,7 @@
                     VerticalContentAlignment="Center"
                     Grid.Column="2"
                     Margin="0,20,0,0"
-                    Click="btnRegister_Click">
+                    Command="{Binding RegisterCommand}">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Background" Value="#3F4E4F"/>

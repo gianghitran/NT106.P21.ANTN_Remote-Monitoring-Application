@@ -33,6 +33,11 @@ namespace RemoteMonitoringApplication.Services
             Console.WriteLine($"Message received: {message}");
         }
 
+        public WebSocketClient GetClient()
+        {
+            return _client;
+        }
+
         public async Task DisconnectAsync()
         {
             await _client.DisconnectAsync();

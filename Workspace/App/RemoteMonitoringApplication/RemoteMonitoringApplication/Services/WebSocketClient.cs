@@ -39,7 +39,7 @@ namespace RemoteMonitoringApplication.Services
 
         public async Task ReceiveLoopAsync()
         {
-            var buffer = new byte[1024];
+            var buffer = new byte[1024 * 4];
             while (_client.State == WebSocketState.Open)
             {
                 var result = await _client.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);

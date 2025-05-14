@@ -143,7 +143,7 @@
                            FontFamily="Montserrat"
                            Margin="0,35,0,0"/>
 
-                <TextBox x:Name="txtUser"
+                <TextBox Text= "{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="13"
                          FontWeight="Medium"
                          FontFamily="Montserrat"
@@ -172,6 +172,7 @@
                            Margin="0,20,0,0"/>
 
                 <PasswordBox x:Name="txtPassword"
+                     PasswordChanged="PasswordInput_PasswordChanged"
                      FontSize="13"
                      FontWeight="Medium"
                      FontFamily="Montserrat"
@@ -203,7 +204,7 @@
                         VerticalContentAlignment="Center"
                         Grid.Column="2"
                         Margin="0,35,0,0"
-                        Click="btnLogin_Click">
+                        Command="{Binding LoginCommand}">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Background" Value="#3F4E4F"/>
