@@ -141,14 +141,12 @@ namespace RemoteMonitoringApplication.ViewModels
 
         private void OnRegisterSuccess()
         {
-            // Handle successful registration (e.g., navigate to login page)
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
-                
-            //    NavigateToLoginAction?.Invoke();
-            //});
-            IsRegistering = false;
-            MessageBox.Show("Registration successful! Please log in.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            //Handle successful registration(e.g., navigate to login page)
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsRegistering = false;
+                NavigateToLoginAction?.Invoke();
+            });
         }
 
         private void OnRegisterFailed(string status, string message)
