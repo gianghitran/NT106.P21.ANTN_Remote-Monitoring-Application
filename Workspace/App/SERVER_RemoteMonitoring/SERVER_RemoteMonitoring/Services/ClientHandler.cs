@@ -10,17 +10,19 @@ using System.Windows.Media.Animation;
 
 namespace SERVER_RemoteMonitoring.Services
 {
-    class ClientHandler
+    public class ClientHandler
     {
         private readonly ClientConnectionWS _client;
         private readonly AuthService _authService;
         private readonly SessionManager _sessionManager;
+        private readonly RoomManager _roomManager;
 
-        public ClientHandler(ClientConnectionWS clientConnection, AuthService authService, SessionManager sessionManager)
+        public ClientHandler(ClientConnectionWS clientConnection, AuthService authService, SessionManager sessionManager, RoomManager roomManager)
         {
             _client = clientConnection;
             _authService = authService;
             _sessionManager = sessionManager;
+            _roomManager = roomManager;
         }
 
         public async Task<bool> ProcessAsync()
@@ -59,6 +61,7 @@ namespace SERVER_RemoteMonitoring.Services
                 }
 
                 var command = jsonMessage.command;
+                MessageBox.Show("AAAAAAAAAAAAAA Command " + command);
 
                 switch (command)
                 {
@@ -165,6 +168,55 @@ namespace SERVER_RemoteMonitoring.Services
             };
             var jsonResponse = System.Text.Json.JsonSerializer.Serialize(response);
             await _client.SendMessageAsync(jsonResponse);
+        }
+
+        public async Task HandleMessageAsync(string json)
+        {
+            MessageBox.Show("Received message (Handle Message): " + json);
+            var doc = JsonDocument.Parse(json);
+            MessageBox.Show("XXXXXXXXXX Parsed JSON: " + doc.RootElement.ToString());
+            var root = doc.RootElement;
+            if (!root.TryGetProperty("command", out var commandProp))
+                return;
+
+            string command = commandProp.GetString();
+
+            switch (command)
+            {
+                case "join_room":
+                    {
+                        string targetId = root.GetProperty("target_id").GetString();
+                        string targetPassword = root.GetProperty("target_password").GetString();
+
+                        bool targetOk = _roomManager.VerifyClient(targetId, targetPassword);
+
+                        if (targetOk)
+                        {
+                            _roomManager.JoinRoom(targetId, _client);
+                            await SendResponseAsync<string>("success", "join_room", "Joined room successfully");
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "join_room", "ID hoặc password không đúng");
+                        }
+                        break;
+                    }
+
+                case "register_room":
+                    {
+                        string id = root.GetProperty("id").GetString();
+                        string password = root.GetProperty("password").GetString();
+
+                        _roomManager.RegisterClient(id, password);
+                        await SendResponseAsync<string>("success", "register_room", "Room registered.");
+                        break;
+                    }
+
+                default:
+                    await SendResponseAsync<string>("error", command, "Unknown command.");
+                    break;
+            }
+
         }
 
         //private async Task ListenMessageAsync()

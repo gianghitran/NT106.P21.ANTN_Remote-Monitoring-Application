@@ -17,6 +17,8 @@ namespace SERVER_RemoteMonitoring.Services
         private readonly SessionManager _sessionManager;
         private readonly List<ClientConnectionWS> _clients = new List<ClientConnectionWS>();
         private const string uri = "http://localhost:8080/";
+        private readonly RoomManager _roomManager;
+
 
         public WebsocketServer(AuthService authService)
         {
@@ -24,11 +26,13 @@ namespace SERVER_RemoteMonitoring.Services
             _sessionManager = new SessionManager();
             _httpListener = new HttpListener();
             _httpListener.Prefixes.Add(uri);
+            _roomManager = new RoomManager();
         }
 
         public void Start()
         {
             _httpListener.Start();
+            Console.WriteLine("WebSocket server started at " + uri);
             Console.WriteLine("WebSocket server started at " + uri);
             Task.Run(AcceptClientsAsync);
         }
@@ -40,8 +44,9 @@ namespace SERVER_RemoteMonitoring.Services
                 var context = await _httpListener.GetContextAsync();
                 if (context.Request.IsWebSocketRequest)
                 {
+                    string clientIp = context.Request.RemoteEndPoint?.Address.ToString();
                     var webSocketContext = await context.AcceptWebSocketAsync(null);
-                    var client = new ClientConnectionWS(webSocketContext.WebSocket);
+                    var client = new ClientConnectionWS(webSocketContext.WebSocket, clientIp);
                     //MessageBox.Show("Client connected: " + client.Id);
                     _clients.Add(client);
                     Console.WriteLine("Client connected: " + client.Id);
@@ -56,7 +61,7 @@ namespace SERVER_RemoteMonitoring.Services
 
             try
             {
-                var handler = new ClientHandler(client, _authservice, _sessionManager);
+                var handler = new ClientHandler(client, _authservice, _sessionManager, _roomManager);
 
                 while (!authenticated)
                 {
@@ -85,7 +90,14 @@ namespace SERVER_RemoteMonitoring.Services
                         // Nếu WebSocket vẫn mở, gửi phản hồi
                         if (client._webSocket.State == WebSocketState.Open)
                         {
-                            await client.SendMessageAsync("Authentication failed.");
+                            var errorJson = System.Text.Json.JsonSerializer.Serialize(new
+                            {
+                                status = "fail",
+                                command = "auth",
+                                message = "Authentication failed."
+                            });
+                            await client.SendMessageAsync(errorJson);
+
                         }
                     }
                 }

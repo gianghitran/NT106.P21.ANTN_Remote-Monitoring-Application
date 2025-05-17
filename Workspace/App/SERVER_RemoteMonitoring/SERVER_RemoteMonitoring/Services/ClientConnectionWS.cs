@@ -6,6 +6,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SERVER_RemoteMonitoring.Services
 {
@@ -17,7 +18,11 @@ namespace SERVER_RemoteMonitoring.Services
 
         public event Action<string> MessageReceived;
 
-        public ClientConnectionWS(WebSocket webSocket) 
+        public string IP { get; set; } // Client IP address
+
+        public ClientHandler Handler { get; set; }
+
+        public ClientConnectionWS(WebSocket webSocket, string IP) 
         {
             _webSocket = webSocket;
             Id = Guid.NewGuid().ToString(); // Unique per client
@@ -29,10 +34,14 @@ namespace SERVER_RemoteMonitoring.Services
             while (_webSocket.State == WebSocketState.Open)
             {
                 var result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                MessageBox.Show("XXXXXX Received message from client " + Id + ": " + result.MessageType.ToString());
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     var jsonMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    Console.WriteLine($"Received message from client {Id}: {jsonMessage}");
+                    MessageBox.Show($"Received message from client {Id}: {jsonMessage}");
+                    if (Handler != null)
+                        await Handler.HandleMessageAsync(jsonMessage);
+                    
                     var message = System.Text.Json.JsonSerializer.Deserialize<string>(jsonMessage);
 
                     //await HandleClientCommandAsync(message);

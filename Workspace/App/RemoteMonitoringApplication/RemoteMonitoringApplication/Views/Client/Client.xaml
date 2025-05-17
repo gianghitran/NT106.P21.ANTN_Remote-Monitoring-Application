@@ -184,14 +184,17 @@
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
-                <Label Content="1 355 811 856"
-                       Canvas.Left="136"
-                       Canvas.Top="302"
-                       FontSize="15"
-                       FontWeight="Bold"
-                       FontFamily="{StaticResource MontserratFont}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
+                <TextBlock x:Name="lblYourID"  
+                           Text="1 355 811 856"
+                           Canvas.Left="136"
+                           Canvas.Top="307"
+                           FontSize="15"
+                           FontWeight="Bold"
+                           FontFamily="{StaticResource MontserratFont}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Center" />
                 <Label Content="Password:"
                        Canvas.Left="27"
                        Canvas.Top="346"
@@ -199,14 +202,17 @@
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
-                <Label Content="uoq1o2"
+                <TextBlock x:Name="lblYourPass" 
+                       Text="uoq1o2"
                        Canvas.Left="136"
-                       Canvas.Top="346"
+                       Canvas.Top="351"
                        FontSize="15"
                        FontWeight="Bold"
                        FontFamily="{StaticResource MontserratFont}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       VerticalAlignment="Top"
+                       HorizontalAlignment="Center" RenderTransformOrigin="0.51,1.139" />
 
                 <Line X1="0"
                       Y1="50"
@@ -299,6 +305,8 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
+                <Image x:Name="copyIconID" Height="20" Canvas.Left="316" Canvas.Top="306" Width="22" Source="/Views/Client/copy.png" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="copyIconID_MouseLeftButtonDown"/>
+                <Image x:Name="copyIconPass" Height="20" Canvas.Left="316" Canvas.Top="349" Width="22" Source="/Views/Client/copy.png" HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="copyIconPass_MouseLeftButtonDown"/>
             </Canvas>
 
             <!-- Sidebar & Labels -->

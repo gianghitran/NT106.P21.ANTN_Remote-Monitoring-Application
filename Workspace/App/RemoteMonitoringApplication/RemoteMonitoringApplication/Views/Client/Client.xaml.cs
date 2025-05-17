@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RemoteMonitoringApplication.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -24,11 +25,25 @@ namespace RemoteMonitoringApplication.Views
         bool connected = false;
         private List<User> users;
         public ObservableCollection<ProcessInfo> Processes { get; set; }
+        private string clientId;
+        private string clientPassword;
+
+        private WebSocketClient webSocketClient = new WebSocketClient("ws://localhost:8080");
 
         public Client()
         {
             InitializeComponent();
-            
+
+            clientId = ClientIdentity.GenerateRandomId();
+            clientPassword = ClientIdentity.GenerateRandomPassword();
+
+            lblYourID.Text = $"{clientId}";
+            lblYourPass.Text = $"{clientPassword}";
+
+            webSocketClient.MessageReceived += OnServerMessage;
+            this.Loaded += Client_Loaded;
+
+
             users = new List<User>
             {
                 new User { ID = 1, UserName = "Alice", Email = "alice@example.com", IP = "192.168.1.2", Port = "8080", OS = "Windows 10", Role = "Connect", ConnectWith = "None", Details = "Alice querry to Bob." },
@@ -48,6 +63,22 @@ namespace RemoteMonitoringApplication.Views
             // Set DataContext để Binding
             this.DataContext = this;
         }
+
+        private async void Client_Loaded(object sender, RoutedEventArgs e)
+        {
+            await webSocketClient.ConnectAsync();
+            var registerRoomRequest = new
+            {
+                command = "register_room",
+                id = clientId,
+                password = clientPassword
+            };
+
+            string json = System.Text.Json.JsonSerializer.Serialize(registerRoomRequest);
+            MessageBox.Show(json);
+            await webSocketClient.SendMessageAsync(json);
+        }
+
 
         public class ProcessInfo
         {
@@ -134,17 +165,22 @@ namespace RemoteMonitoringApplication.Views
             Remote.Visibility = Visibility.Collapsed;
         }
         
-        private void btnConnect_Click(object sender, RoutedEventArgs e)
+        private async void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-            if (connected == true)
+            string targetId = txtUser.Text.Trim();
+            string targetPassword = txtPassword.Password;
+
+            var joinRoomRequest = new
             {
-                usrEmail.Content = users[0].Email;
-                usrIP.Content = users[0].IP;
-                usrOS.Content = users[0].OS;
-                ptnEmail.Content = users[1].Email;
-                ptnIP.Content = users[1].IP;
-                ptnOS.Content = users[1].OS;
-            }    
+                command = "join_room",
+                my_id = clientId,
+                my_password = clientPassword,
+                target_id = targetId,
+                target_password = targetPassword
+            };
+
+            string json = System.Text.Json.JsonSerializer.Serialize(joinRoomRequest);
+            await webSocketClient.SendMessageAsync(json);
         }
 
         private void btnDisconnect_Click(object sender, RoutedEventArgs e)
@@ -184,6 +220,58 @@ namespace RemoteMonitoringApplication.Views
         private void btnPerformanceSync_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void OnServerMessage(string message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    var json = System.Text.Json.JsonDocument.Parse(message);
+                    var root = json.RootElement;
+
+                    MessageBox.Show("📩 Server sent: " + message);
+
+                    if (!message.TrimStart().StartsWith("{"))
+                    {
+                        MessageBox.Show("❌ Server gửi dữ liệu không phải JSON:\n" + message);
+                        return;
+                    }
+
+                    if (root.TryGetProperty("status", out var statusProp) &&
+                        root.TryGetProperty("message", out var messageProp))
+                    {
+                        string? status = statusProp.GetString();
+                        string? msg = messageProp.GetString();
+
+                        if (status == "success")
+                        {
+                            MessageBox.Show($"✅ Kết nối thành công: {msg}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            connected = true;
+                        }
+                        else
+                        {
+                            MessageBox.Show($"❌ Kết nối thất bại: {msg}", "Failure", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            connected = false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi xử lý tin nhắn từ server: " + ex.Message);
+                }
+            });
+        }
+
+        private void copyIconID_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Clipboard.SetText(lblYourID.Text);
+        }
+
+        private void copyIconPass_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Clipboard.SetText(lblYourPass.Text);
         }
     }
 }

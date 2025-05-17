@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\Client\copy.png" />
     <None Remove="Views\Client\home.png" />
     <None Remove="Views\Client\icon.png" />
     <None Remove="Views\Client\tt.png" />
@@ -24,6 +25,7 @@
     <Resource Include="Views\Client\close.png" />
     <Resource Include="Images\Icons\home.png" />
     <Resource Include="Images\Icons\icon.png" />
+    <Resource Include="Views\Client\copy.png" />
     <Resource Include="Views\Client\minimize.png" />
     <Resource Include="Images\Icons\tt.png" />
 

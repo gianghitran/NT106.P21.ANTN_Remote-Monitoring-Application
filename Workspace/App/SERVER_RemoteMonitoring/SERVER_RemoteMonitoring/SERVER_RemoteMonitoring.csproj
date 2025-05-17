@@ -64,6 +64,7 @@
     <Compile Include="Services\ClientConnectionWS.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\ClientHandler.cs" />
+    <Compile Include="Services\RoomManager.cs" />
     <Compile Include="Services\SessionManager.cs" />
     <Compile Include="Services\UserSession.cs" />
     <Compile Include="Services\WebsocketServer.cs" />
