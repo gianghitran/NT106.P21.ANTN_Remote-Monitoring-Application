@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -67,16 +68,6 @@ namespace RemoteMonitoringApplication.Views
         private async void Client_Loaded(object sender, RoutedEventArgs e)
         {
             await webSocketClient.ConnectAsync();
-            var registerRoomRequest = new
-            {
-                command = "register_room",
-                id = clientId,
-                password = clientPassword
-            };
-
-            string json = System.Text.Json.JsonSerializer.Serialize(registerRoomRequest);
-            MessageBox.Show(json);
-            await webSocketClient.SendMessageAsync(json);
         }
 
 
@@ -222,16 +213,13 @@ namespace RemoteMonitoringApplication.Views
 
         }
 
-        private void OnServerMessage(string message)
+        private async void OnServerMessage(string message)
         {
-            Dispatcher.Invoke(() =>
+            await Dispatcher.Invoke(async () =>
             {
                 try
                 {
-                    var json = System.Text.Json.JsonDocument.Parse(message);
-                    var root = json.RootElement;
-
-                    MessageBox.Show("📩 Server sent: " + message);
+                    Console.WriteLine("📩 Server sent: " + message);
 
                     if (!message.TrimStart().StartsWith("{"))
                     {
@@ -239,22 +227,43 @@ namespace RemoteMonitoringApplication.Views
                         return;
                     }
 
+                    var json = JsonDocument.Parse(message);
+                    var root = json.RootElement;
+
                     if (root.TryGetProperty("status", out var statusProp) &&
+                        root.TryGetProperty("command", out var commandProp) &&
                         root.TryGetProperty("message", out var messageProp))
                     {
-                        string? status = statusProp.GetString();
-                        string? msg = messageProp.GetString();
+                        string status = statusProp.GetString() ?? "";
+                        string command = commandProp.GetString() ?? "";
+                        string msg = messageProp.GetString() ?? "";
 
                         if (status == "success")
                         {
-                            MessageBox.Show($"✅ Kết nối thành công: {msg}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            MessageBox.Show($"✅ {command.ToUpper()} thành công: {msg}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                             connected = true;
+                            if (command == "login")
+                            {
+                                var registerRoomRequest = new
+                                {
+                                    command = "register_room",
+                                    id = clientId,
+                                    password = clientPassword
+                                };
+                                string registerJson = JsonSerializer.Serialize(registerRoomRequest);
+                                await webSocketClient.SendMessageAsync(registerJson);
+                                Console.WriteLine("📤 Sent register_room");
+                            }
                         }
-                        else
+                        else if (status == "fail")
                         {
-                            MessageBox.Show($"❌ Kết nối thất bại: {msg}", "Failure", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MessageBox.Show($"❌ XXXXXXXXXXXXXX {command.ToUpper()} thất bại: {msg}", "Failure", MessageBoxButton.OK, MessageBoxImage.Warning);
                             connected = false;
                         }
+                    }
+                    else
+                    {
+                        MessageBox.Show("❌ Dữ liệu JSON từ server thiếu trường cần thiết!");
                     }
                 }
                 catch (Exception ex)
@@ -263,6 +272,7 @@ namespace RemoteMonitoringApplication.Views
                 }
             });
         }
+
 
         private void copyIconID_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

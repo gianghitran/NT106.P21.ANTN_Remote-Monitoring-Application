@@ -61,7 +61,6 @@ namespace SERVER_RemoteMonitoring.Services
                 }
 
                 var command = jsonMessage.command;
-                MessageBox.Show("AAAAAAAAAAAAAA Command " + command);
 
                 switch (command)
                 {
