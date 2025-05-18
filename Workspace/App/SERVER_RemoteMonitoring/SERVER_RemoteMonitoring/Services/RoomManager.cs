@@ -13,17 +13,19 @@ namespace SERVER_RemoteMonitoring.Services
         // Lưu các phòng và danh sách client
         private readonly Dictionary<string, List<ClientConnectionWS>> _rooms = new Dictionary<string, List<ClientConnectionWS>>();
 
-        public void RegisterClient(string id, string password)
+        public async Task RegisterClient(string id, string password)
         {
             _clientPasswords[id] = password;
         }
 
         public bool VerifyClient(string id, string password)
         {
-            return _clientPasswords.TryGetValue(id, out var pw) && pw == password;
+            _clientPasswords.TryGetValue(id, out var pw);
+            Console.WriteLine("ID: ", id, "Pass:", pw);
+            return pw == password;
         }
 
-        public void JoinRoom(string roomId, ClientConnectionWS client)
+        public async Task JoinRoom(string roomId, ClientConnectionWS client)
         {
             if (!_rooms.ContainsKey(roomId))
                 _rooms[roomId] = new List<ClientConnectionWS>();

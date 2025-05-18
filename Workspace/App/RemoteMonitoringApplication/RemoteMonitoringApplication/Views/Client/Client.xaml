@@ -240,7 +240,7 @@
                              Canvas.Top="342"
                              Width="224"
                              HorizontalAlignment="Center"
-                             VerticalAlignment="Top"/>
+                             VerticalAlignment="Center"/>
                 <TextBox x:Name="txtUser"
                          FontSize="13"
                          FontWeight="Medium"

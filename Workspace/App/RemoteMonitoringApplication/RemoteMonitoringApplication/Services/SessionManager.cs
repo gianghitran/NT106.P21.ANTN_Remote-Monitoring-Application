@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RemoteMonitoringApplication.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,10 @@ namespace RemoteMonitoringApplication.Services
         public string username { get; set; }
         public string email { get; set; }
         public string role { get; set; }
+        public WebSocketClient WebSocketClient { get; set; }
+        public string ClientId { get; set; }
+        public string ClientPassword { get; set; }
+
         //public string token { get; set; }
 
         private SessionManager() { }
@@ -25,7 +30,9 @@ namespace RemoteMonitoringApplication.Services
             username = null;
             email = null;
             role = null;
-            //Token = null;
+            WebSocketClient = null;
+            ClientId = null;
+            ClientPassword = null;
         }
     }
 }

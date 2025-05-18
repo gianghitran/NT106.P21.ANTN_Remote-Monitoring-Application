@@ -33,7 +33,6 @@ namespace SERVER_RemoteMonitoring.Services
         {
             _httpListener.Start();
             Console.WriteLine("WebSocket server started at " + uri);
-            Console.WriteLine("WebSocket server started at " + uri);
             Task.Run(AcceptClientsAsync);
         }
 
@@ -62,6 +61,7 @@ namespace SERVER_RemoteMonitoring.Services
             try
             {
                 var handler = new ClientHandler(client, _authservice, _sessionManager, _roomManager);
+                client.Handler = handler;
 
                 while (!authenticated)
                 {

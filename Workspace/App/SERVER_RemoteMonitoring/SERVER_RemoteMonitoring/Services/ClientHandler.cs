@@ -32,7 +32,7 @@ namespace SERVER_RemoteMonitoring.Services
                 bool authenticated = await AuthenticateClientAsync();
                 if (!authenticated) return false;
 
-                //await ListenMessageAsync();
+                await _client.ListenForMessageAsync();
                 return true;
             }
             catch (Exception ex)
@@ -171,27 +171,23 @@ namespace SERVER_RemoteMonitoring.Services
 
         public async Task HandleMessageAsync(string json)
         {
-            MessageBox.Show("Received message (Handle Message): " + json);
             var doc = JsonDocument.Parse(json);
-            MessageBox.Show("XXXXXXXXXX Parsed JSON: " + doc.RootElement.ToString());
             var root = doc.RootElement;
             if (!root.TryGetProperty("command", out var commandProp))
                 return;
 
             string command = commandProp.GetString();
-
             switch (command)
             {
                 case "join_room":
                     {
                         string targetId = root.GetProperty("target_id").GetString();
                         string targetPassword = root.GetProperty("target_password").GetString();
-
                         bool targetOk = _roomManager.VerifyClient(targetId, targetPassword);
 
                         if (targetOk)
                         {
-                            _roomManager.JoinRoom(targetId, _client);
+                            await _roomManager.JoinRoom(targetId, _client);
                             await SendResponseAsync<string>("success", "join_room", "Joined room successfully");
                         }
                         else
@@ -206,7 +202,7 @@ namespace SERVER_RemoteMonitoring.Services
                         string id = root.GetProperty("id").GetString();
                         string password = root.GetProperty("password").GetString();
 
-                        _roomManager.RegisterClient(id, password);
+                        await _roomManager.RegisterClient(id, password);
                         await SendResponseAsync<string>("success", "register_room", "Room registered.");
                         break;
                     }
@@ -263,6 +259,12 @@ namespace SERVER_RemoteMonitoring.Services
             public string status { get; set; }
             public string command { get; set; }
             public T message { get; set; }
+        }
+
+        private class Room
+        {
+            public int id { get; set; }
+            public string password { get; set; }
         }
     }
 }

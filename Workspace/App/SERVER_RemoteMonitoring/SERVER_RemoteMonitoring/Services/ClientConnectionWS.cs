@@ -34,15 +34,17 @@ namespace SERVER_RemoteMonitoring.Services
             while (_webSocket.State == WebSocketState.Open)
             {
                 var result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                MessageBox.Show("XXXXXX Received message from client " + Id + ": " + result.MessageType.ToString());
+                //Console.WriteLine("XXXXXX Received message from client " + Id + ": " + result.MessageType.ToString());
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     var jsonMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    MessageBox.Show($"Received message from client {Id}: {jsonMessage}");
+                    Console.WriteLine($"Received message from client {Id}: {jsonMessage}");
                     if (Handler != null)
+                        Console.WriteLine("Handler");
                         await Handler.HandleMessageAsync(jsonMessage);
+                        
                     
-                    var message = System.Text.Json.JsonSerializer.Deserialize<string>(jsonMessage);
+                    //var message = System.Text.Json.JsonSerializer.Deserialize<string>(jsonMessage);
 
                     //await HandleClientCommandAsync(message);
 

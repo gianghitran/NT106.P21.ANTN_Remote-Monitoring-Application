@@ -13,6 +13,7 @@ public partial class App : Application
 {
     static WebSocketConnectServer _connect = new WebSocketConnectServer("ws://localhost:8080");
 
+
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -20,6 +21,8 @@ public partial class App : Application
         await ConnectToServer();
 
         var _authService = new AuthService(_connect.GetClient());
+
+        SessionManager.Instance.WebSocketClient = _connect.GetClient();
 
         var loginWindow = new Login(_authService);
         loginWindow.Show();

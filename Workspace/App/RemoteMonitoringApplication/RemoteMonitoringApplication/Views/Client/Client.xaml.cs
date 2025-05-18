@@ -29,11 +29,19 @@ namespace RemoteMonitoringApplication.Views
         private string clientId;
         private string clientPassword;
 
-        private WebSocketClient webSocketClient = new WebSocketClient("ws://localhost:8080");
+        private WebSocketClient webSocketClient;
 
         public Client()
         {
             InitializeComponent();
+
+            webSocketClient = SessionManager.Instance.WebSocketClient;
+
+            if (webSocketClient == null)
+            {
+                MessageBox.Show("⚠️ WebSocketClient chưa được khởi tạo!", "Lỗi kết nối", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             clientId = ClientIdentity.GenerateRandomId();
             clientPassword = ClientIdentity.GenerateRandomPassword();
@@ -67,7 +75,16 @@ namespace RemoteMonitoringApplication.Views
 
         private async void Client_Loaded(object sender, RoutedEventArgs e)
         {
-            await webSocketClient.ConnectAsync();
+            var registerRoomRequest = new
+            {
+                command = "register_room",
+                id = clientId,
+                password = clientPassword
+            };
+
+            string registerJson = JsonSerializer.Serialize(registerRoomRequest);
+            await webSocketClient.SendMessageAsync(registerJson);
+            Console.WriteLine("📤 Sent register_room");
         }
 
 
@@ -217,8 +234,8 @@ namespace RemoteMonitoringApplication.Views
         {
             await Dispatcher.Invoke(async () =>
             {
-                try
-                {
+                //try
+                //{
                     Console.WriteLine("📩 Server sent: " + message);
 
                     if (!message.TrimStart().StartsWith("{"))
@@ -244,17 +261,19 @@ namespace RemoteMonitoringApplication.Views
                             connected = true;
                             if (command == "login")
                             {
-                                var registerRoomRequest = new
-                                {
-                                    command = "register_room",
-                                    id = clientId,
-                                    password = clientPassword
-                                };
-                                string registerJson = JsonSerializer.Serialize(registerRoomRequest);
-                                await webSocketClient.SendMessageAsync(registerJson);
-                                Console.WriteLine("📤 Sent register_room");
+                                SessionManager.Instance.WebSocketClient = webSocketClient;
+                                SessionManager.Instance.ClientId = clientId;
+                                SessionManager.Instance.ClientPassword = clientPassword;
                             }
-                        }
+                            if (command == "join_room")
+                            {
+                                // Hiển thị tab Remote
+                                Home_1.Visibility = Visibility.Collapsed;
+                                Home_2.Visibility = Visibility.Collapsed;
+                                Remote.Visibility = Visibility.Visible;
+                                MessageBox.Show("Đã kết nối tới client thành công!");
+                            }
+                    }
                         else if (status == "fail")
                         {
                             MessageBox.Show($"❌ XXXXXXXXXXXXXX {command.ToUpper()} thất bại: {msg}", "Failure", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -265,11 +284,11 @@ namespace RemoteMonitoringApplication.Views
                     {
                         MessageBox.Show("❌ Dữ liệu JSON từ server thiếu trường cần thiết!");
                     }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Lỗi xử lý tin nhắn từ server: " + ex.Message);
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                //    MessageBox.Show("Lỗi xử lý tin nhắn từ server: " + ex.Message);
+                //}
             });
         }
 
