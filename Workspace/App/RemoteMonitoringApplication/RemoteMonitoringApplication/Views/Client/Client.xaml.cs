@@ -52,14 +52,6 @@ namespace RemoteMonitoringApplication.Views
             webSocketClient.MessageReceived += OnServerMessage;
             this.Loaded += Client_Loaded;
 
-
-            users = new List<User>
-            {
-                new User { ID = 1, UserName = "Alice", Email = "alice@example.com", IP = "192.168.1.2", Port = "8080", OS = "Windows 10", Role = "Connect", ConnectWith = "None", Details = "Alice querry to Bob." },
-                new User { ID = 2, UserName = "Bob", Email = "bob@example.com", IP = "192.168.1.3", Port = "8081", OS = "Windows 10", Role = "Be connected", ConnectWith = "Alice", Details = "Bob connected to mornitoring Char." },
-            };
-            connected = true;
-
             Processes = new ObservableCollection<ProcessInfo>
             {
             new ProcessInfo { ProcessName = "Chrome",        Status = "Running", CPU = "12.4s", Memory = "350 MB",  Disk = "5 MB/s",   NetWork = "300 KB/s" },
@@ -195,11 +187,9 @@ namespace RemoteMonitoringApplication.Views
         {
             connected = false;
             usrEmail.Content = "";
-            usrIP.Content = "";
-            usrOS.Content = "";
+            usrName.Text = "";
             ptnEmail.Content = "";
-            ptnIP.Content = "";
-            ptnOS.Content = "";
+            ptnName.Text = "";
         }
 
         private void btnPlay_Click(object sender, RoutedEventArgs e)
@@ -234,61 +224,57 @@ namespace RemoteMonitoringApplication.Views
         {
             await Dispatcher.Invoke(async () =>
             {
-                //try
-                //{
-                    Console.WriteLine("📩 Server sent: " + message);
-
-                    if (!message.TrimStart().StartsWith("{"))
-                    {
-                        MessageBox.Show("❌ Server gửi dữ liệu không phải JSON:\n" + message);
-                        return;
-                    }
-
+                try
+                {
                     var json = JsonDocument.Parse(message);
                     var root = json.RootElement;
 
-                    if (root.TryGetProperty("status", out var statusProp) &&
-                        root.TryGetProperty("command", out var commandProp) &&
-                        root.TryGetProperty("message", out var messageProp))
-                    {
-                        string status = statusProp.GetString() ?? "";
-                        string command = commandProp.GetString() ?? "";
-                        string msg = messageProp.GetString() ?? "";
+                    if (!root.TryGetProperty("status", out var statusProp) ||
+                        !root.TryGetProperty("command", out var commandProp))
+                        return;
 
-                        if (status == "success")
-                        {
-                            MessageBox.Show($"✅ {command.ToUpper()} thành công: {msg}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                            connected = true;
-                            if (command == "login")
-                            {
-                                SessionManager.Instance.WebSocketClient = webSocketClient;
-                                SessionManager.Instance.ClientId = clientId;
-                                SessionManager.Instance.ClientPassword = clientPassword;
-                            }
-                            if (command == "join_room")
-                            {
-                                // Hiển thị tab Remote
-                                Home_1.Visibility = Visibility.Collapsed;
-                                Home_2.Visibility = Visibility.Collapsed;
-                                Remote.Visibility = Visibility.Visible;
-                                MessageBox.Show("Đã kết nối tới client thành công!");
-                            }
-                    }
-                        else if (status == "fail")
-                        {
-                            MessageBox.Show($"❌ XXXXXXXXXXXXXX {command.ToUpper()} thất bại: {msg}", "Failure", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            connected = false;
-                        }
-                    }
-                    else
+                    string status = statusProp.GetString();
+                    string command = commandProp.GetString();
+
+
+                    // Xử lý khi là người điều khiển
+                    if (status == "success" && command == "join_room")
                     {
-                        MessageBox.Show("❌ Dữ liệu JSON từ server thiếu trường cần thiết!");
+                        if (root.TryGetProperty("user", out var userProp) &&
+                            root.TryGetProperty("partner", out var partnerProp))
+                        {
+                            var user = JsonSerializer.Deserialize<UserInfo>(userProp.GetRawText());
+                            var partner = JsonSerializer.Deserialize<UserInfo>(partnerProp.GetRawText());
+
+                            usrEmail.Content = user.email;
+                            usrName.Text = user.username;
+                            ptnEmail.Content = partner.email;
+                            ptnName.Text = partner.username;
+                        }
+                        connected = true;
+                        Remote.Visibility = Visibility.Visible;
                     }
-                //}
-                //catch (Exception ex)
-                //{
-                //    MessageBox.Show("Lỗi xử lý tin nhắn từ server: " + ex.Message);
-                //}
+                    // Xử lý khi là người bị điều khiển
+                    else if (status == "info" && command == "partner_joined")
+                    {
+                        if (root.TryGetProperty("user", out var userProp) &&
+                            root.TryGetProperty("partner", out var partnerProp))
+                        {
+                            var user = JsonSerializer.Deserialize<UserInfo>(userProp.GetRawText());
+                            var partner = JsonSerializer.Deserialize<UserInfo>(partnerProp.GetRawText());
+
+                            usrEmail.Content = partner.email;
+                            usrName.Text = partner.username;
+                            ptnEmail.Content = user.email;
+                            ptnName.Text = user.username;
+                        }
+                        Home_2.Visibility = Visibility.Visible;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Lỗi xử lý message: {ex.Message}");
+                }
             });
         }
 
@@ -301,6 +287,12 @@ namespace RemoteMonitoringApplication.Views
         private void copyIconPass_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Clipboard.SetText(lblYourPass.Text);
+        }
+
+        public class UserInfo
+        {
+            public string username { get; set; }
+            public string email { get; set; }
         }
     }
 }

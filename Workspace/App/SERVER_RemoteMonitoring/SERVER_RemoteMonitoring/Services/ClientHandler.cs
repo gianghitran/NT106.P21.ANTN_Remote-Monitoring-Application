@@ -183,16 +183,71 @@ namespace SERVER_RemoteMonitoring.Services
                     {
                         string targetId = root.GetProperty("target_id").GetString();
                         string targetPassword = root.GetProperty("target_password").GetString();
-                        bool targetOk = _roomManager.VerifyClient(targetId, targetPassword);
 
-                        if (targetOk)
-                        {
-                            await _roomManager.JoinRoom(targetId, _client);
-                            await SendResponseAsync<string>("success", "join_room", "Joined room successfully");
-                        }
-                        else
+                        // Xác minh target
+                        bool targetOk = _roomManager.VerifyClient(targetId, targetPassword);
+                        if (!targetOk)
                         {
                             await SendResponseAsync<string>("fail", "join_room", "ID hoặc password không đúng");
+                            return;
+                        }
+
+                        // Tham gia phòng
+                        if (!await _roomManager.JoinRoom(targetId, _client))
+                        {
+                            await SendResponseAsync<string>("fail", "join_room", "Không thể tham gia phòng");
+                            return;
+                        }
+
+                        // Lấy thông tin session
+                        var targetSession = _roomManager.GetSessionById(targetId);
+
+                        if (targetSession == null)
+                        {
+                            MessageBox.Show($"❌ Không tìm thấy session cho targetId = {targetId}. Client chưa login.");
+                        }
+
+                        var joiningSession = _sessionManager.GetSession(_client.Id); // Người điều khiển
+
+                        // Gửi response cho người điều khiển
+                        var joinResponse = new
+                        {
+                            status = "success",
+                            command = "join_room",
+                            user = new
+                            {
+                                username = joiningSession?.username,
+                                email = joiningSession?.email
+                            },
+                            partner = new
+                            {
+                                username = targetSession?.username,
+                                email = targetSession?.email
+                            }
+                        };
+                        await _client.SendMessageAsync(JsonSerializer.Serialize(joinResponse));
+
+                        // Gửi thông báo cho người bị điều khiển
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            // Gửi thông báo cho người bị điều khiển
+                            var notifyResponse = new
+                            {
+                                status = "info",
+                                command = "partner_joined",
+                                user = new
+                                {
+                                    username = joiningSession?.username,
+                                    email = joiningSession?.email
+                                },
+                                partner = new
+                                {
+                                    username = targetSession?.username,
+                                    email = targetSession?.email
+                                }
+                            };
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(notifyResponse));
                         }
                         break;
                     }
@@ -202,7 +257,8 @@ namespace SERVER_RemoteMonitoring.Services
                         string id = root.GetProperty("id").GetString();
                         string password = root.GetProperty("password").GetString();
 
-                        await _roomManager.RegisterClient(id, password);
+                        var session = _sessionManager.GetSession(_client.Id);
+                        await _roomManager.RegisterClient(id, password, _client, session);
                         await SendResponseAsync<string>("success", "register_room", "Room registered.");
                         break;
                     }
@@ -259,12 +315,6 @@ namespace SERVER_RemoteMonitoring.Services
             public string status { get; set; }
             public string command { get; set; }
             public T message { get; set; }
-        }
-
-        private class Room
-        {
-            public int id { get; set; }
-            public string password { get; set; }
         }
     }
 }

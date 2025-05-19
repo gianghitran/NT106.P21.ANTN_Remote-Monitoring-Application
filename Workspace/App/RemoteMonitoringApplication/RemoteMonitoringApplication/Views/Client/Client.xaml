@@ -225,22 +225,7 @@
                       HorizontalAlignment="Left"
                       VerticalAlignment="Center"
                       Width="970"/>
-                <PasswordBox x:Name="txtPassword"
-                             FontSize="13"
-                             FontWeight="Medium"
-                             FontFamily="{StaticResource MontserratFont}"
-                             Background="#FFE8E4DA"
-                             Foreground="#A27B5C"
-                             CaretBrush="Black"
-                             BorderBrush="Black"
-                             BorderThickness="0,0,0,1"
-                             Height="28"
-                             VerticalContentAlignment="Center"
-                             Canvas.Left="740"
-                             Canvas.Top="342"
-                             Width="224"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"/>
+
                 <TextBox x:Name="txtUser"
                          FontSize="13"
                          FontWeight="Medium"
@@ -257,6 +242,22 @@
                          Width="224"
                          HorizontalAlignment="Center"
                          VerticalAlignment="Center"/>
+                <PasswordBox x:Name="txtPassword"
+                             FontSize="13"
+                             FontWeight="Medium"
+                             FontFamily="{StaticResource MontserratFont}"
+                             Background="#FFE8E4DA"
+                             Foreground="#A27B5C"
+                             CaretBrush="Black"
+                             BorderBrush="Black"
+                             BorderThickness="0,0,0,1"
+                             Height="28"
+                             VerticalContentAlignment="Center"
+                             Canvas.Left="740"
+                             Canvas.Top="342"
+                             Width="224"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"/>
                 <Label Content="Password:"
                        Canvas.Left="643"
                        Canvas.Top="342"
@@ -462,7 +463,9 @@
                 </Button>
             </Grid>
             <Canvas x:Name="Home_2"
-                    Margin="283,438,0,0">
+                    Margin="283,438,0,0"
+                    Visibility="Collapsed"
+                    >
                 <Label Content="Remote Information"
                        FontSize="25"
                        FontWeight="Bold"
@@ -488,23 +491,16 @@
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"/>
-                <Label Content="Email:"
+                <Label Content="Username:"
                        Canvas.Left="28"
                        Canvas.Top="92"
                        FontSize="15"
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Top"/>
-                <Label Content="IP:"
+                <Label Content="Email: "
                        Canvas.Left="28"
                        Canvas.Top="120"
-                       FontSize="15"
-                       FontFamily="{StaticResource MontserratFont}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Top"/>
-                <Label Content="Operation system:"
-                       Canvas.Left="28"
-                       Canvas.Top="148"
                        FontSize="15"
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Center"
@@ -526,74 +522,35 @@
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center"/>
-                <Label Content="Email:"
+                <Label Content="Username:"
                        Canvas.Left="643"
                        Canvas.Top="92"
                        FontSize="15"
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center"/>
-                <Label Content="IP:"
+                <Label Content="Email: "
                        Canvas.Left="643"
                        Canvas.Top="120"
-                       FontSize="15"
-                       FontFamily="{StaticResource MontserratFont}"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center"/>
-                <Label Content="Operation system:"
-                       Canvas.Left="643"
-                       Canvas.Top="148"
                        FontSize="15"
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center"/>
                 <Label x:Name="usrEmail"
-                       Content=""
-                       Canvas.Left="82"
-                       Canvas.Top="92"
-                       FontSize="15"
-                       FontFamily="{StaticResource MontserratFont}"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center"/>
-                <Label x:Name="usrIP"
-                       Content=""
+                       Content="alice@gmail.com"
                        Canvas.Left="82"
                        Canvas.Top="120"
                        FontSize="15"
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Top"/>
-                <Label x:Name="usrOS"
-                       Content=""
-                       Canvas.Left="163"
-                       Canvas.Top="148"
-                       FontSize="15"
-                       FontFamily="{StaticResource MontserratFont}"
-                       HorizontalAlignment="Left"
                        VerticalAlignment="Top"/>
                 <Label x:Name="ptnEmail"
-                       Content=""
-                       Canvas.Left="703"
-                       Canvas.Top="92"
-                       FontSize="15"
-                       FontFamily="{StaticResource MontserratFont}"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Center"/>
-                <Label x:Name="ptnIP"
-                       Content=""
+                       Content="bob@gmail.com"
                        Canvas.Left="703"
                        Canvas.Top="120"
                        FontSize="15"
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Top"/>
-                <Label x:Name="ptnOS"
-                       Content=""
-                       Canvas.Left="778"
-                       Canvas.Top="148"
-                       FontSize="15"
-                       FontFamily="{StaticResource MontserratFont}"
-                       HorizontalAlignment="Left"
                        VerticalAlignment="Top"/>
                 <Button x:Name="btnDisconnect"
                         BorderThickness="0"
@@ -635,6 +592,24 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
+                <TextBlock x:Name="usrName"  
+                    Text="alice"
+                    Canvas.Left="119"
+                    Canvas.Top="97"
+                    FontSize="15"
+                    FontWeight="Bold"
+                    FontFamily="{StaticResource MontserratFont}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBlock x:Name="ptnName"  
+                    Text="bob"
+                    Canvas.Left="734"
+                    Canvas.Top="97"
+                    FontSize="15"
+                    FontWeight="Bold"
+                    FontFamily="{StaticResource MontserratFont}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Center" />
             </Canvas>
             <Canvas x:Name="Remote"
                     Visibility="Collapsed"
@@ -758,7 +733,7 @@
                                     <Trigger Property="IsMouseOver"
                                              Value="True">
                                         <Setter Property="Background"
-                                                Value="#DCD7C9"/>
+                                                Value="#D9A57B"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -798,7 +773,7 @@
                                     <Trigger Property="IsMouseOver"
                                              Value="True">
                                         <Setter Property="Background"
-                                                Value="#DCD7C9"/>
+                                                Value="#D9A57B"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -838,7 +813,7 @@
                                     <Trigger Property="IsMouseOver"
                                              Value="True">
                                         <Setter Property="Background"
-                                                Value="#DCD7C9"/>
+                                                Value="#D9A57B"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>

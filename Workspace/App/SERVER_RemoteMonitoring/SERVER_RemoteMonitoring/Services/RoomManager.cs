@@ -10,32 +10,59 @@ namespace SERVER_RemoteMonitoring.Services
     {
         // Lưu thông tin ID và password tạm thời
         private readonly Dictionary<string, string> _clientPasswords = new Dictionary<string, string>();
-        // Lưu các phòng và danh sách client
-        private readonly Dictionary<string, List<ClientConnectionWS>> _rooms = new Dictionary<string, List<ClientConnectionWS>>();
+        // Mỗi target client có duy nhất một controller
+        private readonly Dictionary<string, ClientConnectionWS> _targetToController = new Dictionary<string, ClientConnectionWS>(); // targetId → controller connection
 
-        public async Task RegisterClient(string id, string password)
+        // Mỗi controller có thể điều khiển nhiều client
+        private readonly Dictionary<ClientConnectionWS, List<string>> _controllerToTargets = new Dictionary<ClientConnectionWS, List<string>>(); // controller → list of targetIds
+
+        private readonly Dictionary<string, ClientConnectionWS> _idToClient = new Dictionary<string, ClientConnectionWS>();
+
+        private readonly Dictionary<string, UserSession> _idToSession = new Dictionary<string, UserSession>();
+
+        public async Task RegisterClient(string id, string password, ClientConnectionWS client, UserSession session)
         {
             _clientPasswords[id] = password;
+            _idToClient[id] = client;
+            _idToSession[id] = session;
         }
 
         public bool VerifyClient(string id, string password)
         {
-            _clientPasswords.TryGetValue(id, out var pw);
-            Console.WriteLine("ID: ", id, "Pass:", pw);
-            return pw == password;
+            if (_clientPasswords.TryGetValue(id, out var stored))
+                return stored == password;
+            return false;
         }
 
-        public async Task JoinRoom(string roomId, ClientConnectionWS client)
+        public async Task<bool> JoinRoom(string targetId, ClientConnectionWS controller)
         {
-            if (!_rooms.ContainsKey(roomId))
-                _rooms[roomId] = new List<ClientConnectionWS>();
-            if (!_rooms[roomId].Contains(client))
-                _rooms[roomId].Add(client);
+            if (!VerifyClient(targetId, _clientPasswords[targetId]))
+                return false;
+
+            // Gán controller cho target
+            _targetToController[targetId] = controller;
+            // Lưu list target dưới controller
+            if (!_controllerToTargets.TryGetValue(controller, out var list))
+            {
+                list = new List<string>();
+                _controllerToTargets[controller] = list;
+            }
+            if (!list.Contains(targetId))
+                list.Add(targetId);
+            return true;
         }
 
-        public List<ClientConnectionWS> GetRoomClients(string roomId)
+        public ClientConnectionWS GetClientById(string id)
         {
-            return _rooms.TryGetValue(roomId, out var clients) ? clients : new List<ClientConnectionWS>();
+            return _idToClient.TryGetValue(id, out var client) ? client : null;
         }
+
+        public UserSession GetSessionById(string id)
+        {
+            _idToSession.TryGetValue(id, out var session);
+            return session;
+        }
+
+
     }
 }
