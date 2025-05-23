@@ -12,6 +12,7 @@ namespace SERVER_RemoteMonitoring.Services
         public string email { get; set; }
         public string role { get; set; } // e.g., "Admin", "User"
         public int id { get; set; }
+        public string tempId { get; set; } // id là chuỗi random từ client
 
         public bool IsAuthenticated => !string.IsNullOrEmpty(username);
 
@@ -21,6 +22,7 @@ namespace SERVER_RemoteMonitoring.Services
             email = null;
             role = null;
             id = 0;
+            tempId = null;
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using RemoteMonitoringApplication.Services;
+﻿using Agora.Rtc;
+using RemoteMonitoringApplication.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,7 +22,7 @@ namespace RemoteMonitoringApplication.Views
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class Client: Window
+    public partial class Client : Window
     {
         bool connected = false;
         private List<User> users;
@@ -30,6 +31,11 @@ namespace RemoteMonitoringApplication.Views
         private string clientPassword;
 
         private WebSocketClient webSocketClient;
+        private AgoraManager agoraManager = new AgoraManager();
+        private VideoFrameObserver _videoObserver;
+
+        private string role;
+        private string targetId;
 
         public Client()
         {
@@ -63,6 +69,27 @@ namespace RemoteMonitoringApplication.Views
 
             // Set DataContext để Binding
             this.DataContext = this;
+
+            agoraManager.Initialize(
+                onRemoteUserJoined: (uid) =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        MessageBox.Show($"🎉 Remote user joined! UID = {uid}");
+                    });
+                },
+                onRemoteUserLeft: (uid) =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        MessageBox.Show($"👋 Remote user left! UID = {uid}");
+                    });
+                }
+            );
+
+            // Đăng ký observer
+            _videoObserver = new VideoFrameObserver(OnRenderVideoFrame);
+            agoraManager.RegisterVideoFrameObserver(_videoObserver);
         }
 
         private async void Client_Loaded(object sender, RoutedEventArgs e)
@@ -98,9 +125,9 @@ namespace RemoteMonitoringApplication.Views
             public string Password { get; set; }         // thêm Password
             public string Email { get; set; }           // thêm Email
             public string IP { get; set; }              // thêm IP
-            public string Port { get; set; }            // thêm Port
-            public string OS { get; set; }              // thêm OS
-            public string ConnectWith { get; set; }     // thêm ConnectWith
+            public string Port { get; set; }            // thêm OS
+            public string OS { get; set; }              // thêm ConnectWith
+            public string ConnectWith { get; set; }     // điều khiển / bị điều khiển
             public string Role { get; set; }            // điều khiển / bị điều khiển
             public string Details { get; set; }         // mô tả thêm 
             public DateTime LastAction { get; set; }          // trạng thái kết nối
@@ -143,7 +170,7 @@ namespace RemoteMonitoringApplication.Views
             Home_1.Visibility = Visibility.Visible;
             Home_2.Visibility = Visibility.Visible;
             Remote.Visibility = Visibility.Collapsed;
-            
+
         }
 
         private void btnRemote_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -164,7 +191,7 @@ namespace RemoteMonitoringApplication.Views
             Home_2.Visibility = Visibility.Visible;
             Remote.Visibility = Visibility.Collapsed;
         }
-        
+
         private async void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             string targetId = txtUser.Text.Trim();
@@ -192,14 +219,36 @@ namespace RemoteMonitoringApplication.Views
             ptnName.Text = "";
         }
 
-        private void btnPlay_Click(object sender, RoutedEventArgs e)
+        private async void btnPlay_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show($"Role hiện tại: {role ?? "(null)"}");
 
+            if (role == "controller")
+            {
+                MessageBox.Show($"Join channel để XEM màn hình {targetId}");
+                await agoraManager.JoinChannel(targetId, isScreenSharer: false);
+                _videoObserver = new VideoFrameObserver(OnRenderVideoFrame);
+                agoraManager.RegisterVideoFrameObserver(_videoObserver);
+
+                var startShareRequest = new
+                {
+                    command = "start_share",
+                    target_id = targetId
+                };
+                string json = JsonSerializer.Serialize(startShareRequest);
+                await webSocketClient.SendMessageAsync(json);
+            }
+            else if (role == "partner") { }
+            else
+            {
+                MessageBox.Show("❌ Vai trò chưa được gán! Không thể thực hiện Play!");
+            }
         }
+
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
-
+            agoraManager.StopScreenShare();
         }
 
         private void lblTaskManager_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -211,7 +260,7 @@ namespace RemoteMonitoringApplication.Views
 
         private void btnTaskSync_Click(object sender, RoutedEventArgs e)
         {
-            
+
 
         }
 
@@ -236,8 +285,6 @@ namespace RemoteMonitoringApplication.Views
                     string status = statusProp.GetString();
                     string command = commandProp.GetString();
 
-
-                    // Xử lý khi là người điều khiển
                     if (status == "success" && command == "join_room")
                     {
                         if (root.TryGetProperty("user", out var userProp) &&
@@ -250,11 +297,12 @@ namespace RemoteMonitoringApplication.Views
                             usrName.Text = user.username;
                             ptnEmail.Content = partner.email;
                             ptnName.Text = partner.username;
+                            role = "controller";
+                            targetId = partner.id; // SỬA: lấy id, không phải username
                         }
                         connected = true;
                         Remote.Visibility = Visibility.Visible;
                     }
-                    // Xử lý khi là người bị điều khiển
                     else if (status == "info" && command == "partner_joined")
                     {
                         if (root.TryGetProperty("user", out var userProp) &&
@@ -267,8 +315,20 @@ namespace RemoteMonitoringApplication.Views
                             usrName.Text = partner.username;
                             ptnEmail.Content = user.email;
                             ptnName.Text = user.username;
+                            role = "partner";
+                            targetId = user.id; // SỬA: lấy id, không phải username
                         }
                         Home_2.Visibility = Visibility.Visible;
+                    }
+                    else if (command == "start_share" && status == "trigger")
+                    {
+                        role = "partner";
+                        MessageBox.Show($"Đã nhận lệnh chia sẻ");
+                        // Join channel với isScreenSharer = true
+                        await agoraManager.JoinChannel(targetId, true);
+                        // Sau khi join thành công, gọi:
+                        await Task.Delay(1500);
+                        agoraManager.StartScreenShare();
                     }
                 }
                 catch (Exception ex)
@@ -291,8 +351,86 @@ namespace RemoteMonitoringApplication.Views
 
         public class UserInfo
         {
+            public string id { get; set; }
             public string username { get; set; }
             public string email { get; set; }
         }
+
+        private void OnRenderVideoFrame(byte[] buffer, int width, int height)
+        {
+            var bitmap = BitmapSource.Create(
+                width, height, 96, 96, PixelFormats.Bgra32, null, buffer, width * 4);
+
+            imgAgoraVideo.Dispatcher.Invoke(() =>
+            {
+                imgAgoraVideo.Source = bitmap;
+            });
+        }
+
+
+    }
+
+    public class VideoFrameObserver : IVideoFrameObserver
+    {
+        private readonly Action<byte[], int, int> _onFrame;
+
+        public VideoFrameObserver(Action<byte[], int, int> onFrame)
+        {
+            _onFrame = onFrame;
+        }
+
+        private byte[] ConvertYUV420ToBGR32(byte[] yBuffer, byte[] uBuffer, byte[] vBuffer, int width, int height)
+        {
+            int frameSize = width * height;
+            byte[] rgbBuffer = new byte[width * height * 4];
+
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    int yIndex = j * width + i;
+                    int uvIndex = (j / 2) * (width / 2) + (i / 2);
+
+                    int Y = yBuffer[yIndex] & 0xFF;
+                    int U = uBuffer[uvIndex] & 0xFF;
+                    int V = vBuffer[uvIndex] & 0xFF;
+
+                    int C = Y - 16;
+                    int D = U - 128;
+                    int E = V - 128;
+
+                    int R = (298 * C + 409 * E + 128) >> 8;
+                    int G = (298 * C - 100 * D - 208 * E + 128) >> 8;
+                    int B = (298 * C + 516 * D + 128) >> 8;
+
+                    R = Math.Clamp(R, 0, 255);
+                    G = Math.Clamp(G, 0, 255);
+                    B = Math.Clamp(B, 0, 255);
+
+                    int index = yIndex * 4;
+                    rgbBuffer[index] = (byte)B;
+                    rgbBuffer[index + 1] = (byte)G;
+                    rgbBuffer[index + 2] = (byte)R;
+                    rgbBuffer[index + 3] = 255;
+                }
+            }
+
+            return rgbBuffer;
+        }
+
+
+        public override bool OnRenderVideoFrame(string channelId, uint uid, VideoFrame videoFrame)
+        {
+            MessageBox.Show($"[Agora] Received frame - channel: {channelId}, uid: {uid}, width: {videoFrame.width}, height: {videoFrame.height}");
+
+            var rgbBuffer = ConvertYUV420ToBGR32(
+                videoFrame.yBuffer, videoFrame.uBuffer, videoFrame.vBuffer,
+                videoFrame.width, videoFrame.height);
+
+            _onFrame?.Invoke(rgbBuffer, videoFrame.width, videoFrame.height);
+            return true;
+        }
+
+
     }
 }

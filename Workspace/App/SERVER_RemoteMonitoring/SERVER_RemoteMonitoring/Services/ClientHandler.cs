@@ -105,7 +105,8 @@ namespace SERVER_RemoteMonitoring.Services
 
         private async Task<bool> HandleLoginAsync(LoginRequest data)
         {
-            if (string.IsNullOrEmpty(data.username) || string.IsNullOrEmpty(data.password)) {
+            if (string.IsNullOrEmpty(data.username) || string.IsNullOrEmpty(data.password))
+            {
                 await SendResponseAsync<string>("error", "login", "Invalid login format.");
                 return false;
             }
@@ -216,33 +217,37 @@ namespace SERVER_RemoteMonitoring.Services
                             command = "join_room",
                             user = new
                             {
+                                id = joiningSession?.tempId, // id tạm thời (chuỗi random)
                                 username = joiningSession?.username,
                                 email = joiningSession?.email
                             },
                             partner = new
                             {
+                                id = targetSession?.tempId, // id tạm thời (chuỗi random)
                                 username = targetSession?.username,
                                 email = targetSession?.email
                             }
                         };
                         await _client.SendMessageAsync(JsonSerializer.Serialize(joinResponse));
 
-                        // Gửi thông báo cho người bị điều khiển
+                        // LẤY targetClient trước khi gửi notify
                         var targetClient = _roomManager.GetClientById(targetId);
+
                         if (targetClient != null)
                         {
-                            // Gửi thông báo cho người bị điều khiển
                             var notifyResponse = new
                             {
                                 status = "info",
                                 command = "partner_joined",
                                 user = new
                                 {
+                                    id = joiningSession?.tempId,
                                     username = joiningSession?.username,
                                     email = joiningSession?.email
                                 },
                                 partner = new
                                 {
+                                    id = targetSession?.tempId,
                                     username = targetSession?.username,
                                     email = targetSession?.email
                                 }
@@ -260,6 +265,29 @@ namespace SERVER_RemoteMonitoring.Services
                         var session = _sessionManager.GetSession(_client.Id);
                         await _roomManager.RegisterClient(id, password, _client, session);
                         await SendResponseAsync<string>("success", "register_room", "Room registered.");
+                        break;
+                    }
+
+                case "start_share":
+                    {
+                        // Lấy targetId từ message
+                        string targetId = root.GetProperty("target_id").GetString();
+                        // Tìm client đang bị điều khiển
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var trigger = new
+                            {
+                                command = "start_share",
+                                status = "trigger",
+                                from_id = _client.Id
+                            };
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(trigger));
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "start_share", $"Không tìm thấy client có ID = {targetId}");
+                        }
                         break;
                     }
 

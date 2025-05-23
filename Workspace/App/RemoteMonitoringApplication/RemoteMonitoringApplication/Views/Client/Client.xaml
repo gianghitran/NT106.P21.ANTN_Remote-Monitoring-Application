@@ -184,7 +184,7 @@
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
-                <TextBlock x:Name="lblYourID"  
+                <TextBlock x:Name="lblYourID"
                            Text="1 355 811 856"
                            Canvas.Left="136"
                            Canvas.Top="307"
@@ -194,7 +194,7 @@
                            TextAlignment="Center"
                            TextWrapping="Wrap"
                            VerticalAlignment="Top"
-                           HorizontalAlignment="Center" />
+                           HorizontalAlignment="Center"/>
                 <Label Content="Password:"
                        Canvas.Left="27"
                        Canvas.Top="346"
@@ -202,17 +202,18 @@
                        FontFamily="{StaticResource MontserratFont}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
-                <TextBlock x:Name="lblYourPass" 
-                       Text="uoq1o2"
-                       Canvas.Left="136"
-                       Canvas.Top="351"
-                       FontSize="15"
-                       FontWeight="Bold"
-                       FontFamily="{StaticResource MontserratFont}"
-                       TextAlignment="Center"
-                       TextWrapping="Wrap"
-                       VerticalAlignment="Top"
-                       HorizontalAlignment="Center" RenderTransformOrigin="0.51,1.139" />
+                <TextBlock x:Name="lblYourPass"
+                           Text="uoq1o2"
+                           Canvas.Left="136"
+                           Canvas.Top="351"
+                           FontSize="15"
+                           FontWeight="Bold"
+                           FontFamily="{StaticResource MontserratFont}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Center"
+                           RenderTransformOrigin="0.51,1.139"/>
 
                 <Line X1="0"
                       Y1="50"
@@ -306,8 +307,26 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <Image x:Name="copyIconID" Height="20" Canvas.Left="316" Canvas.Top="306" Width="22" Source="/Views/Client/copy.png" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="copyIconID_MouseLeftButtonDown"/>
-                <Image x:Name="copyIconPass" Height="20" Canvas.Left="316" Canvas.Top="349" Width="22" Source="/Views/Client/copy.png" HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="copyIconPass_MouseLeftButtonDown"/>
+                <Image x:Name="copyIconID"
+                       Height="20"
+                       Canvas.Left="316"
+                       Canvas.Top="306"
+                       Width="22"
+                       Source="/Views/Client/copy.png"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="copyIconID_MouseLeftButtonDown"/>
+                <Image x:Name="copyIconPass"
+                       Height="20"
+                       Canvas.Left="316"
+                       Canvas.Top="349"
+                       Width="22"
+                       Source="/Views/Client/copy.png"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="copyIconPass_MouseLeftButtonDown"/>
             </Canvas>
 
             <!-- Sidebar & Labels -->
@@ -464,8 +483,7 @@
             </Grid>
             <Canvas x:Name="Home_2"
                     Margin="283,438,0,0"
-                    Visibility="Collapsed"
-                    >
+                    Visibility="Collapsed">
                 <Label Content="Remote Information"
                        FontSize="25"
                        FontWeight="Bold"
@@ -592,24 +610,28 @@
                         </ControlTemplate>
                     </Button.Template>
                 </Button>
-                <TextBlock x:Name="usrName"  
-                    Text="alice"
-                    Canvas.Left="119"
-                    Canvas.Top="97"
-                    FontSize="15"
-                    FontWeight="Bold"
-                    FontFamily="{StaticResource MontserratFont}"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <TextBlock x:Name="ptnName"  
-                    Text="bob"
-                    Canvas.Left="734"
-                    Canvas.Top="97"
-                    FontSize="15"
-                    FontWeight="Bold"
-                    FontFamily="{StaticResource MontserratFont}"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBlock x:Name="usrName"
+                           Text="alice"
+                           Canvas.Left="119"
+                           Canvas.Top="97"
+                           FontSize="15"
+                           FontWeight="Bold"
+                           FontFamily="{StaticResource MontserratFont}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
+                <TextBlock x:Name="ptnName"
+                           Text="bob"
+                           Canvas.Left="734"
+                           Canvas.Top="97"
+                           FontSize="15"
+                           FontWeight="Bold"
+                           FontFamily="{StaticResource MontserratFont}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
             </Canvas>
             <Canvas x:Name="Remote"
                     Visibility="Collapsed"
@@ -706,9 +728,10 @@
                                               Offset="1"/>
                             </LinearGradientBrush>
                         </Border.BorderBrush>
-                        <MediaElement x:Name="videoScreen"
-                                      Height="464"
-                                      Width="855"/>
+                        <Image x:Name="imgAgoraVideo"
+                               Height="464"
+                               Width="855"
+                               Stretch="Uniform"/>
                     </Border>
 
                     <Button x:Name="btnPlay"

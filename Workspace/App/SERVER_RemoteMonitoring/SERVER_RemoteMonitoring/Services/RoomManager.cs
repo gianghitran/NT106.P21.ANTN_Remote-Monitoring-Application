@@ -25,6 +25,7 @@ namespace SERVER_RemoteMonitoring.Services
             _clientPasswords[id] = password;
             _idToClient[id] = client;
             _idToSession[id] = session;
+            session.tempId = id; // id là chuỗi random từ client
         }
 
         public bool VerifyClient(string id, string password)

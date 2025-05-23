@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,10 @@
 	<None Remove="Images\Icons\user.png" />
     <None Remove="Images\Icons\password.png" />
 	<None Remove="Images\Icons\email.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="agora_rtc_sdk" Version="4.2.1" />
   </ItemGroup>
 
   <ItemGroup>
