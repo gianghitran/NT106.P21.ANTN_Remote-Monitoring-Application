@@ -30,9 +30,9 @@ namespace RemoteMonitoringApplication.Views
             _viewModel = new ViewModels.RegisterViewModel(_auth);
             _viewModel.NavigateToLoginAction = () =>
             {
-                if (Application.Current.Windows.OfType<Login>().Any())
+                if (System.Windows.Application.Current.Windows.OfType<Login>().Any())
                 {
-                    var loginWindow = Application.Current.Windows.OfType<Login>().First();
+                    var loginWindow = System.Windows.Application.Current.Windows.OfType<Login>().First();
                     loginWindow.Show();
                     (loginWindow.DataContext as LoginViewModel)?.Reset();
                 }
@@ -59,7 +59,7 @@ namespace RemoteMonitoringApplication.Views
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
 
         private void btnRegister_Click(object sender, RoutedEventArgs e)
@@ -69,7 +69,7 @@ namespace RemoteMonitoringApplication.Views
 
         private void btnMinimize_Click(object sender, RoutedEventArgs e)
         {
-            WindowState = WindowState.Minimized;
+            WindowState = System.Windows.WindowState.Minimized;
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -83,9 +83,9 @@ namespace RemoteMonitoringApplication.Views
         private void navLogin_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
 
-            if (Application.Current.Windows.OfType<Login>().Any())
+            if (System.Windows.Application.Current.Windows.OfType<Login>().Any())
             {
-                var loginWindow = Application.Current.Windows.OfType<Login>().First();
+                var loginWindow = System.Windows.Application.Current.Windows.OfType<Login>().First();
                 loginWindow.Show();
                 (loginWindow.DataContext as LoginViewModel)?.Reset();
             }

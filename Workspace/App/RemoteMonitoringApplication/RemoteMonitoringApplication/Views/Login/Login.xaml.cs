@@ -59,12 +59,12 @@ namespace RemoteMonitoringApplication.Views
 
         private void btnMinimize_Click(object sender, RoutedEventArgs e)
         {
-            WindowState = WindowState.Minimized;
+            WindowState = System.Windows.WindowState.Minimized;
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
@@ -74,9 +74,9 @@ namespace RemoteMonitoringApplication.Views
 
         private void navRegister_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Application.Current.Windows.OfType<Register>().Any())
+            if (System.Windows.Application.Current.Windows.OfType<Register>().Any())
             {
-                var registerWindow = Application.Current.Windows.OfType<Register>().First();
+                var registerWindow = System.Windows.Application.Current.Windows.OfType<Register>().First();
                 registerWindow.Show();
                 (registerWindow.DataContext as RegisterViewModel)?.Reset();
             }

@@ -33,7 +33,7 @@ namespace RemoteMonitoringApplication.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error connecting to WebSocket server: {ex.Message}");
+                System.Windows.MessageBox.Show($"Error connecting to WebSocket server: {ex.Message}");
             }
         }
 

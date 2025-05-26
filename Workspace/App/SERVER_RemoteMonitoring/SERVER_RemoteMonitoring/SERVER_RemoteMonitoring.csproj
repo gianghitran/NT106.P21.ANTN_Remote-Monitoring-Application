@@ -131,6 +131,9 @@
     <PackageReference Include="BCrypt.Net-Next">
       <Version>4.0.3</Version>
     </PackageReference>
+    <PackageReference Include="SIPSorcery">
+      <Version>8.0.14</Version>
+    </PackageReference>
     <PackageReference Include="sqlite-net-pcl">
       <Version>1.9.172</Version>
     </PackageReference>
@@ -150,7 +153,7 @@
       <Version>4.6.3</Version>
     </PackageReference>
     <PackageReference Include="System.Text.Json">
-      <Version>9.0.4</Version>
+      <Version>9.0.5</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

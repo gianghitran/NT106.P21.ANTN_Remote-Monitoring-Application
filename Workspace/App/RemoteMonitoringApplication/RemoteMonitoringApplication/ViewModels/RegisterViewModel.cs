@@ -142,7 +142,7 @@ namespace RemoteMonitoringApplication.ViewModels
         private void OnRegisterSuccess()
         {
             //Handle successful registration(e.g., navigate to login page)
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 IsRegistering = false;
                 NavigateToLoginAction?.Invoke();
@@ -151,16 +151,16 @@ namespace RemoteMonitoringApplication.ViewModels
 
         private void OnRegisterFailed(string status, string message)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 IsRegistering = false;
                 if (status == "error")
                 {
-                    MessageBox.Show(message, "Registration Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show(message, "Registration Failed", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
                 else if (status == "fail")
                 {
-                    MessageBox.Show(message, "Registration Failed", MessageBoxButton.OK, MessageBoxImage.Information);
+                    System.Windows.MessageBox.Show(message, "Registration Failed", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 }
             });
         }

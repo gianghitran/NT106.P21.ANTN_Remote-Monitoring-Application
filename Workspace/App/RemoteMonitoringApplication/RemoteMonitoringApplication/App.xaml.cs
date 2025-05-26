@@ -9,7 +9,7 @@ namespace RemoteMonitoringApplication;
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
-public partial class App : Application
+public partial class App : System.Windows.Application
 {
     static WebSocketConnectServer _connect = new WebSocketConnectServer("ws://localhost:8080");
 
@@ -30,6 +30,7 @@ public partial class App : Application
     protected override void OnExit(ExitEventArgs e)
     {
         // Clean up resources or perform any necessary actions before exiting
+        _connect.DisconnectAsync().Wait();
         base.OnExit(e);
     }
 

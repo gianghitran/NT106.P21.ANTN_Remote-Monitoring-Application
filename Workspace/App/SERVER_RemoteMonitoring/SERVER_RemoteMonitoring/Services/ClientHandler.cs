@@ -7,6 +7,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
+using SIPSorcery.Net;
+using TinyJson;
 
 namespace SERVER_RemoteMonitoring.Services
 {
@@ -270,24 +272,78 @@ namespace SERVER_RemoteMonitoring.Services
 
                 case "start_share":
                     {
-                        // Lấy targetId từ message
-                        string targetId = root.GetProperty("target_id").GetString();
-                        // Tìm client đang bị điều khiển
+                        // Lấy targetId, sdp và sdp_type từ client
+                        string targetId = root.GetProperty("targetId").GetString();
+                        string sdp = root.GetProperty("sdp").GetString();
+                        string sdpType = root.GetProperty("sdpType").GetString();
+
+                        // Tìm client đích theo targetId (người share màn hình)
                         var targetClient = _roomManager.GetClientById(targetId);
+
                         if (targetClient != null)
                         {
-                            var trigger = new
+                            if (sdpType == "offer")
                             {
-                                command = "start_share",
-                                status = "trigger",
-                                from_id = _client.Id
-                            };
-                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(trigger));
+                                var offerMessage = new
+                                {
+                                    command = "start_share",
+                                    status = "info",
+                                    targetId = _client.Id, // ID của client gửi offer
+                                    sdp = sdp,
+                                    sdpType = sdpType
+                                };
+
+                                // Gửi offer đến client đích
+                                await targetClient.SendMessageAsync(JsonSerializer.Serialize(offerMessage));
+                            }
+                            else if (sdpType == "answer")
+                            {
+                                // Nếu là answer, gửi lại cho client đã gửi offer
+                                var answerMessage = new
+                                {
+                                    command = "start_share",
+                                    status = "info",
+                                    targetId = _client.Id, // ID của client muốn gửi answer
+                                    sdp = sdp,
+                                    sdpType = sdpType
+                                };
+                                await targetClient.SendMessageAsync(JsonSerializer.Serialize(answerMessage));
+                            }
+                            else
+                            {
+                                await SendResponseAsync<string>("error", "start_share", "Invalid SDP type.");
+
+                            }
                         }
                         else
                         {
                             await SendResponseAsync<string>("fail", "start_share", $"Không tìm thấy client có ID = {targetId}");
                         }
+                        break;
+                    }
+
+                case "ice_candidate":
+                    {
+                        string targetId = root.GetProperty("targetId").GetString();
+
+
+                        var targetClient = _roomManager.GetClientById(targetId);
+
+                        RTCIceCandidateInit iceCandidate = root.GetProperty("iceCandidate").Deserialize<RTCIceCandidateInit>();
+
+                        Console.WriteLine(iceCandidate);
+
+                        var candidateMessage = new
+                        {
+                            command = "ice_candidate",
+                            status = "info",
+                            iceCandidate = iceCandidate,
+                        };
+
+                        var jsonMessage = candidateMessage.ToJson();
+
+                        await targetClient.SendMessageAsync(jsonMessage);
+
                         break;
                     }
 
@@ -344,5 +400,6 @@ namespace SERVER_RemoteMonitoring.Services
             public string command { get; set; }
             public T message { get; set; }
         }
+
     }
 }

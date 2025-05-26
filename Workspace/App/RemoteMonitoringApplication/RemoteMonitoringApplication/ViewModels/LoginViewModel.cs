@@ -116,7 +116,7 @@ namespace RemoteMonitoringApplication.ViewModels
 
         private void OnLoginSuccess(LoginMessage res)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 IsLoggingIn = false;
                 
@@ -134,18 +134,18 @@ namespace RemoteMonitoringApplication.ViewModels
 
         private void OnLoginFailed(string status, string message)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 IsLoggingIn = false;
                 if (status == "error")
                 {
                     ErrorMessage = message;
-                    MessageBox.Show(message, "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show(message, "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else if (status == "fail")
                 {
                     ErrorMessage = message;
-                    MessageBox.Show(message, "Login Failed", MessageBoxButton.OK, MessageBoxImage.Information);
+                    System.Windows.MessageBox.Show(message, "Login Failed", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 ((RelayCommand)LoginCommand).RaiseCanExecuteChanged();
