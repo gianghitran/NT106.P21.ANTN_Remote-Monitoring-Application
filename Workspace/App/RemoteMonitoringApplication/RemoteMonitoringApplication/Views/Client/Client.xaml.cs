@@ -1,4 +1,5 @@
 ﻿using RemoteMonitoringApplication.Services;
+using RemoteMonitoringApplication.ViewModels;
 using SIPSorcery.Net;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
+using System.Windows.Forms;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -36,7 +37,7 @@ namespace RemoteMonitoringApplication.Views
         private string targetId;
 
         private ShareScreenService _shareScreen = new ShareScreenService();
-
+        private readonly SystemMonitorViewModel _viewModel = new();
         public Client()
         {
             InitializeComponent();
@@ -70,6 +71,8 @@ namespace RemoteMonitoringApplication.Views
 
             // Set DataContext để Binding
             this.DataContext = this;
+
+            DataContext = _viewModel;
         }
 
         // Khi form tắt thì ngắt các kết nối
@@ -252,7 +255,12 @@ namespace RemoteMonitoringApplication.Views
 
         private void btnTaskSync_Click(object sender, RoutedEventArgs e)
         {
-
+            //System.Windows.MessageBox.Show("Click Sync Task Manager");
+            Console.WriteLine("Click Sync");
+            //var viewModel = this.DataContext as SystemMonitorViewModel;
+            //viewModel?.FetchDiskInfo();
+            //_viewModel.FetchDiskInfo();
+            _viewModel.FetchAllInfo();
 
         }
 
