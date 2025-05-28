@@ -268,13 +268,17 @@ namespace RemoteMonitoringApplication.Views
             TextBoxDetails.Document.Blocks.Clear(); ;
             //string[] Info = _viewModel.FetchAllInfo();
             var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
-            double used = 0;
+            
+            double freeSpace = 0;
+            double size = 0;
             foreach (var drive in DiskIn4)
             {
-                double freeSpace = double.Parse(drive.FreeSpace);
-                double size = double.Parse(drive.Size);
-                used = freeSpace / size* 100;
+                freeSpace += double.Parse(drive.FreeSpace);
+                size += double.Parse(drive.Size);
             }
+
+            double used = 100 - (freeSpace / size * 100);
+
             diskBar.Value = 0;
             for (double i = 0; i <= used; i++)
             {
