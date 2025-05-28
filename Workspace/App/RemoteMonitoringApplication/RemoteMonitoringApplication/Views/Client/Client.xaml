@@ -1053,7 +1053,7 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <ComboBox x:Name="ComboBox_Getin4option" Canvas.Left="620" Canvas.Top="77" Width="380" Height="30" SelectionChanged="ComboBox_Getin4option_SelectionChanged" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                    <ComboBox x:Name="ComboBox_Getin4option" Canvas.Left="620" Canvas.Top="77" Width="380" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" 
                                 FontWeight="Bold"
                                 FontSize="18"
                                 Foreground="#FF000AA3"
@@ -1075,7 +1075,7 @@
                         Canvas.Top="77"
                         Canvas.Left="427"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center" Click="btnGetDetail_Click">
                         <!-- Click="btnGetDetail_Click" -->
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">

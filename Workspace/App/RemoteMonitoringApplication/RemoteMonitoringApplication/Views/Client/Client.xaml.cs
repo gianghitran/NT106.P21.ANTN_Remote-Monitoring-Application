@@ -19,6 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Forms;
 using Org.BouncyCastle.Math;
+using static System.Net.Mime.MediaTypeNames;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -86,7 +87,7 @@ namespace RemoteMonitoringApplication.Views
             catch (Exception ex)
             {
                 // Có thể log hoặc bỏ qua nếu shutdown gấp
-                
+
             }
         }
 
@@ -287,12 +288,23 @@ namespace RemoteMonitoringApplication.Views
             {
                 TextBoxDetails.AppendText($"\n{drive.Caption}\t{drive.FreeSpace}\t{drive.Size}");
             }
-            TextBoxDetails.AppendText("\n\nMore Disk Info:\n");
-
+            Run Text = new Run("\nMORE INFORMATIONS:\n");
+            Text.FontWeight = FontWeights.Bold;
             string moreDiskIn4 = _viewModel.fetchIn4("wmic diskdrive get Name,Model,Size,Status\r\n");
+
             string partitionin4 = _viewModel.fetchIn4("wmic partition get Name,Size,Type\r\n");
-            TextBoxDetails.AppendText(moreDiskIn4);
-            TextBoxDetails.AppendText(partitionin4);
+            Run Text1 = new Run("Disk drive information:\n");
+            Text1.FontWeight = FontWeights.Bold;
+            Run Text2 = new Run("Partition information:\n");
+            Text2.FontWeight = FontWeights.Bold;
+
+            Paragraph Full = new Paragraph();
+            Full.Inlines.Add(Text);
+            Full.Inlines.Add(Text1);
+            Full.Inlines.Add(moreDiskIn4);
+            Full.Inlines.Add(Text2);
+            Full.Inlines.Add(partitionin4);
+            TextBoxDetails.Document.Blocks.Add(Full);
 
         }
 
@@ -377,7 +389,7 @@ namespace RemoteMonitoringApplication.Views
                     else if (command == "ice_candidate" && status == "info")
                     {
                         await _shareScreen.HandleIncomingIceCandidate(message);
-                    }    
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -404,10 +416,36 @@ namespace RemoteMonitoringApplication.Views
             public string email { get; set; }
         }
 
-        private void ComboBox_Getin4option_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            string selectedValue = ((ComboBoxItem)ComboBox_Getin4option.SelectedItem).Content.ToString();
+        
 
+        private void btnGetDetail_Click(object sender, RoutedEventArgs e)
+        {
+            if (ComboBox_Getin4option.SelectedItem is ComboBoxItem selectedItem)
+            {
+                string selectedValue = selectedItem.Content.ToString();
+                switch (selectedValue)
+                {
+                    case "Disk":
+                        ShowDiskInfo();
+                        break;
+                    //case "CPU":
+                    //    TextBoxDetails.Document.Blocks.Clear();
+                    //    TextBoxDetails.AppendText(_viewModel.FetchCPUInfo());
+                    //    break;
+                    //case "GPU":
+                    //    TextBoxDetails.Document.Blocks.Clear();
+                    //    TextBoxDetails.AppendText(_viewModel.FetchGPUInfo());
+                    //    break;
+                    //case "Memory":
+                    //    TextBoxDetails.Document.Blocks.Clear();
+                    //    TextBoxDetails.AppendText(_viewModel.FetchMemoryInfo());
+                    //    break;
+                    default:
+                        TextBoxDetails.Document.Blocks.Clear();
+                        TextBoxDetails.AppendText("Infomation not found!");
+                        break;
+                }
+            }
         }
     }
 }
