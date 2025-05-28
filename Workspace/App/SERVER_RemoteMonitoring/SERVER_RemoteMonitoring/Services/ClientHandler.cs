@@ -368,7 +368,7 @@ namespace SERVER_RemoteMonitoring.Services
 
                             await SendResponseAsync<string>("success", "start_sync", $"Đã gửi đến {targetId}");
                         
-                        //await SendResponseAsync<string>("success", "want_sync", "Room registered.");
+                        //await SendResponseAsync<string>("success", "want_sync", "Room registered."); 
                         break;
                     }
                 default:
