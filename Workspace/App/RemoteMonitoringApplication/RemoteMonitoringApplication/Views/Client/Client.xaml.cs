@@ -261,21 +261,28 @@ namespace RemoteMonitoringApplication.Views
             Performance.Visibility = Visibility.Collapsed;
         }
 
-        private void btnTaskSync_Click(object sender, RoutedEventArgs e)
+        private async void btnTaskSync_Click(object sender, RoutedEventArgs e)
         {
             //System.Windows.MessageBox.Show("Click Sync Task Manager");
             Console.WriteLine("Click Sync");
-            //var viewModel = this.DataContext as SystemMonitorViewModel;
-            //viewModel?.FetchDiskInfo();
-            //_viewModel.FetchDiskInfo();
             TextBoxDetails.Document.Blocks.Clear(); ;
-            string[] Info = _viewModel.FetchAllInfo();
-
-            //TextBoxDetails.AppendText(Info[0]) ;
-            //TextBoxDetails.AppendText(Info[1]);
-            //TextBoxDetails.AppendText(Info[2]);
-            //TextBoxDetails.AppendText(Info[3]);
-            ShowDiskInfo();
+            //string[] Info = _viewModel.FetchAllInfo();
+            var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
+            double used = 0;
+            foreach (var drive in DiskIn4)
+            {
+                double freeSpace = double.Parse(drive.FreeSpace);
+                double size = double.Parse(drive.Size);
+                used = freeSpace / size* 100;
+            }
+            diskBar.Value = 0;
+            for (double i = 0; i <= used; i++)
+            {
+                diskBar.Value = i;
+                diskText.Text=$"{i}%";
+                
+                await Task.Delay(50);
+            }
         }
         private void ShowDiskInfo()
         {

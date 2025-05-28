@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace RemoteMonitoringApplication.ViewModels
@@ -45,10 +46,69 @@ namespace RemoteMonitoringApplication.ViewModels
         }
         public string fetchIn4(string cmd)
         {
-            string output = _service.RunCMD(cmd);
-            
-            return output;
+            string rawOutput = _service.RunCMD(cmd);
+            var lines = rawOutput.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (lines.Length <= 1)
+                return "[No output]";
+
+            var result = new StringBuilder();
+
+            // Lấy danh sách thuộc tính từ lệnh wmic: sau "get"
+            string propsPart = cmd.Split(new[] { "get" }, StringSplitOptions.RemoveEmptyEntries)[1];
+            string[] headers = propsPart.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(h => h.Trim())
+                                        .ToArray();
+
+            int columnCount = headers.Length;
+
+            // Tạo danh sách dòng dữ liệu (bỏ dòng header)
+            var dataLines = lines.Skip(1).ToList();
+
+            // Tách dữ liệu từng cột theo khoảng cách thực tế (dùng Regex để giữ nguyên giá trị có khoảng trắng)
+            var parsedRows = new List<string[]>();
+
+            foreach (var line in dataLines)
+            {
+                // Cách tốt hơn: tách theo vị trí cố định bằng Regex (giữ nguyên dữ liệu có khoảng trắng)
+                var values = Regex.Split(line.Trim(), @"\s{2,}"); // 2 khoảng trắng trở lên
+                parsedRows.Add(values);
+            }
+
+            // Tính độ rộng cột tối đa
+            int[] columnWidths = new int[columnCount];
+            for (int i = 0; i < columnCount; i++)
+            {
+                int maxWidth = headers[i].Length;
+                foreach (var row in parsedRows)
+                {
+                    if (i < row.Length)
+                        maxWidth = Math.Max(maxWidth, row[i].Length);
+                }
+                columnWidths[i] = maxWidth;
+            }
+
+            // In dòng header
+            for (int i = 0; i < columnCount; i++)
+                result.Append(headers[i].PadRight(columnWidths[i] + 2));
+            result.AppendLine();
+
+            // In dòng dữ liệu
+            foreach (var row in parsedRows)
+            {
+                for (int i = 0; i < columnCount; i++)
+                {
+                    string val = (i < row.Length) ? row[i] : "";
+                    result.Append(val.PadRight(columnWidths[i] + 2));
+                }
+                result.AppendLine();
+            }
+
+            return result.ToString();
+            //return rawOutput;
         }
+
+
         public ObservableCollection<DriveInfoModel> diskInfo(string drawIn4)
         {
             var Drives = new ObservableCollection<DriveInfoModel>();

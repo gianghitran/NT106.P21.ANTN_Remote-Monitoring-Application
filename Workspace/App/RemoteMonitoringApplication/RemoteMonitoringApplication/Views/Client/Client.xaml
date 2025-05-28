@@ -894,19 +894,14 @@
                             <ProgressBar x:Name="cpuBar"
                                          Height="16"
                                          Maximum="100"
-                                         Value="40"
-                                         Foreground="#A27B5C" Width="233" Margin="0,5,0,0" />
+                                         Value="0"
+                                         Foreground="#A27B5C" Width="233" Margin="0,10,0,0" />
                             <TextBlock x:Name="cpuText"
-                                       Text="40%"
+                                       Text="__%"
                                        HorizontalAlignment="Right"
-                                       Margin="0,5,0,0"
+                                       Margin="0,10,0,0"
                                        FontFamily="{StaticResource MontserratFont}"
-                                       FontSize="16"/>
-                            <TextBlock x:Name="cpuDetailsText"
-                                       Text="Speed: 3.2GHz | Processes: 112 | Threads: 1536"
-                                       Foreground="Gray"
-                                       Margin="0,5,0,0"
-                                       FontFamily="{StaticResource MontserratFont}"/>
+                                       FontSize="16" FontWeight="Bold"/>
 
                         </StackPanel>
 
@@ -929,19 +924,15 @@
                             <ProgressBar x:Name="memoryBar"
                                          Height="16"
                                          Maximum="100"
-                                         Value="65"
-                                         Foreground="#A27B5C" Width="223" Margin="0,5,0,0"/>
+                                         Value="0"
+                                         Foreground="#A27B5C" Width="223" Margin="0,10,0,0"/>
+
                             <TextBlock x:Name="memoryText"
-                                       Text="65%"
+                                       Text="__%"
                                        HorizontalAlignment="Right"
-                                       Margin="0,5,0,0"
+                                       Margin="0,10,0,0"
                                        FontFamily="{StaticResource MontserratFont}"
-                                       FontSize="16"/>
-                            <TextBlock x:Name="memoryDetailsText"
-                                       Text="In use: 7.8 GB | Available: 8.2 GB"
-                                       Foreground="Gray"
-                                       Margin="0,5,0,0"
-                                       FontFamily="{StaticResource MontserratFont}"/>
+                                       FontSize="16" FontWeight="Bold"/>
                         </StackPanel>
                     </Border>
 
@@ -962,19 +953,14 @@
                             <ProgressBar x:Name="diskBar"
                                          Height="16"
                                          Maximum="100"
-                                         Value="20"
-                                         Foreground="#A27B5C" Width="223" Margin="0,5,0,0"/>
+                                         Value="0"
+                                         Foreground="#A27B5C" Width="223" Margin="0,10,0,0"/>
                             <TextBlock x:Name="diskText"
-                                       Text="20%"
+                                       Text="__%"
                                        HorizontalAlignment="Right"
-                                       Margin="0,5,0,0"
+                                       Margin="0,10,0,0"
                                        FontFamily="{StaticResource MontserratFont}"
-                                       FontSize="16"/>
-                            <TextBlock x:Name="diskDetailsText"
-                                       Text="Read: 55 MB/s | Write: 12 MB/s"
-                                       Foreground="Gray"
-                                       Margin="0,5,0,0"
-                                       FontFamily="{StaticResource MontserratFont}"/>
+                                       FontSize="16" FontWeight="Bold"/>
                         </StackPanel>
                     </Border>
 
@@ -998,19 +984,14 @@
                             <ProgressBar x:Name="gpuBar"
                                          Height="16"
                                          Maximum="100"
-                                         Value="30"
-                                         Foreground="#A27B5C" Width="223" Margin="0,5,0,0"/>
+                                         Value="0"
+                                         Foreground="#A27B5C" Width="223" Margin="0,10,0,0"/>
                             <TextBlock x:Name="gpuText"
-                                       Text="30%"
+                                       Text="__%"
                                        HorizontalAlignment="Right"
-                                       Margin="0,5,0,0"
+                                       Margin="0,10,0,0"
                                        FontFamily="{StaticResource MontserratFont}"
-                                       FontSize="16"/>
-                            <TextBlock x:Name="gpuDetailsText"
-                                       Text="GPU Memory: 2.1 GB / 6 GB"
-                                       Foreground="Gray"
-                                       Margin="0,5,0,0"
-                                       FontFamily="{StaticResource MontserratFont}"/>
+                                       FontSize="16" FontWeight="Bold"/>
                         </StackPanel>
                     </Border>
 
@@ -1103,7 +1084,7 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <RichTextBox x:Name="TextBoxDetails"  Height="487" Width="573" Canvas.Left="427" Canvas.Top="126" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FFA27B5C" BorderThickness="2" FontSize="16" IsReadOnly="True">
+                    <RichTextBox x:Name="TextBoxDetails"  Height="487" Width="573" Canvas.Left="427" Canvas.Top="126" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FFA27B5C" BorderThickness="2" FontSize="14" IsReadOnly="True">
                         <RichTextBox.Background>
                             <SolidColorBrush Color="White" Opacity="0"/>
                         </RichTextBox.Background>
