@@ -881,21 +881,21 @@
                     <Border Padding="10"
                             CornerRadius="10"
                             Background="#F0F0F0"
-                            Canvas.Left="70"
-                            Canvas.Top="104"
-                            Height="132"
-                            Width="364">
+                            Canvas.Left="45"
+                            Canvas.Top="77"
+                            Height="109"
+                            Width="270" HorizontalAlignment="Center" VerticalAlignment="Top">
                         <StackPanel>
                             <TextBlock Text="CPU Usage"
                                        FontWeight="Bold"
-                                       FontSize="24"
+                                       FontSize="20"
                                        Foreground="#A27B5C"
                                        FontFamily="{StaticResource MontserratFont}"/>
                             <ProgressBar x:Name="cpuBar"
-                                         Height="20"
+                                         Height="16"
                                          Maximum="100"
                                          Value="40"
-                                         Foreground="#A27B5C"/>
+                                         Foreground="#A27B5C" Width="233" Margin="0,5,0,0" />
                             <TextBlock x:Name="cpuText"
                                        Text="40%"
                                        HorizontalAlignment="Right"
@@ -904,32 +904,33 @@
                                        FontSize="16"/>
                             <TextBlock x:Name="cpuDetailsText"
                                        Text="Speed: 3.2GHz | Processes: 112 | Threads: 1536"
-                                       FontSize="16"
                                        Foreground="Gray"
                                        Margin="0,5,0,0"
                                        FontFamily="{StaticResource MontserratFont}"/>
+
                         </StackPanel>
+
                     </Border>
 
                     <!-- Memory -->
                     <Border Padding="10"
                             CornerRadius="10"
                             Background="#F0F0F0"
-                            Canvas.Left="578"
-                            Canvas.Top="324"
-                            Height="125"
-                            Width="331">
+                            Canvas.Left="45"
+                            Canvas.Top="504"
+                            Height="109"
+                            Width="270" HorizontalAlignment="Center" VerticalAlignment="Top">
                         <StackPanel>
                             <TextBlock Text="Memory Usage"
                                        FontWeight="Bold"
-                                       FontSize="24"
+                                       FontSize="20"
                                        Foreground="#A27B5C"
                                        FontFamily="{StaticResource MontserratFont}"/>
                             <ProgressBar x:Name="memoryBar"
-                                         Height="20"
+                                         Height="16"
                                          Maximum="100"
                                          Value="65"
-                                         Foreground="#A27B5C"/>
+                                         Foreground="#A27B5C" Width="223" Margin="0,5,0,0"/>
                             <TextBlock x:Name="memoryText"
                                        Text="65%"
                                        HorizontalAlignment="Right"
@@ -938,7 +939,6 @@
                                        FontSize="16"/>
                             <TextBlock x:Name="memoryDetailsText"
                                        Text="In use: 7.8 GB | Available: 8.2 GB"
-                                       FontSize="16"
                                        Foreground="Gray"
                                        Margin="0,5,0,0"
                                        FontFamily="{StaticResource MontserratFont}"/>
@@ -949,21 +949,21 @@
                     <Border Padding="10"
                             CornerRadius="10"
                             Background="#F0F0F0"
-                            Canvas.Left="578"
-                            Canvas.Top="104"
-                            Height="132"
-                            Width="331">
+                            Canvas.Left="45"
+                            Canvas.Top="216"
+                            Height="108"
+                            Width="270" HorizontalAlignment="Center" VerticalAlignment="Top">
                         <StackPanel>
                             <TextBlock Text="Disk Usage"
                                        FontWeight="Bold"
-                                       FontSize="24"
+                                       FontSize="20"
                                        Foreground="#A27B5C"
                                        FontFamily="{StaticResource MontserratFont}"/>
                             <ProgressBar x:Name="diskBar"
-                                         Height="20"
+                                         Height="16"
                                          Maximum="100"
                                          Value="20"
-                                         Foreground="#A27B5C"/>
+                                         Foreground="#A27B5C" Width="223" Margin="0,5,0,0"/>
                             <TextBlock x:Name="diskText"
                                        Text="20%"
                                        HorizontalAlignment="Right"
@@ -972,58 +972,34 @@
                                        FontSize="16"/>
                             <TextBlock x:Name="diskDetailsText"
                                        Text="Read: 55 MB/s | Write: 12 MB/s"
-                                       FontSize="16"
                                        Foreground="Gray"
                                        Margin="0,5,0,0"
                                        FontFamily="{StaticResource MontserratFont}"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Wifi -->
-                    <Border Padding="10"
-                            CornerRadius="10"
-                            Background="#F0F0F0"
-                            Canvas.Left="372"
-                            Canvas.Top="504"
-                            HorizontalAlignment="Left"
-                            Height="86"
-                            VerticalAlignment="Center"
-                            Width="322">
-                        <StackPanel>
-                            <TextBlock Text="Network Usage (WiFi)"
-                                       FontWeight="Bold"
-                                       FontSize="24"
-                                       Foreground="#A27B5C"
-                                       FontFamily="{StaticResource MontserratFont}"/>
-                            <TextBlock x:Name="wifiText"
-                                       Text="Download: 1.2 MB/s | Upload: 0.5 MB/s"
-                                       Margin="0,5,0,0"
-                                       FontFamily="{StaticResource MontserratFont}"
-                                       FontSize="16"/>
-                        </StackPanel>
-                    </Border>
 
                     <!-- GPU -->
                     <Border Padding="10"
                             CornerRadius="10"
                             Background="#F0F0F0"
-                            Canvas.Left="70"
-                            Canvas.Top="324"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            Height="125"
-                            Width="364">
+                            Canvas.Left="45"
+                            Canvas.Top="353"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Height="109"
+                            Width="270">
                         <StackPanel>
                             <TextBlock Text="GPU Usage"
                                        FontWeight="Bold"
-                                       FontSize="24"
+                                       FontSize="20"
                                        Foreground="#A27B5C"
                                        FontFamily="{StaticResource MontserratFont}"/>
                             <ProgressBar x:Name="gpuBar"
-                                         Height="20"
+                                         Height="16"
                                          Maximum="100"
                                          Value="30"
-                                         Foreground="#A27B5C"/>
+                                         Foreground="#A27B5C" Width="223" Margin="0,5,0,0"/>
                             <TextBlock x:Name="gpuText"
                                        Text="30%"
                                        HorizontalAlignment="Right"
@@ -1032,7 +1008,6 @@
                                        FontSize="16"/>
                             <TextBlock x:Name="gpuDetailsText"
                                        Text="GPU Memory: 2.1 GB / 6 GB"
-                                       FontSize="16"
                                        Foreground="Gray"
                                        Margin="0,5,0,0"
                                        FontFamily="{StaticResource MontserratFont}"/>
@@ -1046,13 +1021,12 @@
                             FontSize="18"
                             Foreground="#DCD7C9"
                             FontFamily="{StaticResource MontserratFont}"
-                            FontWeight="Medium"
                             VerticalContentAlignment="Center"
                             Click="btnTaskSync_Click"
                             Canvas.Top="17"
                             Canvas.Left="874"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Top">
+                            VerticalAlignment="Top" FontWeight="Bold">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
                                 <Setter Property="Background"
@@ -1079,6 +1053,66 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
+                    <ComboBox x:Name="ComboBox_Getin4option" Canvas.Left="620" Canvas.Top="77" Width="380" Height="30" SelectionChanged="ComboBox_Getin4option_SelectionChanged" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                FontWeight="Bold"
+                                FontSize="18"
+                                Foreground="#FF000AA3"
+                                FontFamily="{StaticResource MontserratFont}">
+                        <ComboBoxItem Content="CPU"/>
+                        <ComboBoxItem Content="Disk"/>
+                        <ComboBoxItem Content="GPU" />
+                        <ComboBoxItem Content="Memory" />
+                    </ComboBox>
+                    <Button x:Name="btnGetDetail"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Content="Get Detail"
+                        FontSize="18"
+                        Foreground="#DCD7C9"
+                        FontFamily="{StaticResource MontserratFont}"
+                        FontWeight="Bold"
+                        VerticalContentAlignment="Center"
+                        Canvas.Top="77"
+                        Canvas.Left="427"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+                        <!-- Click="btnGetDetail_Click" -->
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background"
+                                    Value="#A27B5C"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver"
+                                         Value="True">
+                                        <Setter Property="Background"
+                                            Value="#D9A57B"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Width="150"
+                                Height="30"
+                                CornerRadius="5"
+                                Background="{TemplateBinding Background}">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <RichTextBox x:Name="TextBoxDetails"  Height="487" Width="573" Canvas.Left="427" Canvas.Top="126" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FFA27B5C" BorderThickness="2" FontSize="16" IsReadOnly="True">
+                        <RichTextBox.Background>
+                            <SolidColorBrush Color="White" Opacity="0"/>
+                        </RichTextBox.Background>
+                        <FlowDocument>
+                            <Paragraph>
+                                <Run Text="Detail Infomations here"/>
+                            </Paragraph>
+                        </FlowDocument>
+                    </RichTextBox>
 
                 </Canvas>
 

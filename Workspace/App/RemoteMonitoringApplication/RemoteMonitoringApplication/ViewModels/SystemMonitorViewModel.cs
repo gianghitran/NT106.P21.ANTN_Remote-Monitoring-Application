@@ -31,7 +31,7 @@ namespace RemoteMonitoringApplication.ViewModels
             }
         }
 
-        public void FetchDiskInfo()
+        public string FetchDiskInfo()
         {
             string output = _service.RunCMD("wmic logicaldisk get size,freespace,caption");
             Drives = ParseOutput(output);
@@ -41,8 +41,21 @@ namespace RemoteMonitoringApplication.ViewModels
             //{
             //    Console.WriteLine($"{drive.Caption}\t{drive.FreeSpace}\t{drive.Size}");
             //}
+            return output;
         }
-        public void FetchCPUInfo()
+        public string fetchIn4(string cmd)
+        {
+            string output = _service.RunCMD(cmd);
+            
+            return output;
+        }
+        public ObservableCollection<DriveInfoModel> diskInfo(string drawIn4)
+        {
+            var Drives = new ObservableCollection<DriveInfoModel>();
+            Drives = ParseOutput(drawIn4);
+            return Drives;
+        }
+        public string FetchCPUInfo()
         {
             string output = _service.RunCMD("wmic cpu get Name,MaxClockSpeed");
             Drives = ParseOutput(output);
@@ -52,8 +65,10 @@ namespace RemoteMonitoringApplication.ViewModels
             //{
             //    Console.WriteLine($"{drive.Caption}\t{drive.FreeSpace}\t{drive.Size}");
             //}
+            return output;
+
         }
-        public void FetchGPUInfo()
+        public string FetchGPUInfo()
         {
             string output = _service.RunCMD("wmic path win32_VideoController get Name,AdapterRAM,DriverVersion");
             Drives = ParseOutput(output);
@@ -63,9 +78,11 @@ namespace RemoteMonitoringApplication.ViewModels
             //{
             //    Console.WriteLine($"{drive.Caption}\t{drive.FreeSpace}\t{drive.Size}");
             //}
+            return output;
+
         }
 
-        public void FetchMemoryInfo()
+        public string FetchMemoryInfo()
         {
             string output = _service.RunCMD("wmic OS get FreePhysicalMemory,TotalVisibleMemorySize");
             Drives = ParseOutput(output);
@@ -75,6 +92,7 @@ namespace RemoteMonitoringApplication.ViewModels
             //{
             //    Console.WriteLine($"{drive.Caption}\t{drive.FreeSpace}\t{drive.Size}");
             //}
+            return output;
         }
         private ObservableCollection<DriveInfoModel> ParseOutput(string output)
         {
@@ -97,12 +115,13 @@ namespace RemoteMonitoringApplication.ViewModels
 
             return result;
         }
-        public void FetchAllInfo()
+        public string[] FetchAllInfo()
         {
-            FetchCPUInfo();
-            FetchGPUInfo();
-            FetchMemoryInfo();
-            FetchDiskInfo();
+            string CPU = FetchCPUInfo();
+            string GPU = FetchGPUInfo();
+            string memo = FetchMemoryInfo();
+            string Disk = FetchDiskInfo();
+            return new string[] { CPU, GPU, memo, Disk };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

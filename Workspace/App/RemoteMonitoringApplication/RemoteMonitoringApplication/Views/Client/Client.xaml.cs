@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Forms;
+using Org.BouncyCastle.Math;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -112,6 +113,12 @@ namespace RemoteMonitoringApplication.Views
             public string Memory { get; set; }
             public string Disk { get; set; }
             public string NetWork { get; set; }
+        }
+        public class DriveInfoModel
+        {
+            public string Caption { get; set; }
+            public string FreeSpace { get; set; }
+            public string Size { get; set; }
         }
 
         public class User
@@ -260,7 +267,32 @@ namespace RemoteMonitoringApplication.Views
             //var viewModel = this.DataContext as SystemMonitorViewModel;
             //viewModel?.FetchDiskInfo();
             //_viewModel.FetchDiskInfo();
-            _viewModel.FetchAllInfo();
+            TextBoxDetails.Document.Blocks.Clear(); ;
+            string[] Info = _viewModel.FetchAllInfo();
+
+            //TextBoxDetails.AppendText(Info[0]) ;
+            //TextBoxDetails.AppendText(Info[1]);
+            //TextBoxDetails.AppendText(Info[2]);
+            //TextBoxDetails.AppendText(Info[3]);
+            ShowDiskInfo();
+        }
+        private void ShowDiskInfo()
+        {
+            TextBoxDetails.Document.Blocks.Clear();
+
+            TextBoxDetails.AppendText("Caption\tFreeSpace\tSize\n");
+            var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
+
+            foreach (var drive in DiskIn4)
+            {
+                TextBoxDetails.AppendText($"\n{drive.Caption}\t{drive.FreeSpace}\t{drive.Size}");
+            }
+            TextBoxDetails.AppendText("\n\nMore Disk Info:\n");
+
+            string moreDiskIn4 = _viewModel.fetchIn4("wmic diskdrive get Name,Model,Size,Status\r\n");
+            string partitionin4 = _viewModel.fetchIn4("wmic partition get Name,Size,Type\r\n");
+            TextBoxDetails.AppendText(moreDiskIn4);
+            TextBoxDetails.AppendText(partitionin4);
 
         }
 
@@ -372,6 +404,10 @@ namespace RemoteMonitoringApplication.Views
             public string email { get; set; }
         }
 
+        private void ComboBox_Getin4option_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string selectedValue = ((ComboBoxItem)ComboBox_Getin4option.SelectedItem).Content.ToString();
 
+        }
     }
 }
