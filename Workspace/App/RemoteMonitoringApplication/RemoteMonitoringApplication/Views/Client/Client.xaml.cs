@@ -104,6 +104,7 @@ namespace RemoteMonitoringApplication.Views
             await webSocketClient.SendMessageAsync(registerJson);
             Console.WriteLine("📤 Sent register_room");
         }
+       
 
 
         public class ProcessInfo
@@ -201,19 +202,28 @@ namespace RemoteMonitoringApplication.Views
         {
             string targetId = txtUser.Text.Trim();
             string targetPassword = txtPassword.Password;
-
-            var joinRoomRequest = new
+            if (webSocketClient != null)
             {
-                command = "join_room",
-                my_id = clientId,
-                my_password = clientPassword,
-                target_id = targetId,
-                target_password = targetPassword
-            };
+                var joinRoomRequest = new
+                {
+                    command = "join_room",
+                    my_id = clientId,
+                    my_password = clientPassword,
+                    target_id = targetId,
+                    target_password = targetPassword
+                };
 
-            string json = System.Text.Json.JsonSerializer.Serialize(joinRoomRequest);
-            await webSocketClient.SendMessageAsync(json);
-        }
+                string json = System.Text.Json.JsonSerializer.Serialize(joinRoomRequest);
+                await webSocketClient.SendMessageAsync(json);
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Chưa kết nối WebSocket server.", "Lỗi kết nối", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Console.WriteLine("Chưa kết nối WebSocket server.");
+                return;
+            }
+            }
+
 
         private void btnDisconnect_Click(object sender, RoutedEventArgs e)
         {
@@ -263,29 +273,50 @@ namespace RemoteMonitoringApplication.Views
 
         private async void btnTaskSync_Click(object sender, RoutedEventArgs e)
         {
-            //System.Windows.MessageBox.Show("Click Sync Task Manager");
-            Console.WriteLine("Click Sync");
-            TextBoxDetails.Document.Blocks.Clear(); ;
-            //string[] Info = _viewModel.FetchAllInfo();
-            var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
-            
-            double freeSpace = 0;
-            double size = 0;
-            foreach (var drive in DiskIn4)
+            ////System.Windows.MessageBox.Show("Click Sync Task Manager");
+            //Console.WriteLine("Click Sync");
+            //TextBoxDetails.Document.Blocks.Clear(); ;
+            ////string[] Info = _viewModel.FetchAllInfo();
+            //var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
+
+            //double freeSpace = 0;
+            //double size = 0;
+            //foreach (var drive in DiskIn4)
+            //{
+            //    freeSpace += double.Parse(drive.FreeSpace);
+            //    size += double.Parse(drive.Size);
+            //}
+
+            //double used = 100 - (freeSpace / size * 100);
+
+            //diskBar.Value = 0;
+            //for (double i = 0; i <= used; i++)
+            //{
+            //    diskBar.Value = i;
+            //    diskText.Text=$"{i}%";
+
+            //    await Task.Delay(50);
+            //}
+            if (webSocketClient != null)
             {
-                freeSpace += double.Parse(drive.FreeSpace);
-                size += double.Parse(drive.Size);
+                var SyncRequest = new
+                {
+                    command = "want_sync",
+                    id = clientId,
+                    target_id = targetId
+                };
+
+                string SyncRequestJson = JsonSerializer.Serialize(SyncRequest);
+                await webSocketClient.SendMessageAsync(SyncRequestJson);
+
+                Console.WriteLine($"Sent Sync request: {JsonSerializer.Serialize(SyncRequest)}");
+
             }
-
-            double used = 100 - (freeSpace / size * 100);
-
-            diskBar.Value = 0;
-            for (double i = 0; i <= used; i++)
+            else
             {
-                diskBar.Value = i;
-                diskText.Text=$"{i}%";
-                
-                await Task.Delay(50);
+                System.Windows.MessageBox.Show("Chưa kết nối WebSocket server.", "Lỗi kết nối", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Console.WriteLine("Chưa kết nối WebSocket server.");
+                return;
             }
         }
         private void ShowDiskInfo()
@@ -458,5 +489,10 @@ namespace RemoteMonitoringApplication.Views
                 }
             }
         }
-    }
+
+        
+
+            
+        }
+    
 }

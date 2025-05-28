@@ -37,3 +37,7 @@
 
 > Cấu hình server
 > (Quản lý API key, giới hạn truy cập, cập nhật)
+
+
+### Chỉnh không mở terminal console log khi chạy
+![alt text](image.png)

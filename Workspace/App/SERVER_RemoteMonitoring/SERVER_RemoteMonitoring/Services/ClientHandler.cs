@@ -180,6 +180,7 @@ namespace SERVER_RemoteMonitoring.Services
                 return;
 
             string command = commandProp.GetString();
+            Console.WriteLine($"Received command: {command} from client {_client.Id}");
             switch (command)
             {
                 case "join_room":
@@ -346,7 +347,30 @@ namespace SERVER_RemoteMonitoring.Services
 
                         break;
                     }
+                case "want_sync":
+                    {
+                        // Lấy targetId client
+                        string targetId = root.GetProperty("targetId").GetString();
+                        string Id = root.GetProperty("id").GetString();
+                        
+                        var targetClient = _roomManager.GetClientById(targetId);
 
+                        
+                                var SyncRequest = new
+                                {
+                                    command = "want_sync",
+                                    id = Id,
+                                    target_id = targetId
+                                };
+
+                                // Gửi offer đến client đích
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(SyncRequest));
+
+                            await SendResponseAsync<string>("success", "start_sync", $"Đã gửi đến {targetId}");
+                        
+                        //await SendResponseAsync<string>("success", "want_sync", "Room registered.");
+                        break;
+                    }
                 default:
                     await SendResponseAsync<string>("error", command, "Unknown command.");
                     break;
