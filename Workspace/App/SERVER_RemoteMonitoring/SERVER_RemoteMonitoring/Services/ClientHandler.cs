@@ -352,22 +352,22 @@ namespace SERVER_RemoteMonitoring.Services
                         // Lấy targetId client
                         string targetId = root.GetProperty("targetId").GetString();
                         string Id = root.GetProperty("id").GetString();
-                        
+
                         var targetClient = _roomManager.GetClientById(targetId);
 
-                        
-                                var SyncRequest = new
-                                {
-                                    command = "want_sync",
-                                    id = Id,
-                                    target_id = targetId
-                                };
 
-                                // Gửi offer đến client đích
-                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(SyncRequest));
+                        var SyncRequest = new
+                        {
+                            command = "want_sync",
+                            id = Id,
+                            target_id = targetId
+                        };
 
-                            await SendResponseAsync<string>("success", "start_sync", $"Đã gửi đến {targetId}");
-                        
+                        // Gửi offer đến client đích
+                        await targetClient.SendMessageAsync(JsonSerializer.Serialize(SyncRequest));
+
+                        await SendResponseAsync<string>("success", "start_sync", $"Đã gửi đến {targetId}");
+
                         //await SendResponseAsync<string>("success", "want_sync", "Room registered."); 
                         break;
                     }
