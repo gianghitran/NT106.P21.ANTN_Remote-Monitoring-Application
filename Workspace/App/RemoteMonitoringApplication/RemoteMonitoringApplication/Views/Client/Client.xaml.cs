@@ -296,6 +296,7 @@ namespace RemoteMonitoringApplication.Views
 
             //    await Task.Delay(50);
             //}
+            
             if (tcpClient != null)
             {
                 var SyncRequest = new
@@ -304,12 +305,9 @@ namespace RemoteMonitoringApplication.Views
                     id = clientId,
                     target_id = targetId
                 };
-
-                string SyncRequestJson = JsonSerializer.Serialize(SyncRequest);
-                await tcpClient.SendMessageAsync(SyncRequestJson);
-
-                Console.WriteLine($"Sent Sync request: {JsonSerializer.Serialize(SyncRequest)}");
-
+                string json = JsonSerializer.Serialize(SyncRequest);
+                await tcpClient.SendMessageAsync(json);
+                Console.WriteLine("Sent Sync request to server:");
             }
             else
             {
