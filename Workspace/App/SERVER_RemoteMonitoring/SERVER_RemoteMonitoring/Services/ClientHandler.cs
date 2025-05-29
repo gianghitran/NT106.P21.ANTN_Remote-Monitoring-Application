@@ -32,6 +32,7 @@ namespace SERVER_RemoteMonitoring.Services
             try
             {
                 bool authenticated = await AuthenticateClientAsync();
+                Console.WriteLine($"Client {_client.Id} authenticated: {authenticated}");
                 if (!authenticated) return false;
 
                 await _client.ListenForMessageAsync();

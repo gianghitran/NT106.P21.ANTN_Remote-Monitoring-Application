@@ -17,7 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Windows.Forms;
 using Org.BouncyCastle.Math;
 using static System.Net.Mime.MediaTypeNames;
 namespace RemoteMonitoringApplication.Views
@@ -387,6 +386,7 @@ namespace RemoteMonitoringApplication.Views
                             targetId = partner.id; // SỬA: lấy id, không phải username
                         }
                         connected = true;
+                        System.Windows.MessageBox.Show("✅ Join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         Remote.Visibility = Visibility.Visible;
                     }
                     else if (status == "info" && command == "partner_joined")
@@ -404,6 +404,7 @@ namespace RemoteMonitoringApplication.Views
                             role = "partner";
                             targetId = user.id; // SỬA: lấy id, không phải username
                         }
+                        System.Windows.MessageBox.Show("✅ Partner join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         Home_2.Visibility = Visibility.Visible;
                     }
                     else if (command == "start_share" && status == "info")
