@@ -23,7 +23,7 @@ namespace SERVER_RemoteMonitoring
             base.OnStartup(e);
 
             //MessageBox.Show("Starting the server...");
-            await StartWSServerAsync();
+            await StartTCPServerAsync();
             await GetDatabaseServiceAsync();
             //MessageBox.Show("Database initialized successfully.");
             // Initialize the server
@@ -42,12 +42,12 @@ namespace SERVER_RemoteMonitoring
             return _databaseService;
         }
 
-        private async Task StartWSServerAsync()
+        private async Task StartTCPServerAsync()
         {
             var db = await GetDatabaseServiceAsync();
             var authService = new AuthService(db);
-            var _wsServer = new WebsocketServer(authService);
-            await Task.Run(() => _wsServer.Start());
+            var _tcpServer = new TCPServer(authService);
+            await Task.Run(() => _tcpServer.Start());
         }
     }
 }

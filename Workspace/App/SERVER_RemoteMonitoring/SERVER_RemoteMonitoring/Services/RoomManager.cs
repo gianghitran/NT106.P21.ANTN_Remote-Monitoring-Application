@@ -11,16 +11,16 @@ namespace SERVER_RemoteMonitoring.Services
         // Lưu thông tin ID và password tạm thời
         private readonly Dictionary<string, string> _clientPasswords = new Dictionary<string, string>();
         // Mỗi target client có duy nhất một controller
-        private readonly Dictionary<string, ClientConnectionWS> _targetToController = new Dictionary<string, ClientConnectionWS>(); // targetId → controller connection
+        private readonly Dictionary<string, TCPClient> _targetToController = new Dictionary<string, TCPClient>(); // targetId → controller connection
 
         // Mỗi controller có thể điều khiển nhiều client
-        private readonly Dictionary<ClientConnectionWS, List<string>> _controllerToTargets = new Dictionary<ClientConnectionWS, List<string>>(); // controller → list of targetIds
+        private readonly Dictionary<TCPClient, List<string>> _controllerToTargets = new Dictionary<TCPClient, List<string>>(); // controller → list of targetIds
 
-        private readonly Dictionary<string, ClientConnectionWS> _idToClient = new Dictionary<string, ClientConnectionWS>();
+        private readonly Dictionary<string, TCPClient> _idToClient = new Dictionary<string, TCPClient>();
 
         private readonly Dictionary<string, UserSession> _idToSession = new Dictionary<string, UserSession>();
 
-        public async Task RegisterClient(string id, string password, ClientConnectionWS client, UserSession session)
+        public async Task RegisterClient(string id, string password, TCPClient client, UserSession session)
         {
             _clientPasswords[id] = password;
             _idToClient[id] = client;
@@ -35,7 +35,7 @@ namespace SERVER_RemoteMonitoring.Services
             return false;
         }
 
-        public async Task<bool> JoinRoom(string targetId, ClientConnectionWS controller)
+        public async Task<bool> JoinRoom(string targetId, TCPClient controller)
         {
             if (!VerifyClient(targetId, _clientPasswords[targetId]))
                 return false;
@@ -53,7 +53,7 @@ namespace SERVER_RemoteMonitoring.Services
             return true;
         }
 
-        public ClientConnectionWS GetClientById(string id)
+        public TCPClient GetClientById(string id)
         {
             return _idToClient.TryGetValue(id, out var client) ? client : null;
         }

@@ -3,6 +3,7 @@ using RemoteMonitoringApplication.Views;
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using System.Net.Sockets;
 
 namespace RemoteMonitoringApplication;
 
@@ -11,7 +12,8 @@ namespace RemoteMonitoringApplication;
 /// </summary>
 public partial class App : System.Windows.Application
 {
-    static WebSocketConnectServer _connect = new WebSocketConnectServer("ws://localhost:8080");
+
+    static ConnectServer _connect = new ConnectServer();
 
 
     protected override async void OnStartup(StartupEventArgs e)
@@ -22,7 +24,7 @@ public partial class App : System.Windows.Application
 
         var _authService = new AuthService(_connect.GetClient());
 
-        SessionManager.Instance.WebSocketClient = _connect.GetClient();
+        SessionManager.Instance.tcpClient = _connect.GetClient();
 
         var loginWindow = new Login(_authService);
         loginWindow.Show();

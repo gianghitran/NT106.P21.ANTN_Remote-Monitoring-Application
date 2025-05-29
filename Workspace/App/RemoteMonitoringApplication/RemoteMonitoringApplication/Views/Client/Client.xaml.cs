@@ -32,7 +32,7 @@ namespace RemoteMonitoringApplication.Views
         private string clientId;
         private string clientPassword;
 
-        private WebSocketClient webSocketClient;
+        private CClient tcpClient;
 
         private string role;
         private string targetId;
@@ -43,11 +43,11 @@ namespace RemoteMonitoringApplication.Views
         {
             InitializeComponent();
 
-            webSocketClient = SessionManager.Instance.WebSocketClient;
+            tcpClient = SessionManager.Instance.tcpClient;
 
-            if (webSocketClient == null)
+            if (tcpClient == null)
             {
-                System.Windows.MessageBox.Show("⚠️ WebSocketClient chưa được khởi tạo!", "Lỗi kết nối", MessageBoxButton.OK, MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show("⚠️ tcpClient chưa được khởi tạo!", "Lỗi kết nối", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace RemoteMonitoringApplication.Views
             lblYourID.Text = $"{clientId}";
             lblYourPass.Text = $"{clientPassword}";
 
-            webSocketClient.MessageReceived += OnServerMessage;
+            tcpClient.MessageReceived += OnServerMessage;
             this.Loaded += Client_Loaded;
             this.Closing += Client_Closing;
 
@@ -100,7 +100,7 @@ namespace RemoteMonitoringApplication.Views
             };
 
             string registerJson = JsonSerializer.Serialize(registerRoomRequest);
-            await webSocketClient.SendMessageAsync(registerJson);
+            await tcpClient.SendMessageAsync(registerJson);
             Console.WriteLine("📤 Sent register_room");
         }
        
@@ -201,7 +201,7 @@ namespace RemoteMonitoringApplication.Views
         {
             string targetId = txtUser.Text.Trim();
             string targetPassword = txtPassword.Password;
-            if (webSocketClient != null)
+            if (tcpClient != null)
             {
                 var joinRoomRequest = new
                 {
@@ -213,7 +213,7 @@ namespace RemoteMonitoringApplication.Views
                 };
 
                 string json = System.Text.Json.JsonSerializer.Serialize(joinRoomRequest);
-                await webSocketClient.SendMessageAsync(json);
+                await tcpClient.SendMessageAsync(json);
             }
             else
             {
@@ -249,7 +249,7 @@ namespace RemoteMonitoringApplication.Views
                 //    target_id = targetId
                 //};
                 //string json = JsonSerializer.Serialize(startShareRequest);
-                //await webSocketClient.SendMessageAsync(json);
+                //await tcpClient.SendMessageAsync(json);
             }
             else if (role == "partner") { }
             else
@@ -296,7 +296,7 @@ namespace RemoteMonitoringApplication.Views
 
             //    await Task.Delay(50);
             //}
-            if (webSocketClient != null)
+            if (tcpClient != null)
             {
                 var SyncRequest = new
                 {
@@ -306,7 +306,7 @@ namespace RemoteMonitoringApplication.Views
                 };
 
                 string SyncRequestJson = JsonSerializer.Serialize(SyncRequest);
-                await webSocketClient.SendMessageAsync(SyncRequestJson);
+                await tcpClient.SendMessageAsync(SyncRequestJson);
 
                 Console.WriteLine($"Sent Sync request: {JsonSerializer.Serialize(SyncRequest)}");
 

@@ -16,7 +16,7 @@ namespace RemoteMonitoringApplication.Services
         public string username { get; set; }
         public string email { get; set; }
         public string role { get; set; }
-        public WebSocketClient WebSocketClient { get; set; }
+        public CClient tcpClient { get; set; }
         public string ClientId { get; set; }
         public string ClientPassword { get; set; }
 
@@ -30,7 +30,7 @@ namespace RemoteMonitoringApplication.Services
             username = null;
             email = null;
             role = null;
-            WebSocketClient = null;
+            tcpClient = null;
             ClientId = null;
             ClientPassword = null;
         }

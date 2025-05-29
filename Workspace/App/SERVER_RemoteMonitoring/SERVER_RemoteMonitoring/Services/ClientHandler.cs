@@ -14,12 +14,12 @@ namespace SERVER_RemoteMonitoring.Services
 {
     public class ClientHandler
     {
-        private readonly ClientConnectionWS _client;
+        private readonly TCPClient _client;
         private readonly AuthService _authService;
         private readonly SessionManager _sessionManager;
         private readonly RoomManager _roomManager;
 
-        public ClientHandler(ClientConnectionWS clientConnection, AuthService authService, SessionManager sessionManager, RoomManager roomManager)
+        public ClientHandler(TCPClient clientConnection, AuthService authService, SessionManager sessionManager, RoomManager roomManager)
         {
             _client = clientConnection;
             _authService = authService;

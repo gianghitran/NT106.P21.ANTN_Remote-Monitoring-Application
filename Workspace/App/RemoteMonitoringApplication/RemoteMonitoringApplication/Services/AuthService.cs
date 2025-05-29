@@ -11,7 +11,7 @@ namespace RemoteMonitoringApplication.Services
 {
     public class AuthService
     {
-        private readonly WebSocketClient _client;
+        private readonly CClient _client;
 
         private event Action<string> MessageReceived;
 
@@ -21,7 +21,7 @@ namespace RemoteMonitoringApplication.Services
         public event Action? RegisterSuccess;
         public event Action<string, string>? RegisterFailed;
 
-        public AuthService(WebSocketClient client)
+        public AuthService(CClient client)
         {
             _client = client;
             _client.MessageReceived += HandleMessageReceived;
@@ -118,6 +118,8 @@ namespace RemoteMonitoringApplication.Services
                     return;
                 }
                 LoginSuccess?.Invoke(successResponse);
+                _client.MessageReceived -= HandleMessageReceived; // Unsubscribe from the event after successful login
+                Console.WriteLine($"Login successful for user: {successResponse.username}");
             }
             else if (response.status == "error")
             {

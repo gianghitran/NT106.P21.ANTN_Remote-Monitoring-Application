@@ -7,54 +7,82 @@ using System.Net.WebSockets;
 using System.Net;
 using System.Threading;
 using System.Windows;
+using System.Net.Sockets;
+using WebSocketSharp.Net;
+
 
 namespace SERVER_RemoteMonitoring.Services
 {
-    public class WebsocketServer
+    public class TCPServer
     {
-        private HttpListener _httpListener;
+        //private HttpListener _httpListener;
+        private TcpListener _tcpListener;
+        private const int Port = 8080; // Port for TCP connections
         private readonly AuthService _authservice;
         private readonly SessionManager _sessionManager;
-        private readonly List<ClientConnectionWS> _clients = new List<ClientConnectionWS>();
+        private readonly List<TCPClient> _clients = new List<TCPClient>();
+        //private readonly List<ClientConnectionTCP>
         private const string uri = "http://localhost:8080/";
+
         private readonly RoomManager _roomManager;
 
 
-        public WebsocketServer(AuthService authService)
+        public TCPServer(AuthService authService)
         {
             _authservice = authService;
             _sessionManager = new SessionManager();
-            _httpListener = new HttpListener();
-            _httpListener.Prefixes.Add(uri);
+            _tcpListener = new TcpListener(IPAddress.Any, Port);
+            //_httpListener.Prefixes.Add(uri);
             _roomManager = new RoomManager();
         }
 
         public void Start()
         {
-            _httpListener.Start();
-            Console.WriteLine("WebSocket server started at " + uri);
+            //_httpListener.Start();
+            _tcpListener.Start();
+            Console.WriteLine("TCP server started at " + Port);
             Task.Run(AcceptClientsAsync);
         }
 
+        //public async Task AcceptClientsAsync()
+        //{
+        //    while (_httpListener.IsListening)
+        //    {
+        //        var context = await _httpListener.GetContextAsync();
+        //        if (context.Request.IsWebSocketRequest)
+        //        {
+        //            string clientIp = context.Request.RemoteEndPoint?.Address.ToString();
+        //            var webSocketContext = await context.AcceptWebSocketAsync(null);
+        //            var client = new TCPClients(webSocketContext.WebSocket, clientIp);
+        //            //MessageBox.Show("Client connected: " + client.Id);
+        //            _clients.Add(client);
+        //            Console.WriteLine("Client connected: " + client.Id);
+        //            _ = Task.Run(() => HandleClient(client));
+        //        }
+        //    }
+        //}
         public async Task AcceptClientsAsync()
         {
-            while (_httpListener.IsListening)
+            while (true)
             {
-                var context = await _httpListener.GetContextAsync();
-                if (context.Request.IsWebSocketRequest)
+                TcpClient tcpClient = await _tcpListener.AcceptTcpClientAsync();
+
+                string clientIp = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
+                var client = new TCPClient(tcpClient)
                 {
-                    string clientIp = context.Request.RemoteEndPoint?.Address.ToString();
-                    var webSocketContext = await context.AcceptWebSocketAsync(null);
-                    var client = new ClientConnectionWS(webSocketContext.WebSocket, clientIp);
-                    //MessageBox.Show("Client connected: " + client.Id);
-                    _clients.Add(client);
-                    Console.WriteLine("Client connected: " + client.Id);
-                    _ = Task.Run(() => HandleClient(client));
-                }
+                    IP = clientIp
+                };
+
+                _clients.Add(client);
+
+                Console.WriteLine("Client connected: " + client.Id + " from IP: " + clientIp);
+
+                // Bắt đầu xử lý client trong một task riêng
+                _ = Task.Run(() => HandleClient(client));
             }
         }
 
-        private async Task HandleClient(ClientConnectionWS client)
+        private async Task HandleClient(TCPClient client)
         {
             bool authenticated = false;
 
@@ -65,7 +93,7 @@ namespace SERVER_RemoteMonitoring.Services
 
                 while (!authenticated)
                 {
-                    if (client._webSocket.State != WebSocketState.Open)
+                    if (!client._tcpClient.Connected)
                     {
                         Console.WriteLine("Client disconnected before authentication: " + client.Id);
                         return;
@@ -88,7 +116,7 @@ namespace SERVER_RemoteMonitoring.Services
                         Console.WriteLine("Client authentication failed: " + client.Id);
 
                         // Nếu WebSocket vẫn mở, gửi phản hồi
-                        if (client._webSocket.State == WebSocketState.Open)
+                        if (!client._tcpClient.Connected)
                         {
                             var errorJson = System.Text.Json.JsonSerializer.Serialize(new
                             {
@@ -109,7 +137,7 @@ namespace SERVER_RemoteMonitoring.Services
             finally
             {
                 // Chỉ cleanup nếu client đã thật sự ngắt kết nối hoặc gặp lỗi
-                if (client._webSocket.State != WebSocketState.Open)
+                if (!client._tcpClient.Connected)
                 {
                     _sessionManager.RemoveSession(client.Id);
                     _clients.Remove(client);
@@ -125,7 +153,8 @@ namespace SERVER_RemoteMonitoring.Services
             {
                 await client.CloseAsync();
             }
-            _httpListener.Stop();
+            //_httpListener.Stop();
+            _tcpListener.Stop();
             Console.WriteLine("WebSocket server stopped");
         }
     }

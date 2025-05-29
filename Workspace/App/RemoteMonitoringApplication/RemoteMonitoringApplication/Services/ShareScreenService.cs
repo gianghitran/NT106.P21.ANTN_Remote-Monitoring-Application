@@ -17,7 +17,7 @@ namespace RemoteMonitoringApplication.Services
 {
     class ShareScreenService
     {
-        private WebSocketClient _client = SessionManager.Instance.WebSocketClient;
+        private CClient _client = SessionManager.Instance.tcpClient;
         private RTCPeerConnection _peerConnection;
         private List<RTCIceCandidateInit> _pendingIceCandidates = new List<RTCIceCandidateInit>();
         private bool _remoteDescriptionSet = false;

@@ -7,13 +7,19 @@ using System.Threading.Tasks;
 
 namespace RemoteMonitoringApplication.Services
 {
-    public class WebSocketConnectServer
+    public class ConnectServer
     {
-        private readonly WebSocketClient _client;
+        private readonly CClient _client;
 
-        public WebSocketConnectServer(string serverUri)
+        public ConnectServer()
         {
-            _client = new WebSocketClient(serverUri);
+            _client = new CClient("localhost", 8080); // Default host and port
+            _client.MessageReceived += HandleMessageReceived;
+        }
+
+        public ConnectServer(string host, int port)
+        {
+            _client = new CClient(host, port);
             _client.MessageReceived += HandleMessageReceived;
         }
 
@@ -33,7 +39,7 @@ namespace RemoteMonitoringApplication.Services
             Console.WriteLine($"Message received: {message}");
         }
 
-        public WebSocketClient GetClient()
+        public CClient GetClient()
         {
             return _client;
         }
