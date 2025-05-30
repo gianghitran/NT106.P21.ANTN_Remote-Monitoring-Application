@@ -351,27 +351,46 @@ namespace SERVER_RemoteMonitoring.Services
                 case "want_sync":
                     {
                         // Lấy targetId client
-                        string targetId = root.GetProperty("targetId").GetString();
+                        string targetId = root.GetProperty("target_id").GetString();
                         string Id = root.GetProperty("id").GetString();
 
                         var targetClient = _roomManager.GetClientById(targetId);
 
+                        if (targetClient != null) 
+                        { 
+                            //var SyncRequest = new
+                            //{
+                            //    status="success",
+                            //    command = "want_sync",
+                            //    id = Id,
+                            //    target_id = targetId
+                            //};
+                            var syncMessage = new BaseResponse<object>
+                            {
+                                status = "success",
+                                command = "want_sync",
+                                message = new
+                                {
+                                    id = Id,
+                                    target_id = targetId
+                                }
+                            };
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(syncMessage));
 
-                        var SyncRequest = new
+                        }
+                        else
                         {
-                            command = "want_sync",
-                            id = Id,
-                            target_id = targetId
-                        };
-
-                        // Gửi offer đến client đích
-                        await targetClient.SendMessageAsync(JsonSerializer.Serialize(SyncRequest));
-
-                        await SendResponseAsync<string>("success", "start_sync", $"Đã gửi đến {targetId}");
-
-                        //await SendResponseAsync<string>("success", "want_sync", "Room registered."); 
-                        break;
+                            await SendResponseAsync<string>("fail", "want_sync", $"Không tìm thấy client có ID = {targetId}");
+                        }
+                            break;
                     }
+                case "SentRemoteInfo":
+                        {
+                        Console.WriteLine("Received SentRemoteInfo command.");
+
+                        break; 
+                        }
+                    
                 default:
                     await SendResponseAsync<string>("error", command, "Unknown command.");
                     break;

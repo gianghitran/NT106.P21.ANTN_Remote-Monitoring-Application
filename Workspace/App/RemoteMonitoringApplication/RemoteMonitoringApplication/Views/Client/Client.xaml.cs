@@ -38,7 +38,8 @@ namespace RemoteMonitoringApplication.Views
         private string targetId;
 
         private ShareScreenService _shareScreen = new ShareScreenService();
-        private readonly SystemMonitorViewModel _viewModel = new();
+        private  SystemMonitorViewModel _viewModel = new();
+        private SharePerformanceInfo _GetInfo = new SharePerformanceInfo();
         public Client()
         {
             InitializeComponent();
@@ -103,9 +104,9 @@ namespace RemoteMonitoringApplication.Views
             await tcpClient.SendMessageAsync(registerJson);
             Console.WriteLine("📤 Sent register_room");
         }
-       
 
 
+        
         public class ProcessInfo
         {
             public string ProcessName { get; set; }
@@ -138,7 +139,11 @@ namespace RemoteMonitoringApplication.Views
             public DateTime LastAction { get; set; }          // trạng thái kết nối
             public string LastActionDe { get; set; }          // trạng thái kết nối
         }
-
+        public class PairID
+        {
+            public string id { get; set; }
+            public string target_id { get; set; }
+        }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -316,36 +321,7 @@ namespace RemoteMonitoringApplication.Views
                 return;
             }
         }
-        private void ShowDiskInfo()
-        {
-            TextBoxDetails.Document.Blocks.Clear();
-
-            TextBoxDetails.AppendText("Caption\tFreeSpace\tSize\n");
-            var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
-
-            foreach (var drive in DiskIn4)
-            {
-                TextBoxDetails.AppendText($"\n{drive.Caption}\t{drive.FreeSpace}\t{drive.Size}");
-            }
-            Run Text = new Run("\nMORE INFORMATIONS:\n");
-            Text.FontWeight = FontWeights.Bold;
-            string moreDiskIn4 = _viewModel.fetchIn4("wmic diskdrive get Name,Model,Size,Status\r\n");
-
-            string partitionin4 = _viewModel.fetchIn4("wmic partition get Name,Size,Type\r\n");
-            Run Text1 = new Run("Disk drive information:\n");
-            Text1.FontWeight = FontWeights.Bold;
-            Run Text2 = new Run("Partition information:\n");
-            Text2.FontWeight = FontWeights.Bold;
-
-            Paragraph Full = new Paragraph();
-            Full.Inlines.Add(Text);
-            Full.Inlines.Add(Text1);
-            Full.Inlines.Add(moreDiskIn4);
-            Full.Inlines.Add(Text2);
-            Full.Inlines.Add(partitionin4);
-            TextBoxDetails.Document.Blocks.Add(Full);
-
-        }
+        
 
         private void btnPerformanceSync_Click(object sender, RoutedEventArgs e)
         {
@@ -431,6 +407,57 @@ namespace RemoteMonitoringApplication.Views
                     {
                         await _shareScreen.HandleIncomingIceCandidate(message);
                     }
+                    else if (command == "want_sync" && status == "success")
+                    {
+                        Console.WriteLine("Received sync request from server");
+                        if (root.TryGetProperty("message", out var mess)) 
+                        {
+                            var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
+                            Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
+                            var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
+                            var Info = new
+                            {
+                                command = "SentRemoteInfo",
+                                info = Diskinfo,
+                                id = Pair.id,
+                                target_id = Pair.target_id
+                            };
+                            string Infojson = JsonSerializer.Serialize(Info);
+                            await tcpClient.SendMessageAsync(Infojson);
+                            Console.WriteLine("Sent remote info to server:", Infojson);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Sync error: id and target id not found!");
+                        }
+                    
+                       
+                        //string[] Info = _viewModel.FetchAllInfo();
+                        //var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
+
+                        //double freeSpace = 0;
+                        //double size = 0;
+                        //foreach (var drive in DiskIn4)
+                        //{
+                        //    freeSpace += double.Parse(drive.FreeSpace);
+                        //    size += double.Parse(drive.Size);
+                        //}
+
+                        //double used = 100 - (freeSpace / size * 100);
+
+                        //diskBar.Value = 0;
+                        //for (double i = 0; i <= used; i++)
+                        //{
+                        //    diskBar.Value = i;
+                        //    diskText.Text = $"{i}%";
+
+                        //    await Task.Delay(50);
+                        //}
+                    }
+                    else
+                    {
+                        Console.WriteLine($"❌ Lỗi: Không nhận diện được lệnh '{command}' với trạng thái '{status}'");
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -467,7 +494,7 @@ namespace RemoteMonitoringApplication.Views
                 switch (selectedValue)
                 {
                     case "Disk":
-                        ShowDiskInfo();
+                        _GetInfo.GetDiskInfo();
                         break;
                     //case "CPU":
                     //    TextBoxDetails.Document.Blocks.Clear();
