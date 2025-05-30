@@ -410,7 +410,8 @@ namespace RemoteMonitoringApplication.Views
                     else if (command == "want_sync" && status == "success")
                     {
                         Console.WriteLine("Received sync request from server");
-                        if (root.TryGetProperty("message", out var mess)) 
+                        System.Windows.MessageBox.Show("Received sync request from server", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        if (root.TryGetProperty("message", out var mess))
                         {
                             var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                             Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
@@ -419,19 +420,19 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 command = "SentRemoteInfo",
                                 info = Diskinfo,
-                                id = Pair.id,
-                                target_id = Pair.target_id
+                                Monitor_id = Pair.id,//theo doi
+                                Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
                             };
                             string Infojson = JsonSerializer.Serialize(Info);
                             await tcpClient.SendMessageAsync(Infojson);
-                            Console.WriteLine("Sent remote info to server:", Infojson);
+                            Console.WriteLine("Sent remote info to server, then to client (monitor): ", Pair.id);
                         }
                         else
                         {
                             Console.WriteLine("Sync error: id and target id not found!");
                         }
-                    
-                       
+
+
                         //string[] Info = _viewModel.FetchAllInfo();
                         //var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
 
@@ -453,6 +454,38 @@ namespace RemoteMonitoringApplication.Views
 
                         //    await Task.Delay(50);
                         //}
+                    }
+                    else if (command == "SentRemoteInfo" && status == "success")
+                    {
+                        if (root.TryGetProperty("message", out var Remote_info))
+                        {
+
+                            var remoteInfoElement = root.GetProperty("Remote_info");
+                            var diskInfoJson = remoteInfoElement.GetRawText();
+                            List<DriveInfoModel> drives = JsonSerializer.Deserialize<List<DriveInfoModel>>(diskInfoJson);
+                            double freeSpace = 0;
+                            double size = 0;
+                            foreach (var drive in drives)
+                            {
+                                freeSpace += double.Parse(drive.FreeSpace);
+                                size += double.Parse(drive.Size);
+                            }
+
+                            double used = 100 - (freeSpace / size * 100);
+
+                            diskBar.Value = 0;
+                            for (double i = 0; i <= used; i++)
+                            {
+                                diskBar.Value = i;
+                                diskText.Text = $"{i}%";
+
+                                await Task.Delay(50);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Sync error: id and target id not found!");
+                        }
                     }
                     else
                     {

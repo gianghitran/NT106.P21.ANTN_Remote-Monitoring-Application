@@ -386,7 +386,30 @@ namespace SERVER_RemoteMonitoring.Services
                     }
                 case "SentRemoteInfo":
                         {
-                        Console.WriteLine("Received SentRemoteInfo command.");
+                        string targetId = root.GetProperty("Monitor_id").GetString();//người theo dõi
+                        string Id = root.GetProperty("Remote_id").GetString();//bị theo dõi
+                        var info = root.GetProperty("info");
+                        var infoJson = info.GetRawText(); 
+
+                        
+                        var targetClient = _roomManager.GetClientById(targetId);
+
+                        if (targetClient != null)
+                        {
+                            var RemoteData = new BaseResponse<object>
+                            {
+                                status = "success",
+                                command = "SentRemoteInfo",
+                                message = infoJson
+                            };
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(RemoteData));
+
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "SentRemoteInfo", $"Không tìm thấy client có ID = {targetId}");
+                        }
+                        break;
 
                         break; 
                         }
