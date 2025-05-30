@@ -7,8 +7,16 @@ using System.Windows.Documents;
 
 using System.Windows;
 using RemoteMonitoringApplication.ViewModels;
+using Org.BouncyCastle.Math;
+using System.Windows.Controls;
+using RemoteMonitoringApplication.ViewModels;
 
-
+public class DriveInfoModel
+{
+    public string Caption { get; set; }
+    public string FreeSpace { get; set; }
+    public string Size { get; set; }
+}
 namespace RemoteMonitoringApplication.Services
 {
     class SharePerformanceInfo
@@ -47,6 +55,26 @@ namespace RemoteMonitoringApplication.Services
         {
             var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
 
+        }
+        public async void showDiskBar(DriveInfoModel disk, System.Windows.Controls.ProgressBar diskBar, TextBlock diskText)
+        {
+            double freeSpace = 0;
+            double size = 0;
+           
+            freeSpace += double.Parse(disk.FreeSpace);
+            size += double.Parse(disk.Size);
+           
+
+            double used = 100 - (freeSpace / size * 100);
+
+            diskBar.Value = 0;
+            for (double i = 0; i <= used; i++)
+            {
+                diskBar.Value = i;
+                diskText.Text = $"{i}%";
+
+                await Task.Delay(50);
+            }
         }
     }
 }

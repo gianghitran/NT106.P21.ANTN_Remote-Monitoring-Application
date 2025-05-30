@@ -16,7 +16,6 @@ namespace RemoteMonitoringApplication.ViewModels
         public string FreeSpace { get; set; }
         public string Size { get; set; }
     }
-
     public class SystemMonitorViewModel : INotifyPropertyChanged
     {
         private readonly SystemMonitorService _service = new();

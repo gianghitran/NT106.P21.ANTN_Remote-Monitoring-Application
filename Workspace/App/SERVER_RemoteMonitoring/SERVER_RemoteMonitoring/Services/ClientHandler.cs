@@ -389,18 +389,19 @@ namespace SERVER_RemoteMonitoring.Services
                         string targetId = root.GetProperty("Monitor_id").GetString();//người theo dõi
                         string Id = root.GetProperty("Remote_id").GetString();//bị theo dõi
                         var info = root.GetProperty("info");
-                        var infoJson = info.GetRawText(); 
+                        var infoJson = info.GetRawText();
 
-                        
+                        var drives = JsonSerializer.Deserialize<List<DriveInfoModel>>(infoJson);
+
                         var targetClient = _roomManager.GetClientById(targetId);
 
                         if (targetClient != null)
                         {
-                            var RemoteData = new BaseResponse<object>
+                            var RemoteData = new BaseResponse_RemoteInfo<List<DriveInfoModel>>
                             {
                                 status = "success",
                                 command = "SentRemoteInfo",
-                                message = infoJson
+                                message = drives.ToArray()
                             };
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(RemoteData));
 
@@ -467,6 +468,20 @@ namespace SERVER_RemoteMonitoring.Services
             public string command { get; set; }
             public T message { get; set; }
         }
+        public class DriveInfoModel
+        {
+            public string Caption { get; set; }
+            public string FreeSpace { get; set; }
+            public string Size { get; set; }
+        }
+
+        private class BaseResponse_RemoteInfo<T>
+        {
+            public string status { get; set; }
+            public string command { get; set; }
+            public DriveInfoModel[] message { get; set; }
+        }
+        
 
     }
 }

@@ -116,12 +116,7 @@ namespace RemoteMonitoringApplication.Views
             public string Disk { get; set; }
             public string NetWork { get; set; }
         }
-        public class DriveInfoModel
-        {
-            public string Caption { get; set; }
-            public string FreeSpace { get; set; }
-            public string Size { get; set; }
-        }
+        
 
         public class User
         {
@@ -361,6 +356,7 @@ namespace RemoteMonitoringApplication.Views
                         }
                         connected = true;
                         System.Windows.MessageBox.Show("✅ Join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
                         Remote.Visibility = Visibility.Visible;
                     }
                     else if (status == "info" && command == "partner_joined")
@@ -457,30 +453,13 @@ namespace RemoteMonitoringApplication.Views
                     }
                     else if (command == "SentRemoteInfo" && status == "success")
                     {
+                        
                         if (root.TryGetProperty("message", out var Remote_info))
                         {
 
-                            var remoteInfoElement = root.GetProperty("Remote_info");
-                            var diskInfoJson = remoteInfoElement.GetRawText();
-                            List<DriveInfoModel> drives = JsonSerializer.Deserialize<List<DriveInfoModel>>(diskInfoJson);
-                            double freeSpace = 0;
-                            double size = 0;
-                            foreach (var drive in drives)
-                            {
-                                freeSpace += double.Parse(drive.FreeSpace);
-                                size += double.Parse(drive.Size);
-                            }
-
-                            double used = 100 - (freeSpace / size * 100);
-
-                            diskBar.Value = 0;
-                            for (double i = 0; i <= used; i++)
-                            {
-                                diskBar.Value = i;
-                                diskText.Text = $"{i}%";
-
-                                await Task.Delay(50);
-                            }
+                            var drives = JsonSerializer.Deserialize<List<DriveInfoModel>>(Remote_info.GetRawText());
+                            _GetInfo.showDiskBar(drives[0],diskBar, diskText);
+                            
                         }
                         else
                         {
