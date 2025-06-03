@@ -19,6 +19,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Org.BouncyCastle.Math;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.VisualBasic.Logging;
+
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -141,8 +143,8 @@ namespace RemoteMonitoringApplication.Views
         }
         public class RemoteInfoMessage
         {
-            public DriveDiskModel Drives { get; set; }
-            public DriveMemoryModel Memory { get; set; }
+            public List<DriveDiskModel> Drives { get; set; }
+            public List<DriveMemoryModel> Memory { get; set; }
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -416,7 +418,7 @@ namespace RemoteMonitoringApplication.Views
                         if (root.TryGetProperty("message", out var mess))
                         {
                             var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
-                            Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
+                            //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
                             var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
                             var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo());
                             var Info = new
@@ -429,46 +431,28 @@ namespace RemoteMonitoringApplication.Views
                             };
                             string Infojson = JsonSerializer.Serialize(Info);
                             await tcpClient.SendMessageAsync(Infojson);
-                            Console.WriteLine("Sent remote info to server, then to client (monitor): ", Pair.id);
+                            Console.WriteLine("Sent remote info to server, then to client (monitor) ", Pair.id);
                         }
                         else
                         {
                             Console.WriteLine("Sync error: id and target id not found!");
                         }
-
-
-                        //string[] Info = _viewModel.FetchAllInfo();
-                        //var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
-
-                        //double freeSpace = 0;
-                        //double size = 0;
-                        //foreach (var drive in DiskIn4)
-                        //{
-                        //    freeSpace += double.Parse(drive.FreeSpace);
-                        //    size += double.Parse(drive.Size);
-                        //}
-
-                        //double used = 100 - (freeSpace / size * 100);
-
-                        //diskBar.Value = 0;
-                        //for (double i = 0; i <= used; i++)
-                        //{
-                        //    diskBar.Value = i;
-                        //    diskText.Text = $"{i}%";
-
-                        //    await Task.Delay(50);
-                        //}
                     }
                     else if (command == "SentRemoteInfo" && status == "success")
                     {
                         
                         if (root.TryGetProperty("message", out var Remote_info))
                         {
-                            var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText());
+                            var options = new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true
+                            };
 
-                            Console.WriteLine($"Pair ID: {Info.Drives}, Target ID: {Info.Memory}");
-                            //var InfoDrives = Info.Drives;
-                            //var drives = JsonSerializer.Deserialize<DriveDiskModel>(InfoDrives.GetRawText());
+                            var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText(), options);
+                            //var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText());
+
+                            //Console.WriteLine($"Pair ID: {Info.Drives}, Target ID: {Info.Memory}");
+                            
                             _GetInfo.showDiskBar(Info.Drives, diskBar, diskText);
                             _GetInfo.showMemoryBar(Info.Memory, memoryBar, memoryText);
 

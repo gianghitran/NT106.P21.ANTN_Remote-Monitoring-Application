@@ -51,13 +51,16 @@ namespace RemoteMonitoringApplication.Services
             var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
 
         }
-        public async void showDiskBar(DriveDiskModel disk, System.Windows.Controls.ProgressBar diskBar, TextBlock diskText)
+        public async void showDiskBar(List<DriveDiskModel> disk, System.Windows.Controls.ProgressBar diskBar, TextBlock diskText)
         {
             double freeSpace = 0;
             double size = 0;
-           
-            freeSpace += double.Parse(disk.FreeSpace);
-            size += double.Parse(disk.Size);
+           for (int i = 0; i < disk.Count; i++)
+            {
+                freeSpace += double.Parse(disk[i].FreeSpace);
+                size += double.Parse(disk[i].Size);
+            }
+            
            
 
             double used = 100 - (freeSpace / size * 100);
@@ -71,15 +74,15 @@ namespace RemoteMonitoringApplication.Services
                 await Task.Delay(50);
             }
         }
-        public async void showMemoryBar(DriveMemoryModel memory, System.Windows.Controls.ProgressBar memoryBar, TextBlock memoryText)
+        public async void showMemoryBar(List<DriveMemoryModel> memory, System.Windows.Controls.ProgressBar memoryBar, TextBlock memoryText)
         {
             double freeSpace = 0;
             double size = 0;
-
-            freeSpace += double.Parse(memory.FreeSpace);
-            size += double.Parse(memory.Size);
-
-
+            for (int i = 0; i < memory.Count; i++)
+            {
+                freeSpace += double.Parse(memory[i].FreeSpace);
+                size += double.Parse(memory[i].Size);
+            }
             double used = 100 - (freeSpace / size * 100);
 
             memoryBar.Value = 0;

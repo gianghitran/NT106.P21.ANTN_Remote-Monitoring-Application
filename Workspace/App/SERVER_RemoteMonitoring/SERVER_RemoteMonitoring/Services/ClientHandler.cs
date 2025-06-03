@@ -394,9 +394,21 @@ namespace SERVER_RemoteMonitoring.Services
                         var infoJson = info.GetRawText();
                         var infoJsonMemory = infoMemory.GetRawText();
 
-                        var drives = JsonSerializer.Deserialize<DriveDiskModel[]>(infoJson);
-                        var memory = JsonSerializer.Deserialize<DriveMemoryModel>(infoJsonMemory);
+                        //var drives = JsonSerializer.Deserialize<List<DriveDiskModel>>(infoJson);
+                        //var memory = JsonSerializer.Deserialize<DriveMemoryModel>(infoJsonMemory);
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        };
 
+                        // Deserialize từng phần riêng
+                        var drives = JsonSerializer.Deserialize<List<DriveDiskModel>>(infoJson, options);
+                        var memory = JsonSerializer.Deserialize<List<DriveMemoryModel>>(infoJsonMemory, options);
+                        var remoteInfo = new RemoteInfoMessage
+                        {
+                            Drives = drives,
+                            Memory = memory
+                        };
                         var targetClient = _roomManager.GetClientById(targetId);
                         if (targetClient != null)
                         {
@@ -404,11 +416,7 @@ namespace SERVER_RemoteMonitoring.Services
                             {
                                 status = "success",
                                 command = "SentRemoteInfo",
-                                message = new RemoteInfoMessage
-                                {
-                                    Drives = drives,
-                                    Memory = memory
-                                }
+                                message = remoteInfo
                             };
 
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(RemoteData));
@@ -486,8 +494,8 @@ namespace SERVER_RemoteMonitoring.Services
         }
         public class RemoteInfoMessage
         {
-            public DriveDiskModel[] Drives { get; set; }
-            public DriveMemoryModel Memory { get; set; }
+            public List<DriveDiskModel> Drives { get; set; }
+            public List<DriveMemoryModel> Memory { get; set; }
         }
 
 
