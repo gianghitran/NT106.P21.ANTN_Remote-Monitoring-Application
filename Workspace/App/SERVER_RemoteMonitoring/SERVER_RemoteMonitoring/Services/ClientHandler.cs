@@ -433,7 +433,115 @@ namespace SERVER_RemoteMonitoring.Services
                         }
                         break;
                         }
-                    
+                case "want_diskDetail":
+                    {
+                        string targetId = root.GetProperty("target_id").GetString();
+                        string Id = root.GetProperty("id").GetString();
+
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var Data = new BaseResponse<object>
+                            {
+                                status = "success",
+                                command = "want_diskDetail",
+                                message = new 
+                                {
+                                    id = Id,
+                                    target_id = targetId
+                                }
+                            };
+
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "want_diskDetail", $"Client not found ID = {targetId}");
+                        }
+                        break;
+                    }
+                
+                case "want_MemoryDetail":
+                    {
+                        string targetId = root.GetProperty("target_id").GetString();
+                        string Id = root.GetProperty("id").GetString();
+
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var Data = new BaseResponse<object>
+                            {
+                                status = "success",
+                                command = "want_MemoryDetail",
+                                message = new
+                                {
+                                    id = Id,
+                                    target_id = targetId
+                                }
+                            };
+
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "want_MemoryDetail", $"Client not found ID = {targetId}");
+                        }
+                        break;
+                    }
+                case "want_CPUDetail":
+                    {
+                        string targetId = root.GetProperty("target_id").GetString();
+                        string Id = root.GetProperty("id").GetString();
+
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var Data = new BaseResponse<object>
+                            {
+                                status = "success",
+                                command = "want_CPUDetail",
+                                message = new
+                                {
+                                    id = Id,
+                                    target_id = targetId
+                                }
+                            };
+
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "want_CPUDetail", $"Client not found ID = {targetId}");
+                        }
+                        break;
+                    }
+                case "want_GPUDetail":
+                    {
+                        string targetId = root.GetProperty("target_id").GetString();
+                        string Id = root.GetProperty("id").GetString();
+
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var Data = new BaseResponse<object>
+                            {
+                                status = "success",
+                                command = "want_GPUDetail",
+                                message = new
+                                {
+                                    id = Id,
+                                    target_id = targetId
+                                }
+                            };
+
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "want_GPUDetail", $"Client not found ID = {targetId}");
+                        }
+                        break;
+                    }
                 default:
                     await SendResponseAsync<string>("error", command, "Unknown command.");
                     break;
@@ -511,12 +619,7 @@ namespace SERVER_RemoteMonitoring.Services
         }
 
 
-        //private class BaseResponse_RemoteInfo<T>
-        //{
-        //    public string status { get; set; }
-        //    public string command { get; set; }
-        //    public DriveDiskModel[] message { get; set; }
-        //}
+        
         private class BaseResponse_RemoteInfo<T>
         {
             public string status { get; set; }

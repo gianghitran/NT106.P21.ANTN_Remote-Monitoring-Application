@@ -478,7 +478,7 @@ namespace RemoteMonitoringApplication.Views
 
         
 
-        private void btnGetDetail_Click(object sender, RoutedEventArgs e)
+        private async void btnGetDetail_Click(object sender, RoutedEventArgs e)
         {
             if (ComboBox_Getin4option.SelectedItem is ComboBoxItem selectedItem)
             {
@@ -486,20 +486,93 @@ namespace RemoteMonitoringApplication.Views
                 switch (selectedValue)
                 {
                     case "Disk":
-                        _GetInfo.GetDiskInfo();
+                        //_GetInfo.GetDiskInfo();
+                        if (tcpClient != null)
+                        {
+                            var DiskDetail = new
+                            {
+                                command = "want_diskDetail",
+                                id = clientId,
+                                target_id = targetId
+                            };
+                            string json = JsonSerializer.Serialize(DiskDetail);
+                            await tcpClient.SendMessageAsync(json);
+                            Console.WriteLine("Sent diskDetail request to server.");
+                        }
+                        else
+                        {
+                            System.Windows.MessageBox.Show("WebSocket server disconnected.", "Connect error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            Console.WriteLine("WebSocket server disconnected.");
+                            return;
+                        }
                         break;
-                    //case "CPU":
+                    case "CPU":
+                        if (tcpClient != null)
+                        {
+                            var CPUDetail = new
+                            {
+                                command = "want_CPUDetail",
+                                id = clientId,
+                                target_id = targetId
+                            };
+                            string json = JsonSerializer.Serialize(CPUDetail);
+                            await tcpClient.SendMessageAsync(json);
+                            Console.WriteLine("Sent CPUDetail request to server.");
+                        }
+                        else
+                        {
+                            System.Windows.MessageBox.Show("WebSocket server disconnected.", "Connect error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            Console.WriteLine("WebSocket server disconnected.");
+                            return;
+                        }
+                        break;
                     //    TextBoxDetails.Document.Blocks.Clear();
                     //    TextBoxDetails.AppendText(_viewModel.FetchCPUInfo());
                     //    break;
-                    //case "GPU":
-                    //    TextBoxDetails.Document.Blocks.Clear();
-                    //    TextBoxDetails.AppendText(_viewModel.FetchGPUInfo());
-                    //    break;
-                    //case "Memory":
+                    case "Memory":
+                        if (tcpClient != null)
+                        {
+                            var MemoryDetail = new
+                            {
+                                command = "want_MemoryDetail",
+                                id = clientId,
+                                target_id = targetId
+                            };
+                            string json = JsonSerializer.Serialize(MemoryDetail);
+                            await tcpClient.SendMessageAsync(json);
+                            Console.WriteLine("Sent MemoryDetail request to server.");
+                        }
+                        else
+                        {
+                            System.Windows.MessageBox.Show("WebSocket server disconnected.", "Connect error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            Console.WriteLine("WebSocket server disconnected.");
+                            return;
+                        }
+                        break;
+
                     //    TextBoxDetails.Document.Blocks.Clear();
                     //    TextBoxDetails.AppendText(_viewModel.FetchMemoryInfo());
                     //    break;
+                    case "GPU":
+                        if (tcpClient != null)
+                        {
+                            var MemoryDetail = new
+                            {
+                                command = "want_GPUDetail",
+                                id = clientId,
+                                target_id = targetId
+                            };
+                            string json = JsonSerializer.Serialize(MemoryDetail);
+                            await tcpClient.SendMessageAsync(json);
+                            Console.WriteLine("Sent GPUDetail request to server.");
+                        }
+                        else
+                        {
+                            System.Windows.MessageBox.Show("WebSocket server disconnected.", "Connect error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            Console.WriteLine("WebSocket server disconnected.");
+                            return;
+                        }
+                        break;
                     default:
                         TextBoxDetails.Document.Blocks.Clear();
                         TextBoxDetails.AppendText("Infomation not found!");
