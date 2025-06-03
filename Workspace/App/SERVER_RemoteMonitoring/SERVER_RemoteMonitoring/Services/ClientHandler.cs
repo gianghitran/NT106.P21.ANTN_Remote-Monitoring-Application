@@ -389,30 +389,35 @@ namespace SERVER_RemoteMonitoring.Services
                         string targetId = root.GetProperty("Monitor_id").GetString();//người theo dõi
                         string Id = root.GetProperty("Remote_id").GetString();//bị theo dõi
                         var info = root.GetProperty("info");
-                        var infoJson = info.GetRawText();
+                        var infoMemory = root.GetProperty("infoMemory");
 
-                        var drives = JsonSerializer.Deserialize<List<DriveInfoModel>>(infoJson);
+                        var infoJson = info.GetRawText();
+                        var infoJsonMemory = infoMemory.GetRawText();
+
+                        var drives = JsonSerializer.Deserialize<DriveDiskModel[]>(infoJson);
+                        var memory = JsonSerializer.Deserialize<DriveMemoryModel>(infoJsonMemory);
 
                         var targetClient = _roomManager.GetClientById(targetId);
-
                         if (targetClient != null)
                         {
-                            var RemoteData = new BaseResponse_RemoteInfo<List<DriveInfoModel>>
+                            var RemoteData = new BaseResponse_RemoteInfo<RemoteInfoMessage>
                             {
                                 status = "success",
                                 command = "SentRemoteInfo",
-                                message = drives.ToArray()
+                                message = new RemoteInfoMessage
+                                {
+                                    Drives = drives,
+                                    Memory = memory
+                                }
                             };
-                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(RemoteData));
 
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(RemoteData));
                         }
                         else
                         {
                             await SendResponseAsync<string>("fail", "SentRemoteInfo", $"Không tìm thấy client có ID = {targetId}");
                         }
                         break;
-
-                        break; 
                         }
                     
                 default:
@@ -468,20 +473,37 @@ namespace SERVER_RemoteMonitoring.Services
             public string command { get; set; }
             public T message { get; set; }
         }
-        public class DriveInfoModel
+        public class DriveDiskModel
         {
             public string Caption { get; set; }
             public string FreeSpace { get; set; }
             public string Size { get; set; }
         }
+        public class DriveMemoryModel
+        {
+            public string FreeSpace { get; set; }
+            public string Size { get; set; }
+        }
+        public class RemoteInfoMessage
+        {
+            public DriveDiskModel[] Drives { get; set; }
+            public DriveMemoryModel Memory { get; set; }
+        }
 
+
+        //private class BaseResponse_RemoteInfo<T>
+        //{
+        //    public string status { get; set; }
+        //    public string command { get; set; }
+        //    public DriveDiskModel[] message { get; set; }
+        //}
         private class BaseResponse_RemoteInfo<T>
         {
             public string status { get; set; }
             public string command { get; set; }
-            public DriveInfoModel[] message { get; set; }
+            public RemoteInfoMessage message { get; set; }
         }
-        
+
 
     }
 }

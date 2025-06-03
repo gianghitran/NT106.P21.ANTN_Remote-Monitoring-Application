@@ -139,6 +139,12 @@ namespace RemoteMonitoringApplication.Views
             public string id { get; set; }
             public string target_id { get; set; }
         }
+        public class RemoteInfoMessage
+        {
+            public DriveDiskModel Drives { get; set; }
+            public DriveMemoryModel Memory { get; set; }
+        }
+
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -412,10 +418,12 @@ namespace RemoteMonitoringApplication.Views
                             var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                             Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
                             var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
+                            var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo());
                             var Info = new
                             {
                                 command = "SentRemoteInfo",
                                 info = Diskinfo,
+                                infoMemory = Memoryinfo,
                                 Monitor_id = Pair.id,//theo doi
                                 Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
                             };
@@ -456,10 +464,15 @@ namespace RemoteMonitoringApplication.Views
                         
                         if (root.TryGetProperty("message", out var Remote_info))
                         {
+                            var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText());
 
-                            var drives = JsonSerializer.Deserialize<List<DriveInfoModel>>(Remote_info.GetRawText());
-                            _GetInfo.showDiskBar(drives[0],diskBar, diskText);
-                            
+                            Console.WriteLine($"Pair ID: {Info.Drives}, Target ID: {Info.Memory}");
+                            //var InfoDrives = Info.Drives;
+                            //var drives = JsonSerializer.Deserialize<DriveDiskModel>(InfoDrives.GetRawText());
+                            _GetInfo.showDiskBar(Info.Drives, diskBar, diskText);
+                            _GetInfo.showMemoryBar(Info.Memory, memoryBar, memoryText);
+
+
                         }
                         else
                         {
