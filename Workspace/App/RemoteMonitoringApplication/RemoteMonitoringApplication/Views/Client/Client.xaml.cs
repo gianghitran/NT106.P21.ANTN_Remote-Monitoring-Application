@@ -145,6 +145,8 @@ namespace RemoteMonitoringApplication.Views
         {
             public List<DriveDiskModel> Drives { get; set; }
             public List<DriveMemoryModel> Memory { get; set; }
+            public List<DriveCPUModel> CPU { get; set; }
+
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -280,30 +282,6 @@ namespace RemoteMonitoringApplication.Views
 
         private async void btnTaskSync_Click(object sender, RoutedEventArgs e)
         {
-            ////System.Windows.MessageBox.Show("Click Sync Task Manager");
-            //Console.WriteLine("Click Sync");
-            //TextBoxDetails.Document.Blocks.Clear(); ;
-            ////string[] Info = _viewModel.FetchAllInfo();
-            //var DiskIn4 = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
-
-            //double freeSpace = 0;
-            //double size = 0;
-            //foreach (var drive in DiskIn4)
-            //{
-            //    freeSpace += double.Parse(drive.FreeSpace);
-            //    size += double.Parse(drive.Size);
-            //}
-
-            //double used = 100 - (freeSpace / size * 100);
-
-            //diskBar.Value = 0;
-            //for (double i = 0; i <= used; i++)
-            //{
-            //    diskBar.Value = i;
-            //    diskText.Text=$"{i}%";
-
-            //    await Task.Delay(50);
-            //}
             
             if (tcpClient != null)
             {
@@ -421,11 +399,14 @@ namespace RemoteMonitoringApplication.Views
                             //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
                             var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
                             var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo());
+                            var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo());
+                            Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
                             var Info = new
                             {
                                 command = "SentRemoteInfo",
                                 info = Diskinfo,
                                 infoMemory = Memoryinfo,
+                                infoCPU = CPUinfo,
                                 Monitor_id = Pair.id,//theo doi
                                 Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
                             };
@@ -455,6 +436,8 @@ namespace RemoteMonitoringApplication.Views
                             
                             _GetInfo.showDiskBar(Info.Drives, diskBar, diskText);
                             _GetInfo.showMemoryBar(Info.Memory, memoryBar, memoryText);
+                            _GetInfo.showCPUBar(Info.CPU, cpuBar, cpuText);
+
 
 
                         }
@@ -465,12 +448,12 @@ namespace RemoteMonitoringApplication.Views
                     }
                     else
                     {
-                        Console.WriteLine($"❌ Lỗi: Không nhận diện được lệnh '{command}' với trạng thái '{status}'");
+                        Console.WriteLine($"Command not found '{command}' and state '{status}'");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Lỗi xử lý message: {ex.Message}");
+                    Console.WriteLine($"Message process error: {ex.Message}");
                 }
             });
         }

@@ -390,9 +390,12 @@ namespace SERVER_RemoteMonitoring.Services
                         string Id = root.GetProperty("Remote_id").GetString();//bị theo dõi
                         var info = root.GetProperty("info");
                         var infoMemory = root.GetProperty("infoMemory");
+                        var infoCPU = root.GetProperty("infoCPU");
+
 
                         var infoJson = info.GetRawText();
                         var infoJsonMemory = infoMemory.GetRawText();
+                        var infoJsonCPU = infoCPU.GetRawText();
 
                         //var drives = JsonSerializer.Deserialize<List<DriveDiskModel>>(infoJson);
                         //var memory = JsonSerializer.Deserialize<DriveMemoryModel>(infoJsonMemory);
@@ -404,10 +407,13 @@ namespace SERVER_RemoteMonitoring.Services
                         // Deserialize từng phần riêng
                         var drives = JsonSerializer.Deserialize<List<DriveDiskModel>>(infoJson, options);
                         var memory = JsonSerializer.Deserialize<List<DriveMemoryModel>>(infoJsonMemory, options);
+                        var cpu = JsonSerializer.Deserialize<List<DriveCPUModel>>(infoJsonCPU, options);
+                        
                         var remoteInfo = new RemoteInfoMessage
                         {
                             Drives = drives,
-                            Memory = memory
+                            Memory = memory,
+                            CPU = cpu
                         };
                         var targetClient = _roomManager.GetClientById(targetId);
                         if (targetClient != null)
@@ -492,10 +498,16 @@ namespace SERVER_RemoteMonitoring.Services
             public string FreeSpace { get; set; }
             public string Size { get; set; }
         }
+        public class DriveCPUModel
+        {
+            public string Used { get; set; }
+        }
         public class RemoteInfoMessage
         {
             public List<DriveDiskModel> Drives { get; set; }
             public List<DriveMemoryModel> Memory { get; set; }
+            public List<DriveCPUModel> CPU { get; set; }
+
         }
 
 

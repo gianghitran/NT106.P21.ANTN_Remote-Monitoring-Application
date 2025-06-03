@@ -21,6 +21,10 @@ namespace RemoteMonitoringApplication.ViewModels
         public string FreeSpace { get; set; }
         public string Size { get; set; }
     }
+    public class DriveCPUModel
+    {
+        public string Used { get; set; }
+    }
     public class SystemMonitorViewModel : INotifyPropertyChanged
     {
         private readonly SystemMonitorService _service = new();
@@ -45,6 +49,16 @@ namespace RemoteMonitoringApplication.ViewModels
                 OnPropertyChanged(nameof(DrivesMemory));
             }
         }
+        private ObservableCollection<DriveCPUModel> _drivesCPU = new();
+        public ObservableCollection<DriveCPUModel> DrivesCPU
+        {
+            get => _drivesCPU;
+            set
+            {
+                _drivesCPU = value;
+                OnPropertyChanged(nameof(DrivesCPU));
+            }
+        }
 
 
         public string fetchIn4(string cmd)
@@ -66,6 +80,12 @@ namespace RemoteMonitoringApplication.ViewModels
             var DrivesMemory = new ObservableCollection<DriveMemoryModel>();
             DrivesMemory = ParseOutput_Memory(drawIn4);
             return DrivesMemory;
+        }
+        public ObservableCollection<DriveCPUModel> CPUInfo(string drawIn4)
+        {
+            var DrivesCPU = new ObservableCollection<DriveCPUModel>();
+            DrivesCPU = ParseOutput_CPU(drawIn4);
+            return DrivesCPU;
         }
 
         public string FetchDiskInfo()
@@ -89,7 +109,7 @@ namespace RemoteMonitoringApplication.ViewModels
         public string FetchCPUInfo()
         {
             string output = _service.RunCMD("wmic cpu get LoadPercentage");
-           
+            DrivesCPU = ParseOutput_CPU(output);
             return output;// 1 giá trị duy nhất
 
         }
@@ -143,6 +163,25 @@ namespace RemoteMonitoringApplication.ViewModels
                     {
                         FreeSpace = parts[0],
                         Size = parts[1]
+                    });
+                }
+            }
+
+            return result;
+        }
+        private ObservableCollection<DriveCPUModel> ParseOutput_CPU(string output)
+        {
+            var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var result = new ObservableCollection<DriveCPUModel>();
+
+            foreach (var line in lines.Skip(1)) // Skip header
+            {
+                var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 1)
+                {
+                    result.Add(new DriveCPUModel
+                    {
+                        Used = parts[0]
                     });
                 }
             }

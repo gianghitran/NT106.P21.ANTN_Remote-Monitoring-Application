@@ -94,5 +94,22 @@ namespace RemoteMonitoringApplication.Services
                 await Task.Delay(50);
             }
         }
+
+        public async void showCPUBar(List<DriveCPUModel> cpu, System.Windows.Controls.ProgressBar cpuBar, TextBlock cpuText)
+        {
+            double used = 0;
+            for (int i = 0; i < cpu.Count; i++)
+            {
+                used += double.Parse(cpu[i].Used);
+            }
+            cpuBar.Value = 0;
+            for (double i = 0; i <= used; i++)
+            {
+                cpuBar.Value = i;
+                cpuText.Text = $"{i}%";
+
+                await Task.Delay(50);
+            }
+        }
     }
 }
