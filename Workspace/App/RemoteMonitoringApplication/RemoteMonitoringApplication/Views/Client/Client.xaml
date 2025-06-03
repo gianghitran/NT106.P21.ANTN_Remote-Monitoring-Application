@@ -881,8 +881,8 @@
                     <Border Padding="10"
                             CornerRadius="10"
                             Background="#F0F0F0"
-                            Canvas.Left="45"
-                            Canvas.Top="77"
+                            Canvas.Left="46"
+                            Canvas.Top="132"
                             Height="109"
                             Width="270" HorizontalAlignment="Center" VerticalAlignment="Top">
                         <StackPanel>
@@ -895,7 +895,7 @@
                                          Height="16"
                                          Maximum="100"
                                          Value="0"
-                                         Foreground="#A27B5C" Width="233" Margin="0,10,0,0" />
+                                         Foreground="#A27B5C" Width="234" Margin="0,10,0,0" />
                             <TextBlock x:Name="cpuText"
                                        Text="__%"
                                        HorizontalAlignment="Right"
@@ -941,7 +941,7 @@
                             CornerRadius="10"
                             Background="#F0F0F0"
                             Canvas.Left="45"
-                            Canvas.Top="216"
+                            Canvas.Top="321"
                             Height="108"
                             Width="270" HorizontalAlignment="Center" VerticalAlignment="Top">
                         <StackPanel>
@@ -964,36 +964,6 @@
                         </StackPanel>
                     </Border>
 
-
-                    <!-- GPU -->
-                    <Border Padding="10"
-                            CornerRadius="10"
-                            Background="#F0F0F0"
-                            Canvas.Left="45"
-                            Canvas.Top="353"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Height="109"
-                            Width="270">
-                        <StackPanel>
-                            <TextBlock Text="GPU Usage"
-                                       FontWeight="Bold"
-                                       FontSize="20"
-                                       Foreground="#A27B5C"
-                                       FontFamily="{StaticResource MontserratFont}"/>
-                            <ProgressBar x:Name="gpuBar"
-                                         Height="16"
-                                         Maximum="100"
-                                         Value="0"
-                                         Foreground="#A27B5C" Width="223" Margin="0,10,0,0"/>
-                            <TextBlock x:Name="gpuText"
-                                       Text="__%"
-                                       HorizontalAlignment="Right"
-                                       Margin="0,10,0,0"
-                                       FontFamily="{StaticResource MontserratFont}"
-                                       FontSize="16" FontWeight="Bold"/>
-                        </StackPanel>
-                    </Border>
 
                     <Button x:Name="btnTaskSync"
                             BorderThickness="0"
