@@ -113,19 +113,7 @@ namespace RemoteMonitoringApplication.ViewModels
             return output;// 1 giá trị duy nhất
 
         }
-        public string FetchGPUInfo()
-        {
-            string output = _service.RunCMD("wmic path win32_VideoController get Name,AdapterRAM,DriverVersion");
-            Drives = ParseOutput(output);
-            //Console.WriteLine("Caption\tFreeSpace\tSize");
-
-            //foreach (var drive in Drives)
-            //{
-            //    Console.WriteLine($"{drive.Caption}\t{drive.FreeSpace}\t{drive.Size}");
-            //}
-            return output;
-
-        }
+        
 
         
         private ObservableCollection<DriveDiskModel> ParseOutput(string output)
@@ -188,14 +176,39 @@ namespace RemoteMonitoringApplication.ViewModels
 
             return result;
         }
-        public string[] FetchAllInfo()
+        public string FetchRawInfo(string type)
         {
-            string CPU = FetchCPUInfo();
-            string GPU = FetchGPUInfo();
-            string memo = FetchMemoryInfo();
-            string Disk = FetchDiskInfo();
-            return new string[] { CPU, GPU, memo, Disk };
+            string result="";
+            if (type == "want_CPUDetail")
+            {
+                result = _service.RunCMD("wmic cpu get name,NumberOfCores,NumberOfLogicalProcessors,MaxClockSpeed,Manufacturer");
+            }
+            else if (type == "want_MemoryDetail")
+            {
+                result = _service.RunCMD("wmic path win32_VideoController get Name,AdapterRAM,DriverVersion");
+            }
+            else if (type == "want_GPUDetail")
+            {
+                result = _service.RunCMD("wmic memorychip get BankLabel, Capacity, MemoryType, TypeDetail, Speed, Manufacturer");
+
+            }
+            else if (type == "want_diskDetail")
+            {
+                result = _service.RunCMD("wmic logicaldisk get size,freespace,caption");
+            }
+            else
+            {
+                result = "Invalid type specified. Please use 'cpu', 'gpu', 'memory', or 'disk'.";
+            }
+             return result;
         }
+        //public string[] FetchAllInfo()
+        //{
+        //    string CPU = FetchCPUInfo();
+        //    string memo = FetchMemoryInfo();
+        //    string Disk = FetchDiskInfo();
+        //    return new string[] { CPU,  memo, Disk };
+        //}
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name) =>

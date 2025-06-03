@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using Org.BouncyCastle.Math;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.VisualBasic.Logging;
+using static System.Windows.Forms.Design.AxImporter;
 
 namespace RemoteMonitoringApplication.Views
 {
@@ -430,7 +431,6 @@ namespace RemoteMonitoringApplication.Views
                             };
 
                             var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText(), options);
-                            //var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText());
 
                             //Console.WriteLine($"Pair ID: {Info.Drives}, Target ID: {Info.Memory}");
                             
@@ -446,6 +446,49 @@ namespace RemoteMonitoringApplication.Views
                             Console.WriteLine("Sync error: id and target id not found!");
                         }
                     }
+                    else if ((command == "want_diskDetail"|| command == "want_CPUDetail" || command == "want_GPUDetail" ||command == "want_MemoryDetail") && status == "success")
+                    {
+
+                        Console.WriteLine("Received want Detail request from server");
+                        System.Windows.MessageBox.Show("Received detail info request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                        if (root.TryGetProperty("message", out var mess))
+                        {
+                            var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
+                            //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
+                            var Data = _viewModel.FetchRawInfo(command);
+                           
+                           
+                            var Info = new
+                            {
+                                command = "SentDetail",
+                                info = Data,
+                                
+                                Monitor_id = Pair.id,//theo doi
+                                Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                            };
+                            string Infojson = JsonSerializer.Serialize(Info);
+                            await tcpClient.SendMessageAsync(Infojson);
+                            Console.WriteLine("Sent remote info to server, then to client (monitor) ", Pair.id);
+                        }
+                        
+                        else
+                        {
+                            Console.WriteLine("Received detail request info error: id and target id not found!");
+                        }
+                    }
+                        else if (command == "SentDetail" && status == "success")
+                        {
+                            if (root.TryGetProperty("message", out var DataDetail))
+                            {
+                                var infoDetail = DataDetail.GetString();
+                                TextBoxDetails.Document.Blocks.Clear();
+                                TextBoxDetails.AppendText(infoDetail);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Received detail info error: id and target id not found!");
+                            }
+                        }
                     else
                     {
                         Console.WriteLine($"Command not found '{command}' and state '{status}'");

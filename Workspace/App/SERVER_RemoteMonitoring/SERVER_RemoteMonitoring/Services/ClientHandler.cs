@@ -542,6 +542,32 @@ namespace SERVER_RemoteMonitoring.Services
                         }
                         break;
                     }
+                case "SentDetail":
+                    {
+                        string targetId = root.GetProperty("Monitor_id").GetString();//người theo dõi
+                        string Id = root.GetProperty("Remote_id").GetString();//bị theo dõi
+                        var info = root.GetProperty("info");
+                        
+                        string infoJson = info.GetString();
+
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var DetailData = new 
+                            {
+                                status = "success",
+                                command = "SentDetail",
+                                message = infoJson
+                            };
+
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(DetailData));
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "SentRemoteInfo", $"Client not found ID ID = {targetId}");
+                        }
+                        break;
+                    }
                 default:
                     await SendResponseAsync<string>("error", command, "Unknown command.");
                     break;
