@@ -634,6 +634,7 @@ namespace RemoteMonitoringApplication.Views
                                 Console.WriteLine("WebSocket server disconnected.");
                                 return;
                             }
+
                             break;
                         //    TextBoxDetails.Document.Blocks.Clear();
                         //    TextBoxDetails.AppendText(_viewModel.FetchCPUInfo());

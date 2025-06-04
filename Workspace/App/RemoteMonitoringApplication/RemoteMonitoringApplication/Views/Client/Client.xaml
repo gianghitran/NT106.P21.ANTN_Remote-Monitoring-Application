@@ -1091,7 +1091,7 @@
                             Background="#FFE8E4DA"
                             Padding="0"
                             Width="990"
-                            Height="322"
+                            Height="412"
                             Canvas.Top="94"
                             Canvas.Left="34"
                             HorizontalAlignment="Center"
@@ -1247,13 +1247,12 @@
                             FontSize="18"
                             Foreground="#DCD7C9"
                             FontFamily="{StaticResource MontserratFont}"
-                            FontWeight="Medium"
                             VerticalContentAlignment="Center"
                             Click="btnProcessList_Click"
                             Canvas.Top="17"
                             Canvas.Left="874"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Top">
+                            VerticalAlignment="Top" FontWeight="Bold">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
                                 <Setter Property="Background"
@@ -1281,6 +1280,50 @@
                         </Button.Template>
                     </Button>
                     <Label x:Name="timeGetProcessList" Content="Monitor time:" Canvas.Left="29" Canvas.Top="62" FontSize="14" Foreground="Black" FontFamily="{StaticResource MontserratFont}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top" Width="499"/>
+                    <Button x:Name="btnPocessDump"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Content="Get process dump"
+                        FontSize="18"
+                        Foreground="#DCD7C9"
+                        FontFamily="{StaticResource MontserratFont}"
+                        VerticalContentAlignment="Center"
+                        Click="btnProcessDump_Click"
+                        Canvas.Top="570"
+                        Canvas.Left="835"
+                        FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top" Width="189">
+                        <Button.Style>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background"
+                                    Value="#A27B5C"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver"
+                                        Value="True">
+                                        <Setter Property="Background"
+                                            Value="#D9A57B"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <Border Width="200"
+                                    Height="40"
+                                    CornerRadius="20"
+                                    Background="{TemplateBinding Background}" Margin="-16,0,-11,0">
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <TextBox x:Name="Textbox_PID" Canvas.Left="88" TextWrapping="Wrap" Text="TextBox" Canvas.Top="574" Width="132" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" HorizontalAlignment="Left" VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" />
+                    <TextBox x:Name="Textbox_Savepath" Canvas.Left="354" TextWrapping="Wrap" Text="TextBox" Canvas.Top="574" Width="419" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+                    <Label  Content="PID:" Canvas.Left="34" Canvas.Top="574" FontSize="16" Foreground="Black" FontFamily="{StaticResource MontserratFont}" FontWeight="Bold" Width="53" HorizontalAlignment="Center" VerticalAlignment="Top" Height="32" VerticalContentAlignment="Center"/>
+                    <Label  Content="Save path:" Canvas.Left="256" Canvas.Top="574" FontSize="16" Foreground="Black" FontFamily="{StaticResource MontserratFont}" FontWeight="Bold" Width="94" HorizontalAlignment="Center" VerticalAlignment="Top" Height="32" VerticalContentAlignment="Center"/>
+
+
 
 
                 </Canvas>
