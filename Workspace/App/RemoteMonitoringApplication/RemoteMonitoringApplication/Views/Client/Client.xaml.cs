@@ -43,7 +43,7 @@ namespace RemoteMonitoringApplication.Views
         private ShareScreenService _shareScreen = new ShareScreenService();
         private SystemMonitorViewModel _viewModel = new();
         private ProcessViewModel _viewModelProcess = new();
-
+        private ProcessDumpViewModel _viewModelPCdump = new ();
         private SharePerformanceInfo _GetInfo = new SharePerformanceInfo();
         private ProcessMonitorService _ProcessSerivce = new ProcessMonitorService();
         public Client()
@@ -732,6 +732,14 @@ namespace RemoteMonitoringApplication.Views
                 Console.WriteLine("Disconnected Socket server.");
                 return;
             }
+        }
+
+        private void btnProcessDump_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModelPCdump.ProcessDump(Textbox_PID);
+
+
+
         }
     }// public class
     
