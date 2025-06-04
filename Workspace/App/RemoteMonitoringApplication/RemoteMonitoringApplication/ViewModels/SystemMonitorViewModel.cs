@@ -181,15 +181,18 @@ namespace RemoteMonitoringApplication.ViewModels
             string result="";
             if (type == "want_CPUDetail")
             {
-                result = _service.RunCMD("wmic cpu get name,NumberOfCores,NumberOfLogicalProcessors,MaxClockSpeed,Manufacturer");
+                result = _service.RunCMD("wmic cpu get name");
+                result += _service.RunCMD("wmic cpu get ,NumberOfCores,NumberOfLogicalProcessors, MaxClockSpeed,Manufacturer"); // Add CPU load percentage
             }
             else if (type == "want_MemoryDetail")
             {
-                result = _service.RunCMD("wmic path win32_VideoController get Name,AdapterRAM,DriverVersion");
+                result = _service.RunCMD("wmic path win32_VideoController get Name");
+                result += _service.RunCMD("wmic path win32_VideoController get AdapterRAM,DriverVersion"); // Add memory details
             }
             else if (type == "want_GPUDetail")
             {
-                result = _service.RunCMD("wmic memorychip get BankLabel, Capacity, MemoryType, TypeDetail, Speed, Manufacturer");
+                result = _service.RunCMD("wmic memorychip get BankLabel, Capacity, MemoryType");
+                result += _service.RunCMD("wmic memorychip get TypeDetail, Speed, Manufacturer"); // Add GPU details
 
             }
             else if (type == "want_diskDetail")
