@@ -1072,7 +1072,7 @@
                         Background="#DCD7C9"
                         Height="649"
                         Width="1066"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Center"
                         Canvas.Top="112"
                         VerticalAlignment="Center"
                         Canvas.Left="10">
@@ -1291,7 +1291,7 @@
                         Click="btnProcessDump_Click"
                         Canvas.Top="570"
                         Canvas.Left="835"
-                        FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top" Width="189">
+                        FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Width="189">
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
                                 <Setter Property="Background"
@@ -1318,10 +1318,10 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <TextBox x:Name="Textbox_PID" Canvas.Left="88" TextWrapping="Wrap" Text="TextBox" Canvas.Top="574" Width="132" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" HorizontalAlignment="Left" VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" />
-                    <TextBox x:Name="Textbox_Savepath" Canvas.Left="354" TextWrapping="Wrap" Text="TextBox" Canvas.Top="574" Width="419" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+                    <TextBox x:Name="Textbox_PID" Canvas.Left="88" TextWrapping="Wrap" Text="Input PID process" Canvas.Top="574" Width="138" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" HorizontalAlignment="Left" VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" />
+                    <TextBox x:Name="Textbox_Savepath" Canvas.Left="350" TextWrapping="Wrap" Text="Input save path" Canvas.Top="574" Width="419" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" />
                     <Label  Content="PID:" Canvas.Left="34" Canvas.Top="574" FontSize="16" Foreground="Black" FontFamily="{StaticResource MontserratFont}" FontWeight="Bold" Width="53" HorizontalAlignment="Center" VerticalAlignment="Top" Height="32" VerticalContentAlignment="Center"/>
-                    <Label  Content="Save path:" Canvas.Left="256" Canvas.Top="574" FontSize="16" Foreground="Black" FontFamily="{StaticResource MontserratFont}" FontWeight="Bold" Width="94" HorizontalAlignment="Center" VerticalAlignment="Top" Height="32" VerticalContentAlignment="Center"/>
+                    <Label  Content="Save path:" Canvas.Left="252" Canvas.Top="574" FontSize="16" Foreground="Black" FontFamily="{StaticResource MontserratFont}" FontWeight="Bold" Width="94" HorizontalAlignment="Left" VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center"/>
 
 
 
