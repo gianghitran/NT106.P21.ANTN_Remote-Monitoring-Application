@@ -9,7 +9,7 @@ using System.Windows;
 using RemoteMonitoringApplication.ViewModels;
 using Org.BouncyCastle.Math;
 using System.Windows.Controls;
-using RemoteMonitoringApplication.ViewModels;
+
 
 
 namespace RemoteMonitoringApplication.Services

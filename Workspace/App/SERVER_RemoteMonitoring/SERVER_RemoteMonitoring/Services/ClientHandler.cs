@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Media.Animation;
 using SIPSorcery.Net;
 using TinyJson;
+using SERVER_RemoteMonitoring.ViewModels;
 
 namespace SERVER_RemoteMonitoring.Services
 {
@@ -568,6 +569,57 @@ namespace SERVER_RemoteMonitoring.Services
                         }
                         break;
                     }
+                case "want_processList":
+                    {
+                        string targetId = root.GetProperty("target_id").GetString();
+                        string Id = root.GetProperty("id").GetString();
+
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var Data = new BaseResponse<object>
+                            {
+                                status = "success",
+                                command = "want_processList",
+                                message = new
+                                {
+                                    id = Id,
+                                    target_id = targetId
+                                }
+                            };
+
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "want_processList", $"Client not found ID = {targetId}");
+                        }
+                        break;
+                    }
+                case "SentprocessList":
+                    {
+                        string targetId = root.GetProperty("Monitor_id").GetString();//người theo dõi
+                        string Id = root.GetProperty("Remote_id").GetString();//bị theo dõi
+                        var processList = root.GetProperty("info");
+
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var DetailData = new 
+                            {
+                                status = "success",
+                                command = "SentprocessList",
+                                message = processList
+                            };
+
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(DetailData));
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "SentprocessList", $"Client not found ID ID = {targetId}");
+                        }
+                        break;
+                    }
                 default:
                     await SendResponseAsync<string>("error", command, "Unknown command.");
                     break;
@@ -621,37 +673,7 @@ namespace SERVER_RemoteMonitoring.Services
             public string command { get; set; }
             public T message { get; set; }
         }
-        public class DriveDiskModel
-        {
-            public string Caption { get; set; }
-            public string FreeSpace { get; set; }
-            public string Size { get; set; }
-        }
-        public class DriveMemoryModel
-        {
-            public string FreeSpace { get; set; }
-            public string Size { get; set; }
-        }
-        public class DriveCPUModel
-        {
-            public string Used { get; set; }
-        }
-        public class RemoteInfoMessage
-        {
-            public List<DriveDiskModel> Drives { get; set; }
-            public List<DriveMemoryModel> Memory { get; set; }
-            public List<DriveCPUModel> CPU { get; set; }
-
-        }
-
-
         
-        private class BaseResponse_RemoteInfo<T>
-        {
-            public string status { get; set; }
-            public string command { get; set; }
-            public RemoteInfoMessage message { get; set; }
-        }
 
 
     }

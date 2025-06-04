@@ -21,7 +21,7 @@ using Org.BouncyCastle.Math;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.VisualBasic.Logging;
 using static System.Windows.Forms.Design.AxImporter;
-
+using RemoteMonitoringApplication.Services;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -42,7 +42,10 @@ namespace RemoteMonitoringApplication.Views
 
         private ShareScreenService _shareScreen = new ShareScreenService();
         private SystemMonitorViewModel _viewModel = new();
+        private ProcessViewModel _viewModelProcess = new();
+
         private SharePerformanceInfo _GetInfo = new SharePerformanceInfo();
+        private ProcessMonitorService _ProcessSerivce = new ProcessMonitorService();
         public Client()
         {
             InitializeComponent();
@@ -307,8 +310,8 @@ namespace RemoteMonitoringApplication.Views
             }
             else
             {
-                System.Windows.MessageBox.Show("Chưa kết nối WebSocket server.", "Lỗi kết nối", MessageBoxButton.OK, MessageBoxImage.Warning);
-                Console.WriteLine("Chưa kết nối WebSocket server.");
+                System.Windows.MessageBox.Show("Disconnected Socket server.", "Connect error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Console.WriteLine("Disconnected Socket server");
                 return;
             }
         }
@@ -410,7 +413,7 @@ namespace RemoteMonitoringApplication.Views
                             var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
                             var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo());
                             var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo());
-                            Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
+                            //Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
                             var Info = new
                             {
                                 command = "SentRemoteInfo",
@@ -498,10 +501,62 @@ namespace RemoteMonitoringApplication.Views
                             Console.WriteLine("Received detail info error: id and target id not found!");
                         }
                     }
-                    else
+                    else if (command == "want_processList" && status == "success")
                     {
-                        Console.WriteLine($"Command not found '{command}' and state '{status}'");
+
+                        Console.WriteLine("Received want process list request from server");
+                        System.Windows.MessageBox.Show("Received want process list request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                        if (root.TryGetProperty("message", out var mess))
+                        {
+                            var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
+                            //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
+                            var Data = _ProcessSerivce.getProcessList();
+                            Console.WriteLine($"Process list start sending");
+
+                            var Info = new
+                            {
+                                command = "SentprocessList",
+                                info = Data,
+
+                                Monitor_id = Pair.id,//theo doi
+                                Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                            };
+                            string Infojson = JsonSerializer.Serialize(Info);
+                            await tcpClient.SendMessageAsync(Infojson);
+                            Console.WriteLine("Sent process list to server, then to client (monitor) ", Pair.id);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Received detail info error: id and target id not found!");
+                        }
                     }
+                    else if (command == "SentprocessList" && status == "success")
+                        {
+                            Console.WriteLine("Received process list from server");
+                            System.Windows.MessageBox.Show("Received want process list from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                            if (root.TryGetProperty("message", out var processList))
+                            {
+
+                                var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText());
+                                Console.WriteLine($"Process list getting");
+                            timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time:{processListObj.RealTime}");
+
+                            _viewModelProcess.BindProcessListToDataGrid(processListObj, ProcessDataGrid);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Sent processList error: id and target id not found!");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Command not found '{command}' and state '{status}'");
+                        }
+                    
+                        
+
+                    
                 }
                 catch (Exception ex)
                 {
@@ -643,6 +698,40 @@ namespace RemoteMonitoringApplication.Views
             }
         }
 
+        private async void btnProcessList_Click(object sender, RoutedEventArgs e)
+        {
+            timeGetProcessList.ClearValue(ContentProperty);
+            timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Getting process information...");
+
+
+            if (tcpClient != null)
+            {
+                if (role == "controller")
+                {
+                    var SyncRequest = new
+                    {
+                        command = "want_processList",
+                        id = clientId,
+                        target_id = targetId
+                    };
+                    string json = JsonSerializer.Serialize(SyncRequest);
+                    await tcpClient.SendMessageAsync(json);
+                    Console.WriteLine("Sent processList request to server:");
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("You are not controller!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Console.WriteLine("You are not controller!");
+                    return;
+                }
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Disconnected Socket server.", "Connected Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                Console.WriteLine("Disconnected Socket server.");
+                return;
+            }
+        }
     }// public class
     
 }// namespace

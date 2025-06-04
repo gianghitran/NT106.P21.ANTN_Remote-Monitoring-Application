@@ -701,7 +701,7 @@
                         Width="1076"
                         HorizontalAlignment="Center"
                         Canvas.Top="112"
-                        VerticalAlignment="Top">
+                        VerticalAlignment="Top" Visibility="Collapsed">
                     <Label Content="Partner Screen"
                            Foreground="#FF000AA3"
                            FontSize="36"
@@ -858,7 +858,7 @@
 
                 <!-- Performance -->
                 <Canvas x:Name="Performance"
-                        Visibility="Visible"
+                        Visibility="Collapsed"
                         Background="#DCD7C9"
                         Height="649"
                         Width="1066"
@@ -1069,7 +1069,6 @@
 
                 <!-- Task Manager -->
                 <Canvas x:Name="Task_Manager"
-                        Visibility="Collapsed"
                         Background="#DCD7C9"
                         Height="649"
                         Width="1066"
@@ -1092,11 +1091,11 @@
                             Background="#FFE8E4DA"
                             Padding="0"
                             Width="990"
-                            Height="501"
+                            Height="322"
                             Canvas.Top="94"
                             Canvas.Left="34"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center">
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top">
 
                         <DataGrid x:Name="ProcessDataGrid"
                                   AutoGenerateColumns="False"
@@ -1115,7 +1114,7 @@
                                   CanUserResizeColumns="True"
                                   CanUserReorderColumns="False"
                                   CanUserSortColumns="True"
-                                  Margin="-1,-1,-1,0">
+                                  Margin="-1,-1,-1,-1">
 
                             <DataGrid.Resources>
                                 <Style TargetType="DataGridCell">
@@ -1218,39 +1217,39 @@
                             </DataGrid.ColumnHeaderStyle>
 
                             <DataGrid.Columns>
+                                <DataGridTextColumn Header="PID"
+                                                    Binding="{Binding PID}"
+                                                    Width="*"/>
                                 <DataGridTextColumn Header="Name"
                                                     Binding="{Binding ProcessName}"
                                                     Width="2*"/>
-                                <DataGridTextColumn Header="Status"
-                                                    Binding="{Binding Status}"
-                                                    Width="*"/>
                                 <DataGridTextColumn Header="CPU"
                                                     Binding="{Binding CPU}"
                                                     Width="*"/>
                                 <DataGridTextColumn Header="Memory"
                                                     Binding="{Binding Memory}"
                                                     Width="*"/>
-                                <DataGridTextColumn Header="Disk"
-                                                    Binding="{Binding Disk}"
+                                <DataGridTextColumn Header="DiskRead"
+                                                    Binding="{Binding DiskRead}"
                                                     Width="*"/>
-                                <DataGridTextColumn Header="Network"
-                                                    Binding="{Binding NetWork}"
+                                <DataGridTextColumn Header="DiskWrite"
+                                                    Binding="{Binding DiskWrite}"
                                                     Width="*"/>
                             </DataGrid.Columns>
 
                         </DataGrid>
                     </Border>
 
-                    <Button x:Name="btnPerformanceSync"
+                    <Button x:Name="btnProcessList"
                             BorderThickness="0"
                             Cursor="Hand"
-                            Content="Sync"
+                            Content="Get process list"
                             FontSize="18"
                             Foreground="#DCD7C9"
                             FontFamily="{StaticResource MontserratFont}"
                             FontWeight="Medium"
                             VerticalContentAlignment="Center"
-                            Click="btnPerformanceSync_Click"
+                            Click="btnProcessList_Click"
                             Canvas.Top="17"
                             Canvas.Left="874"
                             HorizontalAlignment="Center"
@@ -1281,6 +1280,7 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
+                    <Label x:Name="timeGetProcessList" Content="Monitor time:" Canvas.Left="29" Canvas.Top="62" FontSize="14" Foreground="Black" FontFamily="{StaticResource MontserratFont}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top" Width="499"/>
 
 
                 </Canvas>
