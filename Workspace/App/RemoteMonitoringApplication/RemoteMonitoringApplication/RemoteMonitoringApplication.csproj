@@ -8,7 +8,15 @@
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
 	<UseWindowsForms>true</UseWindowsForms>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+	  <None Include="Libs\**\*.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <TargetPath>%(Filename)%(Extension)</TargetPath>
+	  </None>
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Views\Client\copy.png" />
@@ -24,7 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="agora_rtc_sdk" Version="4.2.1" />
     <PackageReference Include="SIPSorcery" Version="8.0.14" />
     <PackageReference Include="SIPSorceryMedia.FFmpeg" Version="8.0.10" />
     <PackageReference Include="SIPSorceryMedia.Windows" Version="8.0.11" />

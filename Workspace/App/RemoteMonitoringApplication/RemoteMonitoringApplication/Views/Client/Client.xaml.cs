@@ -81,6 +81,19 @@ namespace RemoteMonitoringApplication.Views
             this.DataContext = this;
 
             DataContext = _viewModel;
+
+            _shareScreen.OnFrameReceived += (data, timestamp, codec, width, height) =>
+            {
+                var bitmap = _shareScreen.ConvertToBitmap(data, codec, width, height);
+                if (bitmap != null)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        // Hiển thị hình ảnh lên UI
+                        imgAgoraVideo.Source = _shareScreen.BitmapToImageSource(bitmap);
+                    });
+                }
+            };
         }
 
         // Khi form tắt thì ngắt các kết nối
@@ -255,15 +268,8 @@ namespace RemoteMonitoringApplication.Views
             {
                 System.Windows.MessageBox.Show($"Join channel để XEM màn hình {targetId}");
 
-                _shareScreen.StartScreenSharingAsync(targetId);
+                await _shareScreen.StartScreenSharingAsync(targetId);
 
-                //var startShareRequest = new
-                //{
-                //    command = "start_share",
-                //    target_id = targetId
-                //};
-                //string json = JsonSerializer.Serialize(startShareRequest);
-                //await tcpClient.SendMessageAsync(json);
             }
             else if (role == "partner") { }
             else
@@ -273,8 +279,14 @@ namespace RemoteMonitoringApplication.Views
         }
 
         // Nút dừng share màn hình
-        private void btnStop_Click(object sender, RoutedEventArgs e)
+        private async void btnStop_Click(object sender, RoutedEventArgs e)
         {
+            await _shareScreen.StopScreenSharingAsync();
+            Dispatcher.Invoke(() =>
+            {
+                // Dừng hiển thị
+                imgAgoraVideo.Source = null;
+            });
         }
 
         private void lblTaskManager_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
