@@ -612,7 +612,7 @@ namespace SERVER_RemoteMonitoring.Services
                                 message = processList
                             };
 
-                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(DetailData));
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(DetailData), "SentprocessList");
                         }
                         else
                         {
@@ -620,6 +620,78 @@ namespace SERVER_RemoteMonitoring.Services
                         }
                         break;
                     }
+                case "want_processDump":
+                    {
+                        string targetId = root.GetProperty("target_id").GetString();
+                        string Id = root.GetProperty("id").GetString();
+                        String ProcessID = root.GetProperty("ProcessPID").GetString();
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var WantPID = new BaseResponse<object>
+                            {
+                                status = "success",
+                                command = "want_processDump",
+                                message = new
+                                {
+                                    id = Id,
+                                    target_id = targetId,
+                                    PID = ProcessID
+                                }
+                            };
+
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(WantPID));
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "want_processDump", $"Client not found ID = {targetId}");
+                        }
+                        break;
+                    }
+                case "SentprocessDump":
+                    {
+                        if (!root.TryGetProperty("target_id", out var targetIdProp) ||
+                            !root.TryGetProperty("length", out var lengthProp))
+                        {
+                            await SendResponseAsync<string>("fail", "SentprocessDump", "Thiếu thông tin cần thiết.");
+                            break;
+                        }
+
+                        string targetId = targetIdProp.GetString();
+                        long dumpLength = lengthProp.GetInt64();
+
+                        if (dumpLength <= 0)
+                        {
+                            await SendResponseAsync<string>("fail", "SentprocessDump", "Dump length không hợp lệ.");
+                            break;
+                        }
+
+                        var targetClient = _roomManager.GetClientById(targetId);
+                        if (targetClient != null)
+                        {
+                            var header = new { command = "SentprocessDump", length = dumpLength };
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(header));
+
+                            Console.WriteLine($"Starting relay dump file of {dumpLength} bytes from {_client.Id} to {targetId}");
+
+                            try
+                            {
+                                await targetClient.RelayFileAsync(_client.stream, targetClient.stream, dumpLength);
+                                Console.WriteLine($"Relay completed. {dumpLength} bytes sent to {targetId}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Relay failed: {ex.Message}");
+                                await SendResponseAsync<string>("fail", "SentprocessDump", $"Relay failed: {ex.Message}");
+                            }
+                        }
+                        else
+                        {
+                            await SendResponseAsync<string>("fail", "SentprocessDump", $"Client not found ID = {targetId}");
+                        }
+                        break;
+                    }
+
                 default:
                     await SendResponseAsync<string>("error", command, "Unknown command.");
                     break;

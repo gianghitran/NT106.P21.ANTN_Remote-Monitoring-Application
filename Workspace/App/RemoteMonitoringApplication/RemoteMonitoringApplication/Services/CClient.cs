@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Net.Sockets;
 using Org.BouncyCastle.Math.Field;
+using System.IO;
+using System.Text.Json;
 
 namespace RemoteMonitoringApplication.Services
 {
@@ -154,5 +156,61 @@ namespace RemoteMonitoringApplication.Services
                 System.Windows.MessageBox.Show("Disconnected from the server.");
             }
         }
+        public async Task SendFileAsync(string filePath, string command, string targetId)
+        {
+            // Tạo header
+                long fileSize = new FileInfo(filePath).Length;
+
+                // Tạo header đầy đủ với length
+                var header = new
+                {
+                    command = "SentprocessDump",
+                    target_id = targetId,
+                    length = fileSize
+                };
+                string headerJson = JsonSerializer.Serialize(header);
+                byte[] headerBytes = Encoding.UTF8.GetBytes(headerJson);
+                byte[] headerLengthBytes = BitConverter.GetBytes(headerBytes.Length);
+
+                // Gửi header length
+                await _stream.WriteAsync(headerLengthBytes, 0, 4);
+
+                // Gửi header
+                await _stream.WriteAsync(headerBytes, 0, headerBytes.Length);
+
+
+                // Gửi file
+                using (FileStream fs = File.OpenRead("dumpTemp.dmp"))
+                {
+                    await fs.CopyToAsync(_stream);
+                }
+
+        }
+
+
+        public async Task ReceiveFileAsync(string savePath)
+        {
+            byte[] sizeBuffer = new byte[8];
+            await _stream.ReadAsync(sizeBuffer, 0, 8);
+            long fileSize = BitConverter.ToInt64(sizeBuffer, 0);
+
+            using (FileStream fs = new FileStream(savePath, FileMode.Create, FileAccess.Write))
+            {
+                byte[] buffer = new byte[8192];
+                long totalRead = 0;
+                int bytesRead;
+
+                while (totalRead < fileSize &&
+                       (bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await fs.WriteAsync(buffer, 0, bytesRead);
+                    totalRead += bytesRead;
+                }
+            }
+
+            Console.WriteLine($"File received: {fileSize} bytes.");
+        }
+
+
     }
 }

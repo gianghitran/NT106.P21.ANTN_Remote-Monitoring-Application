@@ -182,7 +182,7 @@ namespace RemoteMonitoringApplication.ViewModels
             if (type == "want_CPUDetail")
             {
                 result = _service.RunCMD("wmic cpu get name");
-                result += _service.RunCMD("wmic cpu get ,NumberOfCores,NumberOfLogicalProcessors, MaxClockSpeed,Manufacturer"); // Add CPU load percentage
+                result += _service.RunCMD("wmic cpu get NumberOfCores,NumberOfLogicalProcessors, MaxClockSpeed,Manufacturer"); // Add CPU load percentage
             }
             else if (type == "want_MemoryDetail")
             {

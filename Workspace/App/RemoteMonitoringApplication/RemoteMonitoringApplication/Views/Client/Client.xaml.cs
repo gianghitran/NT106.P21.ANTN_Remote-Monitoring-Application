@@ -158,6 +158,12 @@ namespace RemoteMonitoringApplication.Views
             public string id { get; set; }
             public string target_id { get; set; }
         }
+        public class RequestPCDump
+        {
+            public string id { get; set; }
+            public string target_id { get; set; }
+            public string PID { get; set; } // Thêm PID để yêu cầu dump của tiến trình cụ thể
+        }
         public class RemoteInfoMessage
         {
             public List<DriveDiskModel> Drives { get; set; }
@@ -561,7 +567,50 @@ namespace RemoteMonitoringApplication.Views
                                 Console.WriteLine("Sent processList error: id and target id not found!");
                             }
                         }
-                        else
+                    else if (command == "want_processDump" && status == "success")
+                        {
+                            Console.WriteLine("Received process dump request from server");
+                            System.Windows.MessageBox.Show("Received want process dump request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                            if (root.TryGetProperty("message", out var mess))
+                            {
+                                var Mess = JsonSerializer.Deserialize<RequestPCDump>(mess.GetRawText());
+                                //var Data = _ProcessSerivce.getProcessList();
+                                _viewModelPCdump.ProcessDump(Mess.PID);
+                            Console.WriteLine($"Process dump start sending.........");
+
+                            //await tcpClient.SendFileAsync("dumpTemp.dmp");
+                            await tcpClient.SendFileAsync("dumpTemp.dmp", "SentprocessDump", Mess.id);
+
+                            Console.WriteLine("Sent process dump to server, then to client (monitor) ", Mess.id);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Received detail info error: id and target id not found!");
+                            }
+                        }
+                    else if (command == "SentprocessDump" && status == "success")
+                    {
+                        Console.WriteLine("Received process dump from server");
+                        System.Windows.MessageBox.Show("Received want process dump from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                        //if (root.TryGetProperty("message", out var mess))
+                        //{
+                        try { 
+                            //var Mess = JsonSerializer.Deserialize<RequestPCDump>(mess.GetRawText());
+                            //var Data = _ProcessSerivce.getProcessList();
+                            //byte[] dumpdata = _viewModelPCdump.ProcessDumpFile(Mess.PID);
+                            Console.WriteLine($"Process dump start receiveing.....");
+
+                           
+                            await tcpClient.ReceiveFileAsync("C:/Users/ASUS/Documents/Nam2_Ki2/ltmcb/DoAn/Savedata");
+                            Console.WriteLine("Process dump received, Done !!!!!");
+                        }
+                        //else
+                        catch
+                        {
+                            Console.WriteLine("Received detail info error: id and target id not found!");
+                        }
+                    }
+                    else
                         {
                             Console.WriteLine($"Command not found '{command}' and state '{status}'");
                         }
@@ -714,44 +763,73 @@ namespace RemoteMonitoringApplication.Views
         private async void btnProcessList_Click(object sender, RoutedEventArgs e)
         {
             timeGetProcessList.ClearValue(ContentProperty);
-            timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Getting process information...");
+            if (role == "controller") { 
+                timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Getting process information...");
 
-
-            if (tcpClient != null)
-            {
-                if (role == "controller")
+                if (tcpClient != null)
                 {
-                    var SyncRequest = new
+                    if (role == "controller")
                     {
-                        command = "want_processList",
-                        id = clientId,
-                        target_id = targetId
-                    };
-                    string json = JsonSerializer.Serialize(SyncRequest);
-                    await tcpClient.SendMessageAsync(json);
-                    Console.WriteLine("Sent processList request to server:");
+                        var SyncRequest = new
+                        {
+                            command = "want_processList",
+                            id = clientId,
+                            target_id = targetId
+                        };
+                        string json = JsonSerializer.Serialize(SyncRequest);
+                        await tcpClient.SendMessageAsync(json);
+                        Console.WriteLine("Sent processList request to server:");
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("You are not controller!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Console.WriteLine("You are not controller!");
+                        return;
+                    }
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("You are not controller!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    Console.WriteLine("You are not controller!");
+                    System.Windows.MessageBox.Show("Disconnected Socket server.", "Connected Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Console.WriteLine("Disconnected Socket server.");
                     return;
                 }
             }
-            else
-            {
-                System.Windows.MessageBox.Show("Disconnected Socket server.", "Connected Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                Console.WriteLine("Disconnected Socket server.");
-                return;
-            }
         }
 
-        private void btnProcessDump_Click(object sender, RoutedEventArgs e)
+        private async void btnProcessDump_Click(object sender, RoutedEventArgs e)
         {
-            _viewModelPCdump.ProcessDump(Textbox_PID);
-
-
-
+            //byte[] dumpdata = _viewModelPCdump.ProcessDump(Textbox_PID);
+            if (role == "controller")
+            {
+                if (tcpClient != null)
+                {
+                    if (role == "controller")
+                    {
+                        var SyncRequest = new
+                        {
+                            command = "want_processDump",
+                            ProcessPID = Textbox_PID.Text.Trim(),
+                            id = clientId,
+                            target_id = targetId
+                        };
+                        string json = JsonSerializer.Serialize(SyncRequest);
+                        await tcpClient.SendMessageAsync(json);
+                        Console.WriteLine("Sent want_processDump request to server:");
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("You are not controller!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Console.WriteLine("You are not controller!");
+                        return;
+                    }
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("Disconnected Socket server.", "Connect error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Console.WriteLine("Disconnected Socket server");
+                    return;
+                }
+            }
         }
     }// public class
     
