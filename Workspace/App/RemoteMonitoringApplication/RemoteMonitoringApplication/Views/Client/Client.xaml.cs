@@ -22,6 +22,7 @@ using static System.Net.Mime.MediaTypeNames;
 using Microsoft.VisualBasic.Logging;
 using static System.Windows.Forms.Design.AxImporter;
 using RemoteMonitoringApplication.Services;
+using Windows.Media.Protection.PlayReady;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -588,27 +589,40 @@ namespace RemoteMonitoringApplication.Views
                                 Console.WriteLine("Received detail info error: id and target id not found!");
                             }
                         }
-                    else if (command == "SentprocessDump" && status == "success")
+                    else if (command == "SentprocessDump")
                     {
-                        Console.WriteLine("Received process dump from server");
-                        System.Windows.MessageBox.Show("Received want process dump from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-                        //if (root.TryGetProperty("message", out var mess))
-                        //{
-                        try { 
-                            //var Mess = JsonSerializer.Deserialize<RequestPCDump>(mess.GetRawText());
-                            //var Data = _ProcessSerivce.getProcessList();
-                            //byte[] dumpdata = _viewModelPCdump.ProcessDumpFile(Mess.PID);
-                            Console.WriteLine($"Process dump start receiveing.....");
-
-                           
-                            await tcpClient.ReceiveFileAsync("C:/Users/ASUS/Documents/Nam2_Ki2/ltmcb/DoAn/Savedata");
-                            Console.WriteLine("Process dump received, Done !!!!!");
-                        }
-                        //else
-                        catch
+                        if (!root.TryGetProperty("target_id", out var targetIdProp) ||
+                            !root.TryGetProperty("length", out var lengthProp))
                         {
-                            Console.WriteLine("Received detail info error: id and target id not found!");
+                            Console.WriteLine("fail", "SentprocessDump", "Thiếu thông tin cần thiết.");
+                            return;
                         }
+                        Console.WriteLine("Received process dump from server");
+                        string targetId = targetIdProp.GetString();
+                        long dumpLength = lengthProp.GetInt64();
+
+                        if (dumpLength <= 0)
+                        {
+                            Console.WriteLine("fail", "SentprocessDump", "Dump length không hợp lệ.");
+                            return;
+                        }
+
+                        
+                            var header = new { command = "SentprocessDump", length = dumpLength };
+
+                            Console.WriteLine($"Starting saved dump file of {dumpLength} bytes");
+
+                            try
+                            {
+                                await tcpClient.RelayFileAsync( "C:/Users/ASUS/Documents/Nam2_Ki2/ltmcb/DoAn/Savedata", dumpLength);
+                                Console.WriteLine($"Saved completed. {dumpLength} bytes sent to {targetId}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Relay failed: {ex.Message}");
+                                Console.WriteLine("fail", "SentprocessDump", $"Relay failed: {ex.Message}");
+                            }
+                        
                     }
                     else
                         {

@@ -329,30 +329,39 @@ namespace SERVER_RemoteMonitoring.Services
                 Console.WriteLine($"Client {Id} is already disconnected.");
             }
         }
-        public async Task RelayFileAsync(Stream sourceStream, Stream destinationStream, long fileSize)
+        public async Task RelayFileAsync(Stream sourceStream, string pathFile, long fileSize)
         {
             byte[] buffer = new byte[8192];
             long totalRelayed = 0;
             int bytesRead;
 
-            while (totalRelayed < fileSize &&
-                   (bytesRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            // Mở file để ghi
+            using (FileStream fs = new FileStream(pathFile, FileMode.Create, FileAccess.Write))
             {
-                await destinationStream.WriteAsync(buffer, 0, bytesRead);
-                totalRelayed += bytesRead;
+                while (totalRelayed < fileSize &&
+                       (bytesRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await fs.WriteAsync(buffer, 0, bytesRead);
+                    totalRelayed += bytesRead;
+                }
+
+                await fs.FlushAsync();
             }
 
-            await destinationStream.FlushAsync();
-            Console.WriteLine($"Relay done: {totalRelayed} bytes.");
+            Console.WriteLine($"File saved to {pathFile}, total {totalRelayed} bytes.");
         }
 
         public async Task SendFileAsync(string filePath, string command, string targetId)
         {
             // Tạo header
+            long fileSize = new FileInfo(filePath).Length;
+
+            // Tạo header đầy đủ với length
             var header = new
             {
                 command = "SentprocessDump",
-                target_id = targetId
+                target_id = targetId,
+                length = fileSize
             };
             string headerJson = JsonSerializer.Serialize(header);
             byte[] headerBytes = Encoding.UTF8.GetBytes(headerJson);
@@ -364,10 +373,6 @@ namespace SERVER_RemoteMonitoring.Services
             // Gửi header
             await stream.WriteAsync(headerBytes, 0, headerBytes.Length);
 
-            // Gửi file length
-            long fileSize = new FileInfo("dumpTemp.dmp").Length;
-            byte[] fileSizeBytes = BitConverter.GetBytes(fileSize);
-            await stream.WriteAsync(fileSizeBytes, 0, 8);
 
             // Gửi file
             using (FileStream fs = File.OpenRead("dumpTemp.dmp"))
@@ -376,31 +381,6 @@ namespace SERVER_RemoteMonitoring.Services
             }
 
         }
-
-
-        public async Task ReceiveFileAsync(string savePath)
-        {
-            byte[] sizeBuffer = new byte[8];
-            await stream.ReadAsync(sizeBuffer, 0, 8);
-            long fileSize = BitConverter.ToInt64(sizeBuffer, 0);
-
-            using (FileStream fs = new FileStream(savePath, FileMode.Create, FileAccess.Write))
-            {
-                byte[] buffer = new byte[8192];
-                long totalRead = 0;
-                int bytesRead;
-
-                while (totalRead < fileSize &&
-                       (bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                {
-                    await fs.WriteAsync(buffer, 0, bytesRead);
-                    totalRead += bytesRead;
-                }
-            }
-
-            Console.WriteLine($"File received: {fileSize} bytes.");
-        }
-
 
     }
 }

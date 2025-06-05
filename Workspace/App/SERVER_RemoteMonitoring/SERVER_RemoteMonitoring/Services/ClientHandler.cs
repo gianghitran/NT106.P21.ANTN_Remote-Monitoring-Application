@@ -670,14 +670,17 @@ namespace SERVER_RemoteMonitoring.Services
                         if (targetClient != null)
                         {
                             var header = new { command = "SentprocessDump", length = dumpLength };
-                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(header));
+                            //await targetClient.SendMessageAsync(JsonSerializer.Serialize(header));
 
                             Console.WriteLine($"Starting relay dump file of {dumpLength} bytes from {_client.Id} to {targetId}");
 
                             try
                             {
-                                await targetClient.RelayFileAsync(_client.stream, targetClient.stream, dumpLength);
+                                await targetClient.RelayFileAsync(_client.stream, "dumpTemp.dmp", dumpLength);
                                 Console.WriteLine($"Relay completed. {dumpLength} bytes sent to {targetId}");
+                                await targetClient.SendFileAsync("dumpTemp.dmp", "SentprocessDump", targetId);
+                                Console.WriteLine($"Send completed. {dumpLength} bytes sent to {targetId}");
+
                             }
                             catch (Exception ex)
                             {

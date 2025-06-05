@@ -36,8 +36,8 @@ namespace RemoteMonitoringApplication.Services
         private void HandleMessageReceived(string message)
         {
             // Handle the received message here
-            //Console.WriteLine($"Message received: {message}");
-            Console.WriteLine($"Message received!");
+            Console.WriteLine($"Message received: {message}");
+            //Console.WriteLine($"Message received!");
 
         }
 

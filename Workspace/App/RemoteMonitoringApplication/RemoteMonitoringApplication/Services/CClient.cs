@@ -87,36 +87,51 @@ namespace RemoteMonitoringApplication.Services
             {
                 while (_client.Connected)
                 {
-                    // Read the length of the incoming message
                     int totalRead = 0;
                     int lengthNeeded = 4;
 
+                    // Đọc 4 byte đầu tiên để lấy độ dài message
                     while (totalRead < lengthNeeded)
                     {
                         int bytesRead = await _stream.ReadAsync(lengthBuffer, totalRead, lengthNeeded - totalRead);
-                        if (bytesRead == 0) return; // Connection closed
+                        if (bytesRead == 0)
+                        {
+                            // Kết nối đóng, thoát vòng lặp
+                            Console.WriteLine("Connection closed by server.");
+                            return;
+                        }
                         totalRead += bytesRead;
                     }
 
-                    // Convert the length from bytes to an integer
                     int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
+
+                    // Có thể kiểm tra messageLength ở đây nếu muốn
 
                     var messageBuffer = new byte[messageLength];
                     totalRead = 0;
+
+                    // Đọc đủ messageLength bytes
                     while (totalRead < messageLength)
                     {
                         int bytesRead = await _stream.ReadAsync(messageBuffer, totalRead, messageLength - totalRead);
-                        if (bytesRead == 0) return; // Connection closed
+                        if (bytesRead == 0)
+                        {
+                            Console.WriteLine("Connection closed by server.");
+                            return;
+                        }
                         totalRead += bytesRead;
                     }
 
-                    var message = Encoding.UTF8.GetString(messageBuffer);
+                    var message = Encoding.UTF8.GetString(messageBuffer, 0, messageLength).Trim();
+
+                    // Xử lý message nhận được (ví dụ raise event, gọi callback, ...)
                     MessageReceived?.Invoke(message);
                 }
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error receiving message: {ex.Message}");
+                // Xử lý lỗi, ví dụ log hoặc thông báo UI
+                Console.WriteLine($"Error receiving message: {ex.Message}");
             }
         }
 
@@ -211,6 +226,27 @@ namespace RemoteMonitoringApplication.Services
             Console.WriteLine($"File received: {fileSize} bytes.");
         }
 
+        public async Task RelayFileAsync( string pathFile, long fileSize)
+        {
+            byte[] buffer = new byte[8192];
+            long totalRelayed = 0;
+            int bytesRead;
+
+            // Mở file để ghi
+            using (FileStream fs = new FileStream(pathFile, FileMode.Create, FileAccess.Write))
+            {
+                while (totalRelayed < fileSize &&
+                       (bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await fs.WriteAsync(buffer, 0, bytesRead);
+                    totalRelayed += bytesRead;
+                }
+
+                await fs.FlushAsync();
+            }
+
+            Console.WriteLine($"File saved to {pathFile}, total {totalRelayed} bytes.");
+        }
 
     }
 }
