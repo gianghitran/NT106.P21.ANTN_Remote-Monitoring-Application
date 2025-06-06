@@ -146,10 +146,12 @@ namespace SERVER_RemoteMonitoring.Services
                     role = user.Role,
                     token = Guid.NewGuid().ToString() // Generate a token for the session
                 };
-
                 _sessionManager.AddSession(_client.Id, session);
+                
+                await _saveLogService.UserLoginAsync(user.Username, user.Id.ToString(), _client.Id);
 
                 await _saveLogService.LogAsync(user.Id.ToString(), "", "", $"login - Username = {user.Username} - Session_Id = {_client.Id}");
+
 
                 await SendResponseAsync<LoginMessage>("success", "login", response);
                 return true;
@@ -266,6 +268,10 @@ namespace SERVER_RemoteMonitoring.Services
                                     email = targetSession?.email
                                 }
                             };
+                            await _saveLogService.ConnecionAsync(joiningSession?.username, joiningSession?.tempId,"controller", targetSession?.username, targetSession?.tempId);
+                            await _saveLogService.ConnecionAsync(targetSession?.username, targetSession?.tempId, "remote", joiningSession?.username, joiningSession?.tempId);
+
+
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(notifyResponse));
                         }
                         break;
@@ -277,6 +283,7 @@ namespace SERVER_RemoteMonitoring.Services
                         string password = root.GetProperty("password").GetString();
 
                         var session = _sessionManager.GetSession(_client.Id);
+
                         await _roomManager.RegisterClient(id, password, _client, session);
 
                         await _saveLogService.LogAsync(_client.Id, "", "", "register_room");

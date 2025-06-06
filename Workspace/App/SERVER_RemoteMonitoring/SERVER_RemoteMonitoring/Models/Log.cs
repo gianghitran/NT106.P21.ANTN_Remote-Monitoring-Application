@@ -23,7 +23,7 @@ namespace SERVER_RemoteMonitoring.Models
 
         public Log()
         {
-            LogAt = DateTime.UtcNow;
+            LogAt = DateTime.Now;
         }
 
         //public ICollection<Log> Logs { get; set; }

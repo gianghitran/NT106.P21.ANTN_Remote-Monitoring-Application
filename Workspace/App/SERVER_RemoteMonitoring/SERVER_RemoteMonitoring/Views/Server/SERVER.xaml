@@ -198,13 +198,11 @@
                     </DataGrid.Resources>
 
                     <DataGrid.Columns>
-
-                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="30" />
-                        <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*" />
-                        <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" />
-                        <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="*" />
-                        <DataGridTextColumn Header="Created At" Binding="{Binding CreatedAt}" Width="*" />
-                        <DataGridTextColumn Header="Updated At" Binding="{Binding UpdatedAt}" Width="*" />
+                        <DataGridTextColumn Header="Login ID" Binding="{Binding LoginID}" Width="60" />
+                        <DataGridTextColumn Header="Username" Binding="{Binding UserName}" Width="*" />
+                        <DataGridTextColumn Header="User ID" Binding="{Binding UserId}" Width="*" />
+                        <DataGridTextColumn Header="Session ID" Binding="{Binding UserSessionID}" Width="*" />
+                        <DataGridTextColumn Header="Connect At" Binding="{Binding ConnectAt, StringFormat=dd/MM/yyyy HH:mm:ss}" Width="160" />
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -234,12 +232,13 @@
                     </DataGrid.Resources>
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="30" />
-                        <DataGridTextColumn Header="Users" Binding="{Binding UserName}" Width="*" />
-                        <DataGridTextColumn Header="IP" Binding="{Binding IP}" Width="*" />
-                        <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="*" />
-                        <DataGridTextColumn Header="Newest Status" Binding="{Binding LastActionDe}" Width="*" />
-                        <DataGridTextColumn Header="Time" Binding="{Binding LastAction}" Width="*" />
+                        <DataGridTextColumn Header="ID" Binding="{Binding ConnectID}" Width="50"/>
+                        <DataGridTextColumn Header="User" Binding="{Binding UserName}" Width="*"/>
+                        <DataGridTextColumn Header="User ID" Binding="{Binding UserId}" Width="100"/>
+                        <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="100"/>
+                        <DataGridTextColumn Header="Partner Name" Binding="{Binding PartnerName}" Width="*"/>
+                        <DataGridTextColumn Header="Partner ID" Binding="{Binding PartnerId}" Width="100"/>
+                        <DataGridTextColumn Header="Connected At" Binding="{Binding ConnectAt}" Width="150"/>
                     </DataGrid.Columns>
                 </DataGrid>
 

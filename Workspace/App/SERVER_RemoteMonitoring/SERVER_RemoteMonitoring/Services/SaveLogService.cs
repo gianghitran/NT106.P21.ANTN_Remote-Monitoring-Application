@@ -1,4 +1,5 @@
 ﻿using SERVER_RemoteMonitoring.Data;
+using SERVER_RemoteMonitoring.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -66,6 +67,58 @@ namespace SERVER_RemoteMonitoring.Services
         {
             var logs = await GetLogsAsync();
             DashboardDataGrid.ItemsSource = logs;
+        }
+        public async Task<bool> ConnecionAsync(string username, string userId, string role, string partnerName, string partnerId)
+        {
+            try
+            {
+                var db = _dbService.GetDataBaseConnection();
+
+                var newConnection = new Connections
+                {
+                    UserName = username,
+                    UserId = userId,
+                    Role = role,
+                    PartnerName = partnerName,
+                    PartnerId = partnerId,
+                    ConnectAt = DateTime.UtcNow
+                };
+
+                await db.InsertAsync(newConnection);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log lỗi 
+                return false;
+            }
+                
+        }
+        public async Task<bool> UserLoginAsync(string username, string userId, string usersession)
+        {
+            try
+            {
+                var db = _dbService.GetDataBaseConnection();
+
+                var newUserLogin = new UserLogin
+                {
+                    UserName = username,
+                    UserId = userId,
+                    UserSessionID = usersession,
+                    ConnectAt = DateTime.UtcNow
+                };
+
+                await db.InsertAsync(newUserLogin);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log lỗi 
+                return false;
+            }
+
         }
 
 
