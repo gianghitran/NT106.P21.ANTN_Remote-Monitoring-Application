@@ -46,6 +46,7 @@ namespace RemoteMonitoringApplication.Views
         private SystemMonitorViewModel _viewModel = new();
         private ProcessViewModel _viewModelProcess = new();
         private ProcessDumpViewModel _viewModelPCdump = new ();
+        private CompressService _viewCompress = new();
         private SharePerformanceInfo _GetInfo = new SharePerformanceInfo();
         private ProcessMonitorService _ProcessSerivce = new ProcessMonitorService();
         public Client()
@@ -560,7 +561,7 @@ namespace RemoteMonitoringApplication.Views
 
                                 var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText());
                                 Console.WriteLine($"Process list getting");
-                            timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time:{processListObj.RealTime}");
+                            timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time: {processListObj.RealTime}");
 
                             _viewModelProcess.BindProcessListToDataGrid(processListObj, ProcessDataGrid);
                             }
@@ -576,14 +577,29 @@ namespace RemoteMonitoringApplication.Views
                             if (root.TryGetProperty("message", out var mess))
                             {
                                 var Mess = JsonSerializer.Deserialize<RequestPCDump>(mess.GetRawText());
+                                var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //var Data = _ProcessSerivce.getProcessList();
                                 _viewModelPCdump.ProcessDump(Mess.PID);
-                            Console.WriteLine($"Process dump start sending.........");
+                                Console.WriteLine($"Process dump start sending.........");
+                                byte[] fileBytes = File.ReadAllBytes("dumpTemp.dmp");
+                                byte[] compress_data = CompressService.Compress(fileBytes);
+                            string base64Data = Convert.ToBase64String(compress_data);
 
+
+                            Console.WriteLine($"Process dump data length: {compress_data.Length} bytes");
                             //await tcpClient.SendFileAsync("dumpTemp.dmp");
-                            await tcpClient.SendFileAsync("dumpTemp.dmp", "SentprocessDump", Mess.id);
+                            //await tcpClient.SendFileAsync("dumpTemp.dmp", "SentprocessDump", Mess.id);
+                            var Info = new
+                                {
+                                    command = "SentprocessDump",
+                                    info = compress_data,
 
-                            Console.WriteLine("Sent process dump to server, then to client (monitor) ", Mess.id);
+                                    Monitor_id = Pair.id,//theo doi
+                                    Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                                };
+                            string Infojson = JsonSerializer.Serialize(Info);
+                            await tcpClient.SendMessageAsync(Infojson);
+                            Console.WriteLine("Sent process dump to server, then to client (monitor) ", Pair.id);
                             }
                             else
                             {
@@ -619,8 +635,8 @@ namespace RemoteMonitoringApplication.Views
                             //}
                             string filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Savedata", "dumpReceived.dmp");
 
-                            //await tcpClient.ReceiveAndSaveFileAsync(filePath);
-                                Console.WriteLine($"Saved completed. {dumpLength} bytes sent to {targetId}");
+                            //await tcpClient.RelayFileAsync(filePath, dumpLength);
+                            Console.WriteLine($"Saved completed. {dumpLength} bytes sent to {targetId}");
                             }
                             catch (Exception ex)
                             {
@@ -782,6 +798,7 @@ namespace RemoteMonitoringApplication.Views
         private async void btnProcessList_Click(object sender, RoutedEventArgs e)
         {
             timeGetProcessList.ClearValue(ContentProperty);
+            timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time:");
             if (role == "controller") { 
                 timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Getting process information...");
 
@@ -817,6 +834,8 @@ namespace RemoteMonitoringApplication.Views
 
         private async void btnProcessDump_Click(object sender, RoutedEventArgs e)
         {
+            System.Windows.MessageBox.Show("Feature is in development", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
             //byte[] dumpdata = _viewModelPCdump.ProcessDump(Textbox_PID);
             if (role == "controller")
             {

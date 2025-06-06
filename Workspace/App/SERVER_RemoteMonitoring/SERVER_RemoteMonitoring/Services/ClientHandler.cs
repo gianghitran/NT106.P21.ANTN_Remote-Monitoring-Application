@@ -650,47 +650,26 @@ namespace SERVER_RemoteMonitoring.Services
                     }
                 case "SentprocessDump":
                     {
-                        if (!root.TryGetProperty("target_id", out var targetIdProp) ||
-                            !root.TryGetProperty("length", out var lengthProp))
-                        {
-                            await SendResponseAsync<string>("fail", "SentprocessDump", "Thiếu thông tin cần thiết.");
-                            break;
-                        }
-
-                        string targetId = targetIdProp.GetString();
-                        long dumpLength = lengthProp.GetInt64();
-
-                        if (dumpLength <= 0)
-                        {
-                            await SendResponseAsync<string>("fail", "SentprocessDump", "Dump length không hợp lệ.");
-                            break;
-                        }
+                        
+                        string targetId = root.GetProperty("Monitor_id").GetString();//người theo dõi
+                        string Id = root.GetProperty("Remote_id").GetString();//bị theo dõi
+                        var processDumpLength  = root.GetProperty("info");
 
                         var targetClient = _roomManager.GetClientById(targetId);
                         if (targetClient != null)
                         {
-                            var header = new { command = "SentprocessDump", length = dumpLength };
-                            //await targetClient.SendMessageAsync(JsonSerializer.Serialize(header));
-
-                            Console.WriteLine($"Starting relay dump file of {dumpLength} bytes from {_client.Id} to {targetId}");
-
-                            try
+                            var DetailData = new
                             {
-                                await targetClient.RelayFileAsync(_client.stream, "dumpTemp.dmp", dumpLength);
-                                Console.WriteLine($"Relay completed. {dumpLength} bytes sent to {targetId}");
-                                await targetClient.SendFileAsync("dumpTemp.dmp", "SentprocessDump", targetId);
-                                Console.WriteLine($"Send completed. {dumpLength} bytes sent to {targetId}");
+                                status = "success",
+                                command = "SentprocessDump",
+                                message = processDumpLength
+                            };
 
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"Relay failed: {ex.Message}");
-                                await SendResponseAsync<string>("fail", "SentprocessDump", $"Relay failed: {ex.Message}");
-                            }
+                            await targetClient.SendMessageAsync(JsonSerializer.Serialize(DetailData), "SentprocessDump");
                         }
                         else
                         {
-                            await SendResponseAsync<string>("fail", "SentprocessDump", $"Client not found ID = {targetId}");
+                            await SendResponseAsync<string>("fail", "SentprocessList", $"Client not found ID ID = {targetId}");
                         }
                         break;
                     }

@@ -555,7 +555,7 @@
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center"/>
                 <Label x:Name="usrEmail"
-                       Content="alice@gmail.com"
+                       Content=""
                        Canvas.Left="82"
                        Canvas.Top="120"
                        FontSize="15"
@@ -563,7 +563,7 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"/>
                 <Label x:Name="ptnEmail"
-                       Content="bob@gmail.com"
+                       Content=""
                        Canvas.Left="703"
                        Canvas.Top="120"
                        FontSize="15"
@@ -611,7 +611,7 @@
                     </Button.Template>
                 </Button>
                 <TextBlock x:Name="usrName"
-                           Text="alice"
+                           Text=""
                            Canvas.Left="119"
                            Canvas.Top="97"
                            FontSize="15"
@@ -622,7 +622,7 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"/>
                 <TextBlock x:Name="ptnName"
-                           Text="bob"
+                           Text=""
                            Canvas.Left="734"
                            Canvas.Top="97"
                            FontSize="15"
@@ -633,8 +633,9 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"/>
             </Canvas>
+            <!-- REMOTE -->
             <Canvas x:Name="Remote"
-                    Visibility="Visible"
+                    Visibility="Collapsed"
                     Margin="283,0,0,0"
                     Background="#DCD7C9">
                 <Rectangle Height="154"
@@ -858,7 +859,6 @@
 
                 <!-- Performance -->
                 <Canvas x:Name="Performance"
-                        Visibility="Collapsed"
                         Background="#DCD7C9"
                         Height="649"
                         Width="1066"
@@ -1075,7 +1075,7 @@
                         HorizontalAlignment="Center"
                         Canvas.Top="112"
                         VerticalAlignment="Center"
-                        Canvas.Left="10">
+                        Canvas.Left="10" Visibility="Collapsed">
                     <Label Content="Task Manager"
                            Foreground="#FF000AA3"
                            FontSize="36"
