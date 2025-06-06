@@ -23,6 +23,7 @@ using Microsoft.VisualBasic.Logging;
 using static System.Windows.Forms.Design.AxImporter;
 using RemoteMonitoringApplication.Services;
 using Windows.Media.Protection.PlayReady;
+using System.IO;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -589,7 +590,7 @@ namespace RemoteMonitoringApplication.Views
                                 Console.WriteLine("Received detail info error: id and target id not found!");
                             }
                         }
-                    else if (command == "SentprocessDump")
+                    else if (command == "SentprocessDump" && status == "success" )
                     {
                         if (!root.TryGetProperty("target_id", out var targetIdProp) ||
                             !root.TryGetProperty("length", out var lengthProp))
@@ -598,6 +599,7 @@ namespace RemoteMonitoringApplication.Views
                             return;
                         }
                         Console.WriteLine("Received process dump from server");
+                        System.Windows.MessageBox.Show("Received process dump from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
                         string targetId = targetIdProp.GetString();
                         long dumpLength = lengthProp.GetInt64();
 
@@ -606,15 +608,18 @@ namespace RemoteMonitoringApplication.Views
                             Console.WriteLine("fail", "SentprocessDump", "Dump length không hợp lệ.");
                             return;
                         }
-
-                        
-                            var header = new { command = "SentprocessDump", length = dumpLength };
-
                             Console.WriteLine($"Starting saved dump file of {dumpLength} bytes");
 
                             try
                             {
-                                await tcpClient.RelayFileAsync( "C:/Users/ASUS/Documents/Nam2_Ki2/ltmcb/DoAn/Savedata", dumpLength);
+                            //string path = "dumpReceived.dmp";
+                            //if (!Directory.Exists(path))
+                            //{
+                            //    Directory.CreateDirectory(path);
+                            //}
+                            string filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Savedata", "dumpReceived.dmp");
+
+                            //await tcpClient.ReceiveAndSaveFileAsync(filePath);
                                 Console.WriteLine($"Saved completed. {dumpLength} bytes sent to {targetId}");
                             }
                             catch (Exception ex)

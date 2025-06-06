@@ -360,6 +360,7 @@ namespace SERVER_RemoteMonitoring.Services
             var header = new
             {
                 command = "SentprocessDump",
+                status = "success",
                 target_id = targetId,
                 length = fileSize
             };
