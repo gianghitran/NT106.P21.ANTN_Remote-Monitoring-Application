@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using static SERVER_RemoteMonitoring.Server.SERVER;
-
+using SERVER_RemoteMonitoring.Data;
 namespace SERVER_RemoteMonitoring.Server
 {
     /// <summary>
@@ -21,68 +21,56 @@ namespace SERVER_RemoteMonitoring.Server
     /// </summary>
     public partial class SERVER : Window
     {
-        public SERVER()
+        private readonly DatabaseService _dbService;
+
+        public SERVER(DatabaseService dbService)
         {
             InitializeComponent();
-            
+            _dbService = dbService;
+
+            this.Loaded += SERVER_Loaded; // Gán sự kiện loaded khi cửa sổ mở lên
+        }
+
+        private async void SERVER_Loaded(object sender, RoutedEventArgs e)
+        {
+            await LoadDataAsync();
+        }
+
+        private async Task LoadDataAsync()
+        {
+            var db = _dbService.GetDataBaseConnection();
+
+            // Lấy dữ liệu logs từ database
+            List<Models.Log> logs = await db.Table<Models.Log>().ToListAsync();
+
+            // Hoặc nếu chưa có thì có thể tạo giả test như sau:
             List<User> users = new List<User>
-            {
-                new User { ID = 1, UserName = "Alice", Email = "alice@example.com", IP = "192.168.1.2", Port = "8080", Role = "Connect", ConnectWith = "None", Details = "Alice querry to Bob." },
-                new User { ID = 2, UserName = "Bob", Email = "bob@example.com", IP = "192.168.1.3", Port = "8081", Role = "Be connected", ConnectWith = "Alice", Details = "Bob connected to mornitoring Char." },
-                new User { ID = 3, UserName = "Charlie", Email = "charlie@example.com", IP = "192.168.1.4", Port = "8082", Role = "Be connected", ConnectWith = "Bob", Details = "Charlie offline." }
-            };
+        {
+            new User { ID = 1, UserName = "Alice", Email = "alice@example.com", IP = "192.168.1.2", Port = "8080", Role = "Connect", ConnectWith = "None", Details = "Alice query to Bob." },
+            new User { ID = 2, UserName = "Bob", Email = "bob@example.com", IP = "192.168.1.3", Port = "8081", Role = "Be connected", ConnectWith = "Alice", Details = "Bob connected to monitoring Char." },
+            new User { ID = 3, UserName = "Charlie", Email = "charlie@example.com", IP = "192.168.1.4", Port = "8082", Role = "Be connected", ConnectWith = "Bob", Details = "Charlie offline." }
+        };
+            List<Models.Log> sampleLogs = await db.Table<Models.Log>().ToListAsync();
 
-            // Tạo danh sách logs, mỗi log gán đúng user từ danh sách
-            List<Log> logs = new List<Log>
-            { 
-                new Log
-                {
-                    ID=1,
-                    LogID = "1",
-                    Action = "Alice get process list of Bob.",
-                    NameResources="file.txt",
-                    Times = DateTime.Now,
-                    User = users.First(u => u.ID == 1),
+        //    List<Log> sampleLogs = new List<Log>
+        //{
+        //    new Log { ID = 1, LogID = "1", Action = "Alice get process list of Bob.", NameResources="file.txt", Times=DateTime.Now, User=users.First(u => u.ID == 1) },
+        //    new Log { ID = 2, LogID = "2", Action = "Bob connected to monitoring Char.", NameResources="file.txt", Times=DateTime.Now, User=users.First(u => u.ID == 2) },
+        //    new Log { ID = 3, LogID = "3", Action = "Charlie screen view Alice.", NameResources="file.txt", Times=DateTime.Now, User=users.First(u => u.ID == 3) }
+        //};
 
-                },
-                new Log
-                {
-                    ID = 2,
-                    LogID = "2",
-                    Action = "Bob connected to monitoring Char.",
-                    NameResources="file.txt",
-
-                    Times = DateTime.Now,
-                    User = users.First(u => u.ID == 2), 
-                },
-                new Log
-                {
-                    ID = 3,
-                    LogID = "3",
-                    Action = "Charlie screen view Alice.",
-                    NameResources="file.txt",
-
-                    Times = DateTime.Now,
-                    User = users.First(u => u.ID == 3), 
-                }
-            };
-
-            foreach (var log in logs)
-            {
-                log.User.LastAction = log.Times;
-                log.User.LastActionDe = log.Action;
-
-            }
-
+            //foreach (var log in sampleLogs)
+            //{
+            //    log.User.LastAction = log.Times;
+            //    log.User.LastActionDe = log.Action;
+            //}
 
             // Gán dữ liệu vào DataGrid
             SettingsDataGrid.ItemsSource = users;
-            DashboardDataGrid.ItemsSource = logs;
+            DashboardDataGrid.ItemsSource = sampleLogs;
             UserControlDataGrid.ItemsSource = users;
             ConnectionsDataGrid.ItemsSource = users;
-            LogsDataGrid.ItemsSource = logs;
-
-
+            LogsDataGrid.ItemsSource = sampleLogs;
         }
 
         public class User
@@ -217,6 +205,9 @@ namespace SERVER_RemoteMonitoring.Server
             
         }
 
-        
+        private void DashboardDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

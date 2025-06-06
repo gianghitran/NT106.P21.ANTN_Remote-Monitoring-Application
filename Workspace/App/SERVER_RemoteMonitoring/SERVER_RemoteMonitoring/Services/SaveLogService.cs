@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace SERVER_RemoteMonitoring.Services
 {
@@ -42,5 +43,31 @@ namespace SERVER_RemoteMonitoring.Services
                 return false;
             }
         }
+        public async Task<List<Models.Log>> GetLogsAsync()
+        {
+            try
+            {
+                var db = _dbService.GetDataBaseConnection();
+
+                //sắp xếp theo thời gian giảm dần
+                var logs = await db.Table<Models.Log>()
+                                   .OrderByDescending(log => log.LogAt)
+                                   .ToListAsync();
+
+                return logs;
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log lỗi 
+                return new List<Models.Log>();
+            }
+        }
+        public async Task LoadLogsToDataGrid(DataGrid DashboardDataGrid)
+        {
+            var logs = await GetLogsAsync();
+            DashboardDataGrid.ItemsSource = logs;
+        }
+
+
     }
 }

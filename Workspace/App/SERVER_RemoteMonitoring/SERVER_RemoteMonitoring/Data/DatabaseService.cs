@@ -25,7 +25,7 @@ namespace SERVER_RemoteMonitoring.Data
             var resultLog = await _database.CreateTableAsync<Models.Log>();
             //await _database.CreateTableAsync<Models.Log>();
         }
-
+        
         public SQLiteAsyncConnection GetDataBaseConnection() => _database;
 
     }

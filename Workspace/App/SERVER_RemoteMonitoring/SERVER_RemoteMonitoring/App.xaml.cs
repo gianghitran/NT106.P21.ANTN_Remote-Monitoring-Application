@@ -27,7 +27,7 @@ namespace SERVER_RemoteMonitoring
             await GetDatabaseServiceAsync();
             //MessageBox.Show("Database initialized successfully.");
             // Initialize the server
-            var _server = new SERVER();
+            var _server = new SERVER(_databaseService);
             _server.Show();
         }
 
