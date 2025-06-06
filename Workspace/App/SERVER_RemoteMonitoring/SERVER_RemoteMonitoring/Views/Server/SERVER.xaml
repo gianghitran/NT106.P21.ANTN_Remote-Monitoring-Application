@@ -127,14 +127,15 @@
                     <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Connections"/><LineBreak/><Run/></TextBlock>
                 </Label>
 
-                <Label x:Name="LogsControl" HorizontalAlignment="Left" Margin="0,450,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261" MouseDown="LogsControl_Click" Cursor="Hand">
+                <!-- HomeClick_Click -->
+                <Label x:Name="LogsControl" HorizontalAlignment="Left" Margin="0,450,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261" MouseDown="HomeClick_Click" Cursor="Hand">
                     <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Logs"/><LineBreak/><Run/></TextBlock>
                 </Label>
 
                 <Label x:Name="SettingsControl" HorizontalAlignment="Left" Margin="0,550,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Black" FontSize="28" Width="261" MouseDown="SettingsControl_Click" Cursor="Hand">
-                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Settings"/><LineBreak/><Run/></TextBlock>
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center" Foreground="#FFDCD7C9" Width="252" Height="61"><Run Text="Users"/><LineBreak/><Run/></TextBlock>
                 </Label>
-                
+
             </Grid>
 
             <!-- HOME -->
@@ -159,12 +160,12 @@
           Margin="0,29,0,0">
 
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="LogID" Binding="{Binding logid}" />
-                            <DataGridTextColumn Header="User ID" Binding="{Binding UserId}" />
-                            <DataGridTextColumn Header="Role" Binding="{Binding Role}" />
-                            <DataGridTextColumn Header="Partner ID" Binding="{Binding PartnerId}" />
-                            <DataGridTextColumn Header="Action" Binding="{Binding Action}" />
-                            <DataGridTextColumn Header="Log At" Binding="{Binding LogAt}" />
+                            <DataGridTextColumn Header="LogID" Binding="{Binding logid}" Width="50" />
+                            <DataGridTextColumn Header="User ID" Binding="{Binding UserId}" Width="150"/>
+                            <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="150"/>
+                            <DataGridTextColumn Header="Partner ID" Binding="{Binding PartnerId}" Width="150"/>
+                            <DataGridTextColumn Header="Action" Binding="{Binding Action}" Width="*"/>
+                            <DataGridTextColumn Header="Log At" Binding="{Binding LogAt}" Width="200"/>
                         </DataGrid.Columns>
                     </DataGrid>
 
@@ -177,9 +178,9 @@
             <StackPanel x:Name="UserControl_Table" Panel.ZIndex="100" Visibility="Collapsed">
                 <DataGrid x:Name="UserControlDataGrid"
                     HorizontalAlignment="Right"
-                    Margin="0,100,100,0"
+                    Margin="0,100,45,0"
                     Height="592"
-                    Width="913"
+                    Width="1015"
 
                     AutoGenerateColumns="False">
                     <DataGrid.Resources>
@@ -197,12 +198,13 @@
                     </DataGrid.Resources>
 
                     <DataGrid.Columns>
-                        
-                        <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="30" />
-                        <DataGridTextColumn Header="User A" Binding="{Binding UserName}" Width="*" />
-                        <DataGridTextColumn Header="Connect With" Binding="{Binding ConnectWith}" Width="*" />
-                        <DataGridTextColumn Header="Status" Binding="{Binding Details}" Width="*" />
-                        <DataGridTextColumn Header="Time" Binding="{Binding LastAction}" Width="*" />
+
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="30" />
+                        <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*" />
+                        <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" />
+                        <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="*" />
+                        <DataGridTextColumn Header="Created At" Binding="{Binding CreatedAt}" Width="*" />
+                        <DataGridTextColumn Header="Updated At" Binding="{Binding UpdatedAt}" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
@@ -212,12 +214,12 @@
                 <DataGrid
                     x:Name="ConnectionsDataGrid"
                     HorizontalAlignment="Right"
-                    Margin="0,100,100,0"
+                    Margin="0,100,50,0"
                     Height="592"
-                    Width="913"
+                    Width="997"
                     AutoGenerateColumns="False">
-                   
-                        <DataGrid.Resources>
+
+                    <DataGrid.Resources>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
                             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -240,14 +242,14 @@
                         <DataGridTextColumn Header="Time" Binding="{Binding LastAction}" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
-               
+
             </StackPanel>
 
 
 
             <!-- Logs -->
             <StackPanel x:Name="Logs" Panel.ZIndex="100" Visibility="Collapsed">
-                
+
                 <DataGrid
                     x:Name="LogsDataGrid"
                      HorizontalAlignment="Right"
@@ -286,18 +288,18 @@
                 </RichTextBox>
 
             </StackPanel>
-            
+
 
 
 
 
             <!-- sETTINGs -->
-            <StackPanel x:Name="Settings" Panel.ZIndex="100" Visibility="Collapsed">
+            <StackPanel x:Name="Settings" Panel.ZIndex="1000" Visibility="Collapsed">
                 <DataGrid x:Name="SettingsDataGrid"
                           HorizontalAlignment="Right"
-                            Margin="0,100,750,0"
-                            Height="592"
-                            Width="292"
+                            Margin="7,92,49,0"
+                            Height="624"
+                            Width="1006"
 
                           ItemsSource="{Binding Users}"
                           SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
@@ -318,54 +320,53 @@
                     </DataGrid.Resources>
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="30" />
-                        <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" Width="*" />
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="30" />
+<DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*" />
+<DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" />
+<DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="*" />
+<DataGridTextColumn Header="Created At" Binding="{Binding CreatedAt}" Width="*" />
+<DataGridTextColumn Header="Updated At" Binding="{Binding UpdatedAt}" Width="*" />
                     </DataGrid.Columns>
                 </DataGrid>
+                <!--
                 <GroupBox Height="595" Header="User Details" FontWeight="Bold" BorderThickness="2"
-          BorderBrush="#FF2C3639" Width="647" Margin="0,-600,-600,0" FontSize="16">
+                  BorderBrush="#FF2C3639" Width="647" Margin="0,-600,-600,0" FontSize="16">
 
-                    <Grid Margin="20,20,20,20">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                            <Grid Margin="20,20,20,20">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                        <!-- Row 0 -->
                         <Label Grid.Row="0" Grid.Column="0" Content="User Name:" FontSize="12" FontWeight="Bold" Foreground="#FF2C3639" VerticalAlignment="Center"/>
                         <TextBox Grid.Row="0" Grid.Column="1" x:Name="UserNameTextBox" FontSize="12" Margin="0,20,0,20" FontWeight="Normal" Foreground="#FF2C3639" />
 
-                        <!-- Row 1 -->
                         <Label Grid.Row="1" Grid.Column="0" Content="Email:"  FontSize="12" FontWeight="Bold" Foreground="#FF2C3639" VerticalAlignment="Center"/>
                         <TextBox Grid.Row="1" Grid.Column="1" x:Name="EmailTextBox" FontSize="12" Margin="0,20,0,20" FontWeight="Normal" Foreground="#FF2C3639"/>
 
-                        <!-- Row 2 -->
                         <Label Grid.Row="2" Grid.Column="0" Content="IP:" FontSize="12" FontWeight="Bold" Foreground="#FF2C3639" VerticalAlignment="Center"/>
                         <TextBox Grid.Row="2" Grid.Column="1" x:Name="IPTextBox" FontSize="12" Margin="0,20,0,20" FontWeight="Normal" Foreground="#FF2C3639"/>
 
-                        <!-- Row 3 -->
                         <Label Grid.Row="3" Grid.Column="0" Content="Port:" FontSize="12" FontWeight="Bold" Foreground="#FF2C3639" VerticalAlignment="Center"/>
                         <TextBox Grid.Row="3" Grid.Column="1" x:Name="PortTextBox" FontSize="12" Margin="0,20,0,20" FontWeight="Normal" Foreground="#FF2C3639"/>
 
-                        <!-- Row 4 -->
                         <Label Grid.Row="4" Grid.Column="0" Content="Permission:" FontSize="12" FontWeight="Bold" Foreground="#FF2C3639" VerticalAlignment="Center"/>
                         <TextBox Grid.Row="4" Grid.Column="1" x:Name="PermissionTextBox" FontSize="12" Margin="0,20,0,20" FontWeight="Normal" Foreground="#FF2C3639"/>
 
-                        <!-- Row 5 -->
+                
                         <Label Grid.Row="5" Grid.Column="0" Content="Logs:" FontSize="12" FontWeight="Bold" Foreground="#FF2C3639" VerticalAlignment="Top" Margin="0,20,0,0"/>
                         <RichTextBox Grid.Row="5" Grid.Column="1" x:Name="LogsTextBox" FontSize="12" AcceptsReturn="True" Margin="0,20,0,-170" FontWeight="Normal" Foreground="#FF2C3639"/>
-                    </Grid>
-                </GroupBox>
-
+                </Grid>
+                </GroupBox>  -->
 
 
 

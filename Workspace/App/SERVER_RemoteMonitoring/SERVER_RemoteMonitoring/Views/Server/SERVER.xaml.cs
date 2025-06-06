@@ -51,13 +51,14 @@ namespace SERVER_RemoteMonitoring.Server
             new User { ID = 3, UserName = "Charlie", Email = "charlie@example.com", IP = "192.168.1.4", Port = "8082", Role = "Be connected", ConnectWith = "Bob", Details = "Charlie offline." }
         };
             List<Models.Log> sampleLogs = await db.Table<Models.Log>().ToListAsync();
+            List<Models.User> User = await db.Table<Models.User>().ToListAsync();
 
-        //    List<Log> sampleLogs = new List<Log>
-        //{
-        //    new Log { ID = 1, LogID = "1", Action = "Alice get process list of Bob.", NameResources="file.txt", Times=DateTime.Now, User=users.First(u => u.ID == 1) },
-        //    new Log { ID = 2, LogID = "2", Action = "Bob connected to monitoring Char.", NameResources="file.txt", Times=DateTime.Now, User=users.First(u => u.ID == 2) },
-        //    new Log { ID = 3, LogID = "3", Action = "Charlie screen view Alice.", NameResources="file.txt", Times=DateTime.Now, User=users.First(u => u.ID == 3) }
-        //};
+            //    List<Log> sampleLogs = new List<Log>
+            //{
+            //    new Log { ID = 1, LogID = "1", Action = "Alice get process list of Bob.", NameResources="file.txt", Times=DateTime.Now, User=users.First(u => u.ID == 1) },
+            //    new Log { ID = 2, LogID = "2", Action = "Bob connected to monitoring Char.", NameResources="file.txt", Times=DateTime.Now, User=users.First(u => u.ID == 2) },
+            //    new Log { ID = 3, LogID = "3", Action = "Charlie screen view Alice.", NameResources="file.txt", Times=DateTime.Now, User=users.First(u => u.ID == 3) }
+            //};
 
             //foreach (var log in sampleLogs)
             //{
@@ -66,11 +67,11 @@ namespace SERVER_RemoteMonitoring.Server
             //}
 
             // Gán dữ liệu vào DataGrid
-            SettingsDataGrid.ItemsSource = users;
+            SettingsDataGrid.ItemsSource = User;
             DashboardDataGrid.ItemsSource = sampleLogs;
-            UserControlDataGrid.ItemsSource = users;
+            UserControlDataGrid.ItemsSource = User;
             ConnectionsDataGrid.ItemsSource = users;
-            LogsDataGrid.ItemsSource = sampleLogs;
+            LogsDataGrid.ItemsSource = User;
         }
 
         public class User
@@ -175,14 +176,14 @@ namespace SERVER_RemoteMonitoring.Server
             Logs.Visibility = Visibility.Collapsed;
 
             Settings.Visibility = Visibility.Visible;
-            UserNameTextBox.Clear();
-            EmailTextBox.Clear();
-            IPTextBox.Clear();
-            PortTextBox.Clear();
-            PermissionTextBox.Clear();
+            //UserNameTextBox.Clear();
+            //EmailTextBox.Clear();
+            //IPTextBox.Clear();
+            //PortTextBox.Clear();
+            //PermissionTextBox.Clear();
 
-            TextRange LogsText = new TextRange(LogsTextBox.Document.ContentStart, LogsTextBox.Document.ContentEnd);
-            LogsText.Text ="";
+            //TextRange LogsText = new TextRange(LogsTextBox.Document.ContentStart, LogsTextBox.Document.ContentEnd);
+            //LogsText.Text ="";
         }
 
         //Setting
@@ -191,15 +192,15 @@ namespace SERVER_RemoteMonitoring.Server
         {
             if (SettingsDataGrid.SelectedItem is User selectedUser)
             {
-                UserNameTextBox.Text = selectedUser.UserName;
-                EmailTextBox.Text = selectedUser.Email;
-                IPTextBox.Text = selectedUser.IP;
-                PortTextBox.Text = selectedUser.Port;
-                PermissionTextBox.Text = selectedUser.Role+ " : " + selectedUser.ConnectWith ;
+                //UserNameTextBox.Text = selectedUser.UserName;
+                //EmailTextBox.Text = selectedUser.Email;
+                //IPTextBox.Text = selectedUser.IP;
+                //PortTextBox.Text = selectedUser.Port;
+                //PermissionTextBox.Text = selectedUser.Role+ " : " + selectedUser.ConnectWith ;
 
 
-                TextRange LogsText = new TextRange(LogsTextBox.Document.ContentStart, LogsTextBox.Document.ContentEnd);
-                LogsText.Text= selectedUser.Details;
+                //TextRange LogsText = new TextRange(LogsTextBox.Document.ContentStart, LogsTextBox.Document.ContentEnd);
+                //LogsText.Text= selectedUser.Details;
 
             }
             
