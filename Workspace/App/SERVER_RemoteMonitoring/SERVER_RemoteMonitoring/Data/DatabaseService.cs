@@ -22,6 +22,7 @@ namespace SERVER_RemoteMonitoring.Data
         public async Task InitDatabase()
         {
             var result = await _database.CreateTableAsync<Models.User>();
+            var resultLog = await _database.CreateTableAsync<Models.Log>();
             //await _database.CreateTableAsync<Models.Log>();
         }
 

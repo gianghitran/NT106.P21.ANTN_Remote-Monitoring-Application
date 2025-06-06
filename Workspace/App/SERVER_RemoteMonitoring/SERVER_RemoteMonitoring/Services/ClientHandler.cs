@@ -19,13 +19,15 @@ namespace SERVER_RemoteMonitoring.Services
         private readonly AuthService _authService;
         private readonly SessionManager _sessionManager;
         private readonly RoomManager _roomManager;
+        private readonly SaveLogService _saveLogService;
 
-        public ClientHandler(TCPClient clientConnection, AuthService authService, SessionManager sessionManager, RoomManager roomManager)
+        public ClientHandler(TCPClient clientConnection, AuthService authService, SessionManager sessionManager, RoomManager roomManager, SaveLogService saveLogService)
         {
             _client = clientConnection;
             _authService = authService;
             _sessionManager = sessionManager;
             _roomManager = roomManager;
+            _saveLogService = saveLogService;
         }
 
         public async Task<bool> ProcessAsync()
@@ -146,6 +148,9 @@ namespace SERVER_RemoteMonitoring.Services
                 };
 
                 _sessionManager.AddSession(_client.Id, session);
+
+                await _saveLogService.LogAsync(user.Id.ToString(), "", "", $"login - Username = {user.Username} - Session_Id = {_client.Id}");
+
                 await SendResponseAsync<LoginMessage>("success", "login", response);
                 return true;
             }
@@ -183,6 +188,7 @@ namespace SERVER_RemoteMonitoring.Services
 
             string command = commandProp.GetString();
             Console.WriteLine($"Received command: {command} from client {_client.Id}");
+            
             switch (command)
             {
                 case "join_room":
@@ -233,6 +239,9 @@ namespace SERVER_RemoteMonitoring.Services
                                 email = targetSession?.email
                             }
                         };
+                        
+                        await _saveLogService.LogAsync(joiningSession?.tempId, "Controller", targetSession?.tempId, "join_room");
+                        
                         await _client.SendMessageAsync(JsonSerializer.Serialize(joinResponse));
 
                         // LẤY targetClient trước khi gửi notify
@@ -269,6 +278,9 @@ namespace SERVER_RemoteMonitoring.Services
 
                         var session = _sessionManager.GetSession(_client.Id);
                         await _roomManager.RegisterClient(id, password, _client, session);
+
+                        await _saveLogService.LogAsync(_client.Id, "", "", "register_room");
+
                         await SendResponseAsync<string>("success", "register_room", "Room registered.");
                         break;
                     }
@@ -283,10 +295,12 @@ namespace SERVER_RemoteMonitoring.Services
                         // Tìm client đích theo targetId (người share màn hình)
                         var targetClient = _roomManager.GetClientById(targetId);
 
+                        
                         if (targetClient != null)
                         {
                             if (sdpType == "offer")
                             {
+                                string Controller_id = _client.Id;
                                 var offerMessage = new
                                 {
                                     command = "start_share",
@@ -295,12 +309,16 @@ namespace SERVER_RemoteMonitoring.Services
                                     sdp = sdp,
                                     sdpType = sdpType
                                 };
+                                
 
+                                await _saveLogService.LogAsync(_client.Id, "Controller", targetClient.Id, "Want received share screen");
                                 // Gửi offer đến client đích
                                 await targetClient.SendMessageAsync(JsonSerializer.Serialize(offerMessage));
                             }
                             else if (sdpType == "answer")
                             {
+                                string Monitor_id = _client.Id;
+                                string target_id = targetClient.Id;
                                 // Nếu là answer, gửi lại cho client đã gửi offer
                                 var answerMessage = new
                                 {
@@ -310,6 +328,10 @@ namespace SERVER_RemoteMonitoring.Services
                                     sdp = sdp,
                                     sdpType = sdpType
                                 };
+
+                                await _saveLogService.LogAsync(_client.Id, "Remote", target_id, "Send share screen");
+
+
                                 await targetClient.SendMessageAsync(JsonSerializer.Serialize(answerMessage));
                             }
                             else
@@ -345,6 +367,8 @@ namespace SERVER_RemoteMonitoring.Services
 
                         var jsonMessage = candidateMessage.ToJson();
 
+                        await _saveLogService.LogAsync(_client.Id, "Controller - Remote", targetClient.Id, "sharing screen connection checking...");
+
                         await targetClient.SendMessageAsync(jsonMessage);
 
                         break;
@@ -356,6 +380,8 @@ namespace SERVER_RemoteMonitoring.Services
                         string Id = root.GetProperty("id").GetString();
 
                         var targetClient = _roomManager.GetClientById(targetId);
+                        var Client = _roomManager.GetClientById(Id);
+
 
                         if (targetClient != null) 
                         { 
@@ -376,6 +402,9 @@ namespace SERVER_RemoteMonitoring.Services
                                     target_id = targetId
                                 }
                             };
+
+                            await _saveLogService.LogAsync(Client.Id, "Controller", targetClient.Id, "Want sync remote data");
+
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(syncMessage));
 
                         }
@@ -426,6 +455,8 @@ namespace SERVER_RemoteMonitoring.Services
                                 message = remoteInfo
                             };
 
+                            await _saveLogService.LogAsync(_client.Id, "Remote", targetClient.Id, "Send remote data");
+
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(RemoteData));
                         }
                         else
@@ -440,6 +471,7 @@ namespace SERVER_RemoteMonitoring.Services
                         string Id = root.GetProperty("id").GetString();
 
                         var targetClient = _roomManager.GetClientById(targetId);
+                        var Client = _roomManager.GetClientById(Id);
                         if (targetClient != null)
                         {
                             var Data = new BaseResponse<object>
@@ -452,6 +484,8 @@ namespace SERVER_RemoteMonitoring.Services
                                     target_id = targetId
                                 }
                             };
+
+                            await _saveLogService.LogAsync(Client.Id, "Controller", targetClient.Id, "Want disk detail information from remote data");
 
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
                         }
@@ -468,6 +502,7 @@ namespace SERVER_RemoteMonitoring.Services
                         string Id = root.GetProperty("id").GetString();
 
                         var targetClient = _roomManager.GetClientById(targetId);
+                        var Client = _roomManager.GetClientById(Id);
                         if (targetClient != null)
                         {
                             var Data = new BaseResponse<object>
@@ -481,6 +516,8 @@ namespace SERVER_RemoteMonitoring.Services
                                 }
                             };
 
+                           
+                            await _saveLogService.LogAsync(Client.Id, "Controller", targetClient.Id, "Want memory detail information from remote data");
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
                         }
                         else
@@ -495,6 +532,7 @@ namespace SERVER_RemoteMonitoring.Services
                         string Id = root.GetProperty("id").GetString();
 
                         var targetClient = _roomManager.GetClientById(targetId);
+                        var Client = _roomManager.GetClientById(Id);
                         if (targetClient != null)
                         {
                             var Data = new BaseResponse<object>
@@ -507,6 +545,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     target_id = targetId
                                 }
                             };
+                            await _saveLogService.LogAsync(Client.Id, "Controller", targetClient.Id, "Want CPU detail information from remote data");
 
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
                         }
@@ -522,6 +561,7 @@ namespace SERVER_RemoteMonitoring.Services
                         string Id = root.GetProperty("id").GetString();
 
                         var targetClient = _roomManager.GetClientById(targetId);
+                        var Client = _roomManager.GetClientById(Id);
                         if (targetClient != null)
                         {
                             var Data = new BaseResponse<object>
@@ -534,6 +574,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     target_id = targetId
                                 }
                             };
+                            await _saveLogService.LogAsync(Client.Id, "Controller", targetClient.Id, "Want GPU detail information from remote data");
 
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
                         }
@@ -560,6 +601,7 @@ namespace SERVER_RemoteMonitoring.Services
                                 command = "SentDetail",
                                 message = infoJson
                             };
+                            await _saveLogService.LogAsync(_client.Id, "Remote", targetClient.Id, "Send detail remote data");
 
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(DetailData));
                         }
@@ -575,6 +617,7 @@ namespace SERVER_RemoteMonitoring.Services
                         string Id = root.GetProperty("id").GetString();
 
                         var targetClient = _roomManager.GetClientById(targetId);
+                        var Client = _roomManager.GetClientById(Id);
                         if (targetClient != null)
                         {
                             var Data = new BaseResponse<object>
@@ -587,6 +630,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     target_id = targetId
                                 }
                             };
+                            await _saveLogService.LogAsync(Client.Id, "Controller", targetClient.Id, "Want process list information to controller");
 
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(Data));
                         }
@@ -611,6 +655,9 @@ namespace SERVER_RemoteMonitoring.Services
                                 command = "SentprocessList",
                                 message = processList
                             };
+
+                            await _saveLogService.LogAsync(_client.Id, "Remote", targetClient.Id, "Send processList to controller");
+
 
                             await targetClient.SendMessageAsync(JsonSerializer.Serialize(DetailData), "SentprocessList");
                         }

@@ -46,7 +46,8 @@ namespace SERVER_RemoteMonitoring
         {
             var db = await GetDatabaseServiceAsync();
             var authService = new AuthService(db);
-            var _tcpServer = new TCPServer(authService);
+            var saveLogService = new SaveLogService(db);
+            var _tcpServer = new TCPServer(authService, saveLogService);
             await Task.Run(() => _tcpServer.Start());
         }
     }

@@ -19,6 +19,7 @@ namespace SERVER_RemoteMonitoring.Services
         private TcpListener _tcpListener;
         private const int Port = 8080; // Port for TCP connections
         private readonly AuthService _authservice;
+        private readonly SaveLogService _saveLogService;
         private readonly SessionManager _sessionManager;
         private readonly List<TCPClient> _clients = new List<TCPClient>();
         //private readonly List<ClientConnectionTCP>
@@ -27,9 +28,10 @@ namespace SERVER_RemoteMonitoring.Services
         private readonly RoomManager _roomManager;
 
 
-        public TCPServer(AuthService authService)
+        public TCPServer(AuthService authService, SaveLogService saveLogService)
         {
             _authservice = authService;
+            _saveLogService = saveLogService;
             _sessionManager = new SessionManager();
             _tcpListener = new TcpListener(IPAddress.Any, Port);
             //_httpListener.Prefixes.Add(uri);
@@ -88,7 +90,7 @@ namespace SERVER_RemoteMonitoring.Services
 
             try
             {
-                var handler = new ClientHandler(client, _authservice, _sessionManager, _roomManager);
+                var handler = new ClientHandler(client, _authservice, _sessionManager, _roomManager, _saveLogService);
                 client.Handler = handler;
 
                 while (!authenticated)

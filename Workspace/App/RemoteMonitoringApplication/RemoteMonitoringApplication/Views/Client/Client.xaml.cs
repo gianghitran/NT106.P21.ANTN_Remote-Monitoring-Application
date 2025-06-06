@@ -119,7 +119,7 @@ namespace RemoteMonitoringApplication.Views
             {
                 command = "register_room",
                 id = clientId,
-                password = clientPassword
+                password = clientPassword,
             };
 
             string registerJson = JsonSerializer.Serialize(registerRoomRequest);
