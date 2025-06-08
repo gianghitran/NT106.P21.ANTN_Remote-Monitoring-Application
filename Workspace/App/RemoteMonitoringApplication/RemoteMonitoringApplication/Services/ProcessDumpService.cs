@@ -29,21 +29,26 @@ namespace RemoteMonitoringApplication.Services
             if (!File.Exists(procdumpExePath))
                 throw new FileNotFoundException("Không tìm thấy procdump.exe.");
 
-            string tempDumpPath = Path.GetTempFileName(); // file tạm
+            string tempDumpPath = Path.Combine(Path.GetTempPath(), $"process_{processId}.dmp");
 
-            // Tạo tiến trình chạy procdump
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = procdumpExePath,
-                Arguments = $"-ma {processId} \"{tempDumpPath}\"",
-                UseShellExecute = false,
+                Arguments = $"-accepteula -ma {processId} \"{tempDumpPath}\"",
+                UseShellExecute = true,   // bắt buộc khi Verb = "runas"
+                Verb = "runas",
                 CreateNoWindow = true
             };
 
             try
             {
                 var proc = Process.Start(psi);
+                //string output = proc.StandardOutput.ReadToEnd();
+                //string error = proc.StandardError.ReadToEnd();
                 proc.WaitForExit();
+
+                //Console.WriteLine("ProcDump Output:\n" + output);
+                //Console.WriteLine("ProcDump Error:\n" + error);
 
                 if (!File.Exists(tempDumpPath) || new FileInfo(tempDumpPath).Length == 0)
                 {
@@ -80,6 +85,11 @@ namespace RemoteMonitoringApplication.Services
             System.Windows.Forms.MessageBox.Show($"File was saved at: {filePath}", "Notification", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
+
+
+
+
     }
+
 }
 

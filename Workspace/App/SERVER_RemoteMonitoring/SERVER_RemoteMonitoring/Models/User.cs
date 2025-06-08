@@ -24,8 +24,8 @@ namespace SERVER_RemoteMonitoring.Models
 
         public User()
         {
-            CreatedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            CreatedAt = DateTime.Now;
+            UpdatedAt = DateTime.Now; ;
         }
 
         //public ICollection<Log> Logs { get; set; }

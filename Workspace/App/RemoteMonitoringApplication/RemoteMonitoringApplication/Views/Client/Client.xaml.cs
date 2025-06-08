@@ -22,6 +22,8 @@ using static System.Net.Mime.MediaTypeNames;
 using Microsoft.VisualBasic.Logging;
 using static System.Windows.Forms.Design.AxImporter;
 using RemoteMonitoringApplication.Services;
+using Windows.Media.Protection.PlayReady;
+using System.IO;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -42,6 +44,7 @@ namespace RemoteMonitoringApplication.Views
         private SystemMonitorViewModel _viewModel = new();
         private ProcessViewModel _viewModelProcess = new();
         private ProcessDumpViewModel _viewModelPCdump = new();
+        private CompressService _viewCompress = new();
         private SharePerformanceInfo _GetInfo = new SharePerformanceInfo();
         private ProcessMonitorService _ProcessSerivce = new ProcessMonitorService();
         private string savedTempId;
@@ -125,6 +128,12 @@ namespace RemoteMonitoringApplication.Views
         {
             public string id { get; set; }
             public string target_id { get; set; }
+        }
+        public class RequestPCDump
+        {
+            public string id { get; set; }
+            public string target_id { get; set; }
+            public string PID { get; set; } // Thêm PID để yêu cầu dump của tiến trình cụ thể
         }
         public class RemoteInfoMessage
         {
@@ -738,7 +747,7 @@ namespace RemoteMonitoringApplication.Views
 
                                 var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText());
                                 Console.WriteLine($"Process list getting");
-                                timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time:{processListObj.RealTime}");
+                                timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time: {processListObj.RealTime}");
 
                                 _viewModelProcess.BindProcessListToDataGrid(processListObj, ProcessDataGrid);
                             }
@@ -746,6 +755,81 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 Console.WriteLine("Sent processList error: id and target id not found!");
                             }
+                        }
+                        else if (command == "want_processDump" && status == "success")
+                        {
+                            Console.WriteLine("Received process dump request from server");
+                            System.Windows.MessageBox.Show("Received want process dump request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                            if (root.TryGetProperty("message", out var mess))
+                            {
+                                var Mess = JsonSerializer.Deserialize<RequestPCDump>(mess.GetRawText());
+                                var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
+                                //var Data = _ProcessSerivce.getProcessList();
+                                _viewModelPCdump.ProcessDump(Mess.PID);
+                                Console.WriteLine($"Process dump start sending.........");
+                                byte[] fileBytes = File.ReadAllBytes("dumpTemp.dmp");
+                                byte[] compress_data = CompressService.Compress(fileBytes);
+                                string base64Data = Convert.ToBase64String(compress_data);
+
+
+                                Console.WriteLine($"Process dump data length: {compress_data.Length} bytes");
+                                //await tcpClient.SendFileAsync("dumpTemp.dmp");
+                                //await tcpClient.SendFileAsync("dumpTemp.dmp", "SentprocessDump", Mess.id);
+                                var Info = new
+                                {
+                                    command = "SentprocessDump",
+                                    info = compress_data,
+
+                                    Monitor_id = Pair.id,//theo doi
+                                    Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                                };
+                                string Infojson = JsonSerializer.Serialize(Info);
+                                await tcpClient.SendMessageAsync(Infojson);
+                                Console.WriteLine("Sent process dump to server, then to client (monitor) ", Pair.id);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Received detail info error: id and target id not found!");
+                            }
+                        }
+                        else if (command == "SentprocessDump" && status == "success")
+                        {
+                            if (!root.TryGetProperty("target_id", out var targetIdProp) ||
+                                !root.TryGetProperty("length", out var lengthProp))
+                            {
+                                Console.WriteLine("fail", "SentprocessDump", "Thiếu thông tin cần thiết.");
+                                return;
+                            }
+                            Console.WriteLine("Received process dump from server");
+                            System.Windows.MessageBox.Show("Received process dump from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                            string targetId = targetIdProp.GetString();
+                            long dumpLength = lengthProp.GetInt64();
+
+                            if (dumpLength <= 0)
+                            {
+                                Console.WriteLine("fail", "SentprocessDump", "Dump length không hợp lệ.");
+                                return;
+                            }
+                            Console.WriteLine($"Starting saved dump file of {dumpLength} bytes");
+
+                            try
+                            {
+                                //string path = "dumpReceived.dmp";
+                                //if (!Directory.Exists(path))
+                                //{
+                                //    Directory.CreateDirectory(path);
+                                //}
+                                string filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Savedata", "dumpReceived.dmp");
+
+                                //await tcpClient.RelayFileAsync(filePath, dumpLength);
+                                Console.WriteLine($"Saved completed. {dumpLength} bytes sent to {targetId}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Relay failed: {ex.Message}");
+                                Console.WriteLine("fail", "SentprocessDump", $"Relay failed: {ex.Message}");
+                            }
+
                         }
                         else
                         {
@@ -893,43 +977,77 @@ namespace RemoteMonitoringApplication.Views
         private async void btnProcessList_Click(object sender, RoutedEventArgs e)
         {
             timeGetProcessList.ClearValue(ContentProperty);
-            timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Getting process information...");
-
-
-            if (tcpClient != null)
+            timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time:");
+            if (role == "controller")
             {
-                if (role == "controller")
+                timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Getting process information...");
+
+                if (tcpClient != null)
                 {
-                    var SyncRequest = new
+                    if (role == "controller")
                     {
-                        command = "want_processList",
-                        id = clientId,
-                        target_id = targetId
-                    };
-                    await tcpClient.SendMessageAsync(clientId, targetId, SyncRequest);
-                    Console.WriteLine("Sent processList request to server:");
+                        var SyncRequest = new
+                        {
+                            command = "want_processList",
+                            id = clientId,
+                            target_id = targetId
+                        };
+
+                        await tcpClient.SendMessageAsync(clientId, targetId, SyncRequest);
+                        Console.WriteLine("Sent processList request to server:");
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("You are not controller!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Console.WriteLine("You are not controller!");
+                        return;
+                    }
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("You are not controller!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    Console.WriteLine("You are not controller!");
+                    System.Windows.MessageBox.Show("Disconnected Socket server.", "Connected Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Console.WriteLine("Disconnected Socket server.");
                     return;
                 }
             }
-            else
-            {
-                System.Windows.MessageBox.Show("Disconnected Socket server.", "Connected Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                Console.WriteLine("Disconnected Socket server.");
-                return;
-            }
         }
 
-        private void btnProcessDump_Click(object sender, RoutedEventArgs e)
+        private async void btnProcessDump_Click(object sender, RoutedEventArgs e)
         {
-            _viewModelPCdump.ProcessDump(Textbox_PID);
-
-
-
+            System.Windows.MessageBox.Show("Feature is in development", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+            //byte[] dumpdata = _viewModelPCdump.ProcessDump(Textbox_PID);
+            if (role == "controller")
+            {
+                if (tcpClient != null)
+                {
+                    if (role == "controller")
+                    {
+                        var SyncRequest = new
+                        {
+                            command = "want_processDump",
+                            ProcessPID = Textbox_PID.Text.Trim(),
+                            id = clientId,
+                            target_id = targetId
+                        };
+                        string json = JsonSerializer.Serialize(SyncRequest);
+                        await tcpClient.SendMessageAsync(json);
+                        Console.WriteLine("Sent want_processDump request to server:");
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("You are not controller!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Console.WriteLine("You are not controller!");
+                        return;
+                    }
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("Disconnected Socket server.", "Connect error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Console.WriteLine("Disconnected Socket server");
+                    return;
+                }
+            }
         }
 
         private async Task<int> GetPartnerServerPortAsync(string targetId)

@@ -555,7 +555,7 @@
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center"/>
                 <Label x:Name="usrEmail"
-                       Content="alice@gmail.com"
+                       Content=""
                        Canvas.Left="82"
                        Canvas.Top="120"
                        FontSize="15"
@@ -563,7 +563,7 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"/>
                 <Label x:Name="ptnEmail"
-                       Content="bob@gmail.com"
+                       Content=""
                        Canvas.Left="703"
                        Canvas.Top="120"
                        FontSize="15"
@@ -611,7 +611,7 @@
                     </Button.Template>
                 </Button>
                 <TextBlock x:Name="usrName"
-                           Text="alice"
+                           Text=""
                            Canvas.Left="119"
                            Canvas.Top="97"
                            FontSize="15"
@@ -622,7 +622,7 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"/>
                 <TextBlock x:Name="ptnName"
-                           Text="bob"
+                           Text=""
                            Canvas.Left="734"
                            Canvas.Top="97"
                            FontSize="15"
@@ -633,6 +633,7 @@
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"/>
             </Canvas>
+            <!-- REMOTE -->
             <Canvas x:Name="Remote"
                     Visibility="Collapsed"
                     Margin="283,0,0,0"
@@ -858,7 +859,6 @@
 
                 <!-- Performance -->
                 <Canvas x:Name="Performance"
-                        Visibility="Collapsed"
                         Background="#DCD7C9"
                         Height="649"
                         Width="1066"
@@ -1075,7 +1075,7 @@
                         HorizontalAlignment="Center"
                         Canvas.Top="112"
                         VerticalAlignment="Center"
-                        Canvas.Left="10">
+                        Canvas.Left="10" Visibility="Collapsed">
                     <Label Content="Task Manager"
                            Foreground="#FF000AA3"
                            FontSize="36"
@@ -1318,8 +1318,8 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <TextBox x:Name="Textbox_PID" Canvas.Left="88" TextWrapping="Wrap" Text="Input PID process" Canvas.Top="574" Width="138" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" HorizontalAlignment="Left" VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" />
-                    <TextBox x:Name="Textbox_Savepath" Canvas.Left="350" TextWrapping="Wrap" Text="Input save path" Canvas.Top="574" Width="419" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+                    <TextBox x:Name="Textbox_PID" Canvas.Left="88" TextWrapping="Wrap" Text="" Canvas.Top="574" Width="138" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" HorizontalAlignment="Left" VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center" />
+                    <TextBox x:Name="Textbox_Savepath" Canvas.Left="350" TextWrapping="Wrap" Text="" Canvas.Top="574" Width="419" Background="#FFE8E4DA" BorderBrush="#FF0D0D0E" FontSize="16" FontFamily="{StaticResource MontserratFont}" Height="32" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" />
                     <Label  Content="PID:" Canvas.Left="34" Canvas.Top="574" FontSize="16" Foreground="Black" FontFamily="{StaticResource MontserratFont}" FontWeight="Bold" Width="53" HorizontalAlignment="Center" VerticalAlignment="Top" Height="32" VerticalContentAlignment="Center"/>
                     <Label  Content="Save path:" Canvas.Left="252" Canvas.Top="574" FontSize="16" Foreground="Black" FontFamily="{StaticResource MontserratFont}" FontWeight="Bold" Width="94" HorizontalAlignment="Left" VerticalAlignment="Center" Height="32" VerticalContentAlignment="Center"/>
 

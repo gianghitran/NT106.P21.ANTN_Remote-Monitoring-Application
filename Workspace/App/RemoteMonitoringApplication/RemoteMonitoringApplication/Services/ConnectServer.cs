@@ -37,6 +37,8 @@ namespace RemoteMonitoringApplication.Services
         {
             // Handle the received message here
             Console.WriteLine($"Message received: {message}");
+            //Console.WriteLine($"Message received!");
+
         }
 
         public CClient GetClient()

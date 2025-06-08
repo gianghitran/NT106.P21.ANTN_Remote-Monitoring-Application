@@ -34,7 +34,8 @@ namespace SERVER_RemoteMonitoring
                 port = p;
 
             await StartTCPServerAsync(port, dbService); // Truyền dbService này vào
-            var _server = new SERVER();
+
+            var _server = new SERVER(dbService);
             _server.Show();
         }
 
@@ -53,7 +54,8 @@ namespace SERVER_RemoteMonitoring
         private async Task StartTCPServerAsync(int port, DatabaseService dbService)
         {
             var authService = new AuthService(dbService);
-            var _tcpServer = new TCPServer(authService, port, dbService);
+            var saveLogService = new SaveLogService(dbService);
+            var _tcpServer = new TCPServer(authService, saveLogService, port, dbService);
             await Task.Run(() => _tcpServer.Start());
         }
     }

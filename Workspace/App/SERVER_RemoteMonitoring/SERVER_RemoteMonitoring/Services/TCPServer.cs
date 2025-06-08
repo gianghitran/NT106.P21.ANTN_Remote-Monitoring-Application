@@ -11,7 +11,6 @@ using System.Net.Sockets;
 using WebSocketSharp.Net;
 using SERVER_RemoteMonitoring.Data;
 
-
 namespace SERVER_RemoteMonitoring.Services
 {
     public class TCPServer
@@ -19,6 +18,7 @@ namespace SERVER_RemoteMonitoring.Services
         private TcpListener _tcpListener;
         private int _port;
         private readonly AuthService _authservice;
+        private readonly SaveLogService _saveLogService;
         private readonly SessionManager _sessionManager;
         private readonly List<TCPClient> _clients = new List<TCPClient>();
         private const string uri = "http://localhost:8080/";
@@ -26,10 +26,11 @@ namespace SERVER_RemoteMonitoring.Services
         private readonly RoomManager _roomManager;
         private readonly DatabaseService _dbService;
 
-
-        public TCPServer(AuthService authService, int port, DatabaseService dbService)
+        // Đã hợp nhất các tham số khởi tạo
+        public TCPServer(AuthService authService, SaveLogService saveLogService, int port, DatabaseService dbService)
         {
             _authservice = authService;
+            _saveLogService = saveLogService;
             _sessionManager = new SessionManager();
             _port = port;
             _tcpListener = new TcpListener(IPAddress.Any, _port);
@@ -39,29 +40,11 @@ namespace SERVER_RemoteMonitoring.Services
 
         public void Start()
         {
-            //_httpListener.Start();
             _tcpListener.Start();
             Console.WriteLine("TCP server started at " + _port);
             Task.Run(AcceptClientsAsync);
         }
 
-        //public async Task AcceptClientsAsync()
-        //{
-        //    while (_httpListener.IsListening)
-        //    {
-        //        var context = await _httpListener.GetContextAsync();
-        //        if (context.Request.IsWebSocketRequest)
-        //        {
-        //            string clientIp = context.Request.RemoteEndPoint?.Address.ToString();
-        //            var webSocketContext = await context.AcceptWebSocketAsync(null);
-        //            var client = new TCPClients(webSocketContext.WebSocket, clientIp);
-        //            //MessageBox.Show("Client connected: " + client.Id);
-        //            _clients.Add(client);
-        //            Console.WriteLine("Client connected: " + client.Id);
-        //            _ = Task.Run(() => HandleClient(client));
-        //        }
-        //    }
-        //}
         public async Task AcceptClientsAsync()
         {
             while (true)
@@ -89,7 +72,7 @@ namespace SERVER_RemoteMonitoring.Services
 
             try
             {
-                var handler = new ClientHandler(client, _authservice, _sessionManager, _roomManager, _dbService);
+                var handler = new ClientHandler(client, _authservice, _sessionManager, _roomManager, _dbService, _saveLogService);
                 client.Handler = handler;
 
                 while (!authenticated)
@@ -116,8 +99,8 @@ namespace SERVER_RemoteMonitoring.Services
                     {
                         Console.WriteLine("Client authentication failed: " + client.Id);
 
-                        // Nếu WebSocket vẫn mở, gửi phản hồi
-                        if (!client._tcpClient.Connected)
+                        // Nếu socket vẫn mở, gửi phản hồi
+                        if (client._tcpClient.Connected)
                         {
                             var errorJson = System.Text.Json.JsonSerializer.Serialize(new
                             {
@@ -126,7 +109,6 @@ namespace SERVER_RemoteMonitoring.Services
                                 message = "Authentication failed."
                             });
                             await client.SendMessageAsync(errorJson);
-
                         }
                     }
                 }
@@ -147,14 +129,12 @@ namespace SERVER_RemoteMonitoring.Services
             }
         }
 
-
         public async void Stop()
         {
             foreach (var client in _clients)
             {
                 await client.CloseAsync();
             }
-            //_httpListener.Stop();
             _tcpListener.Stop();
             Console.WriteLine("WebSocket server stopped");
         }
