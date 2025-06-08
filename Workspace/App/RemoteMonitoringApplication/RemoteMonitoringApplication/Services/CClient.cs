@@ -3,56 +3,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Net.Sockets;
 using Org.BouncyCastle.Math.Field;
+using System.Text.Json;
 
 namespace RemoteMonitoringApplication.Services
 {
     public class CClient
     {
-        //private readonly ClientWebSocket _client = new();
-        private readonly TcpClient _client;
+        private TcpClient _client; // Bỏ readonly
         private NetworkStream _stream;
         private readonly string _host;
         private readonly int _port;
 
-        //private readonly Uri _serverUri;
-        //private readonly CancellationToken _cancellationToken;
+        private bool _isReconnecting = false;
+        private bool _disposed = false;
+        private CancellationTokenSource _cts; // Để huỷ ReceiveLoop khi disconnect
 
+        public event Action Disconnected;
         public event Action<string> MessageReceived;
+
+        public bool IsReconnecting
+        {
+            get => _isReconnecting;
+            set => _isReconnecting = value;
+        }
+
+        public string Id { get; set; }
 
         public CClient(string host, int port)
         {
             _host = host;
             _port = port;
             _client = new TcpClient();
+            IsReconnecting = false;
+            _disposed = false;
         }
-
-        //public async Task ConnectAsync()
-        //{
-        //    try
-        //    {
-        //        if (_client.State != WebSocketState.Open)
-        //        {
-        //            await _client.ConnectAsync(_serverUri, CancellationToken.None);
-        //            _ = Task.Run(ReceiveLoopAsync);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Windows.MessageBox.Show($"Error connecting to WebSocket server: {ex.Message}");
-        //    }
-        //}
 
         public async Task ConnectAsync()
         {
             try
             {
+                _cts = new CancellationTokenSource();
                 await _client.ConnectAsync(_host, _port);
                 _stream = _client.GetStream();
-                _ = Task.Run(ReceiveLoopAsync);
+                _ = Task.Run(() => ReceiveLoopAsync(_cts.Token));
             }
             catch (Exception ex)
             {
@@ -60,50 +58,30 @@ namespace RemoteMonitoringApplication.Services
             }
         }
 
-        //public async Task ReceiveLoopAsync()
-        //{
-        //    var buffer = new byte[1024 * 4];
-        //    while (_client.State == WebSocketState.Open)
-        //    {
-        //        var result = await _client.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-        //        if (result.MessageType == WebSocketMessageType.Close)
-        //        {
-        //            await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
-        //            break;
-        //        }
-
-        //        var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-        //        MessageReceived?.Invoke(message);
-        //    }
-        //}
-
-        public async Task ReceiveLoopAsync()
+        public async Task ReceiveLoopAsync(CancellationToken token)
         {
             var lengthBuffer = new byte[4];
 
             try
             {
-                while (_client.Connected)
+                while (_client.Connected && !token.IsCancellationRequested)
                 {
-                    // Read the length of the incoming message
                     int totalRead = 0;
                     int lengthNeeded = 4;
 
                     while (totalRead < lengthNeeded)
                     {
-                        int bytesRead = await _stream.ReadAsync(lengthBuffer, totalRead, lengthNeeded - totalRead);
+                        int bytesRead = await _stream.ReadAsync(lengthBuffer.AsMemory(totalRead, lengthNeeded - totalRead), token);
                         if (bytesRead == 0) return; // Connection closed
                         totalRead += bytesRead;
                     }
 
-                    // Convert the length from bytes to an integer
                     int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
-
                     var messageBuffer = new byte[messageLength];
                     totalRead = 0;
                     while (totalRead < messageLength)
                     {
-                        int bytesRead = await _stream.ReadAsync(messageBuffer, totalRead, messageLength - totalRead);
+                        int bytesRead = await _stream.ReadAsync(messageBuffer.AsMemory(totalRead, messageLength - totalRead), token);
                         if (bytesRead == 0) return; // Connection closed
                         totalRead += bytesRead;
                     }
@@ -114,44 +92,73 @@ namespace RemoteMonitoringApplication.Services
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error receiving message: {ex.Message}");
+                if (!_disposed && !token.IsCancellationRequested)
+                {
+                    DispatcherHelper.RunOnUI(() =>
+                    {
+                        System.Windows.MessageBox.Show("Error receiving message: " + ex.Message);
+                    });
+                    Disconnected?.Invoke();
+                }
             }
         }
 
-        //public async Task SendMessageAsync(string message)
-        //{
-        //    if (_client.State == WebSocketState.Open)
-        //    {
-        //        var buffer = Encoding.UTF8.GetBytes(message);
-        //        var segment = new ArraySegment<byte>(buffer);
-        //        await _client.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None);
-        //    }
-        //}
+        // public async Task SendMessageAsync(string message)
+        // {
+        //     if (_client.Connected)
+        //     {
+        //         var lengthBuffer = BitConverter.GetBytes(message.Length);
+        //         await _stream.WriteAsync(lengthBuffer, 0, lengthBuffer.Length);
 
+        //         var messageBuffer = Encoding.UTF8.GetBytes(message);
+        //         await _stream.WriteAsync(messageBuffer, 0, messageBuffer.Length);
+        //     }
+        // }
         public async Task SendMessageAsync(string message)
         {
             if (_client.Connected)
             {
-                // Convert the message length to bytes and send it first
-                var lengthBuffer = BitConverter.GetBytes(message.Length);
-                await _stream.WriteAsync(lengthBuffer, 0, lengthBuffer.Length);
-
-                // Convert the message to bytes and send it
                 var messageBuffer = Encoding.UTF8.GetBytes(message);
+                var lengthBuffer = BitConverter.GetBytes(messageBuffer.Length);
+
+                await _stream.WriteAsync(lengthBuffer, 0, lengthBuffer.Length);
                 await _stream.WriteAsync(messageBuffer, 0, messageBuffer.Length);
+                await _stream.FlushAsync(); // đảm bảo gửi sạch
             }
+        }
+
+        public async Task SendMessageAsync(string from, string to, object payload)
+        {
+            var packet = new
+            {
+                from = from,
+                to = to,
+                payload = payload
+            };
+            string wrappedJson = JsonSerializer.Serialize(packet);
+            Console.WriteLine($"Sending message: {wrappedJson}");
+            await SendMessageAsync(wrappedJson);
         }
 
         public async Task DisconnectAsync()
         {
-            if (_client.Connected)
+            try { _stream?.Close(); } catch { }
+            try { _client?.Close(); } catch { }
+            try { _client?.Dispose(); } catch { }
+            _stream = null;
+            _client = null;
+            _disposed = true;
+            _cts?.Cancel();
+            Disconnected?.Invoke();
+        }
+
+        public int Port => _port;
+
+        public static class DispatcherHelper
+        {
+            public static void RunOnUI(Action action)
             {
-                await _client.GetStream().FlushAsync();
-                _stream?.Close();
-                _client.Close();
-                _client.Dispose();
-                MessageReceived = null; // Unsubscribe from the event
-                System.Windows.MessageBox.Show("Disconnected from the server.");
+                System.Windows.Application.Current.Dispatcher.Invoke(action);
             }
         }
     }

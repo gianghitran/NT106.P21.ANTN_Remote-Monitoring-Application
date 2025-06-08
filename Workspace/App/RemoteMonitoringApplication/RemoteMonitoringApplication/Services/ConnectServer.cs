@@ -13,7 +13,7 @@ namespace RemoteMonitoringApplication.Services
 
         public ConnectServer()
         {
-            _client = new CClient("localhost", 8080); // Default host and port
+            _client = new CClient("localhost", 8001); // Default host and port
             _client.MessageReceived += HandleMessageReceived;
         }
 

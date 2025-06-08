@@ -36,11 +36,17 @@ namespace SERVER_RemoteMonitoring.Services
         //    Id = Guid.NewGuid().ToString(); // Unique per client
         //}
 
-        public TCPClient(TcpClient client)
+        private readonly RoomManager _roomManager;
+
+        public int ServerPort { get; private set; } // Thêm dòng này
+
+        public TCPClient(TcpClient client, RoomManager roomManager, int serverPort)
         {
             _tcpClient = client;
             stream = _tcpClient.GetStream();
-            Id = Guid.NewGuid().ToString(); // Unique per client
+            Id = Guid.NewGuid().ToString();
+            _roomManager = roomManager;
+            ServerPort = serverPort; // Gán giá trị khi khởi tạo
         }
 
 
@@ -97,7 +103,7 @@ namespace SERVER_RemoteMonitoring.Services
                             return;
                         }
                         totalRead += bytesRead;
-                    }                    
+                    }
 
                     int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
 
@@ -223,6 +229,7 @@ namespace SERVER_RemoteMonitoring.Services
                 try
                 {
                     await stream.FlushAsync();
+                    _roomManager.RemoveClient(this.Id);
                     stream.Close();
                     _tcpClient.Close();
                     Console.WriteLine($"Connection closed for client {Id}");

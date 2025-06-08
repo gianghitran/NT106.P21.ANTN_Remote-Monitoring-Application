@@ -1,13 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using SERVER_RemoteMonitoring.Data;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
+using SERVER_RemoteMonitoring.Models;
+using System;
 
 namespace SERVER_RemoteMonitoring.Services
 {
     public class RoomManager
     {
+        private readonly DatabaseService _dbService;
+
+        public RoomManager(DatabaseService dbService)
+        {
+            _dbService = dbService;
+        }
+
+        public void RemoveClient(string id)
+        {
+            Console.WriteLine($"[RoomManager] Removing client {id}");
+            _idToClient.Remove(id);
+            _idToSession.Remove(id);
+            _clientPasswords.Remove(id);
+        }
+
+
         // Lưu thông tin ID và password tạm thời
         private readonly Dictionary<string, string> _clientPasswords = new Dictionary<string, string>();
         // Mỗi target client có duy nhất một controller
@@ -20,24 +37,41 @@ namespace SERVER_RemoteMonitoring.Services
 
         private readonly Dictionary<string, UserSession> _idToSession = new Dictionary<string, UserSession>();
 
-        public async Task RegisterClient(string id, string password, TCPClient client, UserSession session)
+        public async Task RegisterClient(string id, string password, TCPClient client, UserSession session, int serverPort)
         {
+            var db = _dbService.GetDataBaseConnection();
+            var existing = await db.Table<RoomClient>().Where(r => r.Id == id).FirstOrDefaultAsync();
+            if (existing == null)
+            {
+                await db.InsertAsync(new RoomClient { Id = id, Password = password, ServerPort = serverPort });
+            }
+            else
+            {
+                existing.Password = password;
+                existing.ServerPort = serverPort;
+                await db.UpdateAsync(existing);
+            }
+
             _clientPasswords[id] = password;
-            _idToClient[id] = client;
+            _idToClient[id] = client; // id tạm (database id)
+            _idToClient[client.Id] = client; // session id (GUID)
             _idToSession[id] = session;
-            session.tempId = id; // id là chuỗi random từ client
+            _idToSession[client.Id] = session;
+            session.tempId = id;
         }
 
-        public bool VerifyClient(string id, string password)
+
+        public async Task<bool> VerifyClient(string id, string password)
         {
-            if (_clientPasswords.TryGetValue(id, out var stored))
-                return stored == password;
-            return false;
+            var db = _dbService.GetDataBaseConnection();
+            var existing = await db.Table<RoomClient>().Where(r => r.Id == id).FirstOrDefaultAsync();
+            return existing != null && existing.Password == password;
         }
 
-        public async Task<bool> JoinRoom(string targetId, TCPClient controller)
+        public async Task<bool> JoinRoom(string targetId, TCPClient controller, string targetPassword)
         {
-            if (!VerifyClient(targetId, _clientPasswords[targetId]))
+            // Kiểm tra targetId và password trong database
+            if (!await VerifyClient(targetId, targetPassword))
                 return false;
 
             // Gán controller cho target
@@ -60,9 +94,27 @@ namespace SERVER_RemoteMonitoring.Services
 
         public UserSession GetSessionById(string id)
         {
-            _idToSession.TryGetValue(id, out var session);
-            return session;
+            if (_idToSession.TryGetValue(id, out var session))
+            {
+                return session;
+            }
+
+            var db = _dbService.GetDataBaseConnection();
+            var roomClient = db.Table<RoomClient>().Where(r => r.Id == id).FirstOrDefaultAsync().Result;
+            if (roomClient != null)
+            {
+                return new UserSession
+                {
+                    tempId = roomClient.Id,
+                    username = "",
+                    email = "",
+                    role = "User"
+                };
+            }
+
+            return null;
         }
+
 
 
     }

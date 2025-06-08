@@ -9,38 +9,39 @@ using System.Threading;
 using System.Windows;
 using System.Net.Sockets;
 using WebSocketSharp.Net;
+using SERVER_RemoteMonitoring.Data;
 
 
 namespace SERVER_RemoteMonitoring.Services
 {
     public class TCPServer
     {
-        //private HttpListener _httpListener;
         private TcpListener _tcpListener;
-        private const int Port = 8080; // Port for TCP connections
+        private int _port;
         private readonly AuthService _authservice;
         private readonly SessionManager _sessionManager;
         private readonly List<TCPClient> _clients = new List<TCPClient>();
-        //private readonly List<ClientConnectionTCP>
         private const string uri = "http://localhost:8080/";
 
         private readonly RoomManager _roomManager;
+        private readonly DatabaseService _dbService;
 
 
-        public TCPServer(AuthService authService)
+        public TCPServer(AuthService authService, int port, DatabaseService dbService)
         {
             _authservice = authService;
             _sessionManager = new SessionManager();
-            _tcpListener = new TcpListener(IPAddress.Any, Port);
-            //_httpListener.Prefixes.Add(uri);
-            _roomManager = new RoomManager();
+            _port = port;
+            _tcpListener = new TcpListener(IPAddress.Any, _port);
+            _roomManager = new RoomManager(dbService);
+            _dbService = dbService;
         }
 
         public void Start()
         {
             //_httpListener.Start();
             _tcpListener.Start();
-            Console.WriteLine("TCP server started at " + Port);
+            Console.WriteLine("TCP server started at " + _port);
             Task.Run(AcceptClientsAsync);
         }
 
@@ -68,7 +69,7 @@ namespace SERVER_RemoteMonitoring.Services
                 TcpClient tcpClient = await _tcpListener.AcceptTcpClientAsync();
 
                 string clientIp = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
-                var client = new TCPClient(tcpClient)
+                var client = new TCPClient(tcpClient, _roomManager, _port)
                 {
                     IP = clientIp
                 };
@@ -88,7 +89,7 @@ namespace SERVER_RemoteMonitoring.Services
 
             try
             {
-                var handler = new ClientHandler(client, _authservice, _sessionManager, _roomManager);
+                var handler = new ClientHandler(client, _authservice, _sessionManager, _roomManager, _dbService);
                 client.Handler = handler;
 
                 while (!authenticated)

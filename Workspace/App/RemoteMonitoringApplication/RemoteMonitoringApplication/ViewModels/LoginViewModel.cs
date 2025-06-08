@@ -110,25 +110,40 @@ namespace RemoteMonitoringApplication.ViewModels
             finally
             {
                 IsLoggingIn = false;
-  
+
             }
         }
 
-        private void OnLoginSuccess(LoginMessage res)
+        private async void OnLoginSuccess(LoginMessage res)
         {
-            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            await System.Windows.Application.Current.Dispatcher.Invoke(async () =>
             {
                 IsLoggingIn = false;
-                
+
                 var session = SessionManager.Instance;
                 session.id = res.id;
                 session.username = res.username;
                 session.email = res.email;
                 session.role = res.role;
-                // Add token to session manager
 
-                NavigateToClientAction?.Invoke(); // Fixed: Changed EndInvoke to Invoke
+                // Đảm bảo ClientId/ClientPassword đã có giá trị
+                if (string.IsNullOrEmpty(session.ClientId) || string.IsNullOrEmpty(session.ClientPassword))
+                {
+                    session.ClientId = ClientIdentity.GenerateRandomId();
+                    session.ClientPassword = ClientIdentity.GenerateRandomPassword();
+                }
 
+                // Gửi register_room ngay sau khi login thành công
+                var registerRoomRequest = new
+                {
+                    command = "register_room",
+                    id = session.ClientId,
+                    password = session.ClientPassword
+                };
+                await session.tcpClient.SendMessageAsync(session.ClientId, null, registerRoomRequest);
+                Console.WriteLine("📤 Sent register_room (from LoginViewModel)");
+
+                NavigateToClientAction?.Invoke();
             });
         }
 
@@ -149,7 +164,7 @@ namespace RemoteMonitoringApplication.ViewModels
                 }
 
                 ((RelayCommand)LoginCommand).RaiseCanExecuteChanged();
-        });
+            });
         }
 
         private bool CanLogin()

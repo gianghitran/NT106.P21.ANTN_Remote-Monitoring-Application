@@ -30,8 +30,6 @@ namespace RemoteMonitoringApplication.Views
     public partial class Client : Window
     {
         bool connected = false;
-        private List<User> users;
-        public ObservableCollection<ProcessInfo> Processes { get; set; }
         private string clientId;
         private string clientPassword;
 
@@ -43,14 +41,28 @@ namespace RemoteMonitoringApplication.Views
         private ShareScreenService _shareScreen = new ShareScreenService();
         private SystemMonitorViewModel _viewModel = new();
         private ProcessViewModel _viewModelProcess = new();
-        private ProcessDumpViewModel _viewModelPCdump = new ();
+        private ProcessDumpViewModel _viewModelPCdump = new();
         private SharePerformanceInfo _GetInfo = new SharePerformanceInfo();
         private ProcessMonitorService _ProcessSerivce = new ProcessMonitorService();
-        public Client()
+        private string savedTempId;
+        private string savedClientPassword;
+        private string savedUsername;
+        private string savedPassword;
+        private readonly AuthService _auth;
+
+
+        public Client(AuthService auth, CClient sharedClient)
         {
             InitializeComponent();
+            _auth = auth;
+            tcpClient = sharedClient;
 
-            tcpClient = SessionManager.Instance.tcpClient;
+            if (tcpClient != null)
+            {
+                tcpClient.MessageReceived -= OnServerMessage;
+                tcpClient.MessageReceived += OnServerMessage;
+            }
+
 
             if (tcpClient == null)
             {
@@ -58,42 +70,40 @@ namespace RemoteMonitoringApplication.Views
                 return;
             }
 
-            clientId = ClientIdentity.GenerateRandomId();
-            clientPassword = ClientIdentity.GenerateRandomPassword();
-
-            lblYourID.Text = $"{clientId}";
-            lblYourPass.Text = $"{clientPassword}";
-
-            tcpClient.MessageReceived += OnServerMessage;
-            this.Loaded += Client_Loaded;
-            this.Closing += Client_Closing;
-
-            Processes = new ObservableCollection<ProcessInfo>
+            // Nếu chưa có thông tin tạm, thì tạo mới
+            if (string.IsNullOrEmpty(SessionManager.Instance.ClientId) || string.IsNullOrEmpty(SessionManager.Instance.ClientPassword))
             {
-            new ProcessInfo { ProcessName = "Chrome",        Status = "Running", CPU = "12.4s", Memory = "350 MB",  Disk = "5 MB/s",   NetWork = "300 KB/s" },
-            new ProcessInfo { ProcessName = "Visual Studio", Status = "Running", CPU = "25.1s", Memory = "1200 MB", Disk = "10 MB/s",  NetWork = "150 KB/s" },
-            new ProcessInfo { ProcessName = "Discord",       Status = "Running", CPU = "5.3s",  Memory = "200 MB",  Disk = "1 MB/s",   NetWork = "1 MB/s" },
-            new ProcessInfo { ProcessName = "Spotify",       Status = "Running", CPU = "3.8s",  Memory = "150 MB",  Disk = "0.5 MB/s", NetWork = "500 KB/s" },
-            new ProcessInfo { ProcessName = "Explorer",      Status = "Running", CPU = "1.2s",  Memory = "100 MB",  Disk = "0.1 MB/s", NetWork = "50 KB/s" }
-            };
-
-            // Set DataContext để Binding
-            this.DataContext = this;
-
-            DataContext = _viewModel;
-
-            _shareScreen.OnFrameReceived += (data, timestamp, codec, width, height) =>
+                savedTempId = ClientIdentity.GenerateRandomId();
+                savedClientPassword = ClientIdentity.GenerateRandomPassword();
+                SessionManager.Instance.ClientId = savedTempId;
+                SessionManager.Instance.ClientPassword = savedClientPassword;
+            }
+            else
             {
-                var bitmap = _shareScreen.ConvertToBitmap(data, codec, width, height);
-                if (bitmap != null)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        // Hiển thị hình ảnh lên UI
-                        imgAgoraVideo.Source = _shareScreen.BitmapToImageSource(bitmap);
-                    });
-                }
-            };
+                savedTempId = SessionManager.Instance.ClientId;
+                savedClientPassword = SessionManager.Instance.ClientPassword;
+            }
+
+            lblYourID.Text = savedTempId;
+            lblYourPass.Text = savedClientPassword;
+
+            // // Gán sự kiện login thành công để xử lý lại register_room sau reconnect
+            // _auth.LoginSuccess += async loginMsg =>
+            // {
+            //     // Lưu lại username/password vào SessionManager
+            //     SessionManager.Instance.username = loginMsg.username;
+            //     SessionManager.Instance.password = ((Login)System.Windows.Application.Current.Windows.OfType<Login>().FirstOrDefault())?.txtPassword.Password;
+
+            //     // Đăng ký lại room sau khi login lại
+            //     var registerRoomRequest = new
+            //     {
+            //         command = "register_room",
+            //         id = SessionManager.Instance.ClientId,
+            //         password = SessionManager.Instance.ClientPassword
+            //     };
+            //     await tcpClient.SendMessageAsync(SessionManager.Instance.ClientId, null, registerRoomRequest);
+            //     Console.WriteLine("📤 Sent register_room after reconnect");
+            // };
         }
 
         // Khi form tắt thì ngắt các kết nối
@@ -108,51 +118,9 @@ namespace RemoteMonitoringApplication.Views
                 // Có thể log hoặc bỏ qua nếu shutdown gấp
 
             }
+            tcpClient.MessageReceived -= OnServerMessage;
         }
 
-        private async void Client_Loaded(object sender, RoutedEventArgs e)
-        {
-            var registerRoomRequest = new
-            {
-                command = "register_room",
-                id = clientId,
-                password = clientPassword
-            };
-
-            string registerJson = JsonSerializer.Serialize(registerRoomRequest);
-            await tcpClient.SendMessageAsync(registerJson);
-            Console.WriteLine("📤 Sent register_room");
-        }
-
-
-
-        public class ProcessInfo
-        {
-            public string ProcessName { get; set; }
-            public string Status { get; set; }
-            public string CPU { get; set; }
-            public string Memory { get; set; }
-            public string Disk { get; set; }
-            public string NetWork { get; set; }
-        }
-
-
-        public class User
-        {
-            public int ID { get; set; }
-            public string UserName { get; set; }
-
-            public string Password { get; set; }         // thêm Password
-            public string Email { get; set; }           // thêm Email
-            public string IP { get; set; }              // thêm IP
-            public string Port { get; set; }            // thêm OS
-            public string OS { get; set; }              // thêm ConnectWith
-            public string ConnectWith { get; set; }     // điều khiển / bị điều khiển
-            public string Role { get; set; }            // điều khiển / bị điều khiển
-            public string Details { get; set; }         // mô tả thêm 
-            public DateTime LastAction { get; set; }          // trạng thái kết nối
-            public string LastActionDe { get; set; }          // trạng thái kết nối
-        }
         public class PairID
         {
             public string id { get; set; }
@@ -224,31 +192,95 @@ namespace RemoteMonitoringApplication.Views
             Remote.Visibility = Visibility.Collapsed;
         }
 
+        private TaskCompletionSource<bool> loginCompletedTcs;
+        private TaskCompletionSource<int> partnerPortTcs;
+        private TaskCompletionSource<bool> registerRoomCompletedTcs;
+
         private async void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             string targetId = txtUser.Text.Trim();
             string targetPassword = txtPassword.Password;
-            if (tcpClient != null)
+
+            int partnerPort = await GetPartnerServerPortAsync(targetId).ConfigureAwait(false);
+            int currentPort = tcpClient.Port;
+            Console.WriteLine($"Current port: {currentPort}, Partner port: {partnerPort}");
+
+            if (currentPort != partnerPort)
+            {
+                loginCompletedTcs = new TaskCompletionSource<bool>();
+                Console.WriteLine("🧹 Disconnecting...");
+
+                tcpClient.IsReconnecting = true;
+
+                var oldClient = tcpClient; // lưu client cũ
+                oldClient.MessageReceived -= OnServerMessage;
+
+                await oldClient.DisconnectAsync();
+                await Task.Delay(300); // Chờ server đóng socket cũ hoàn toàn
+                tcpClient = new CClient("localhost", partnerPort);
+                tcpClient.MessageReceived -= OnServerMessage;
+                tcpClient.MessageReceived += OnServerMessage;
+                await tcpClient.ConnectAsync();
+
+                savedUsername = SessionManager.Instance.username;
+                savedPassword = SessionManager.Instance.password;
+
+                if (string.IsNullOrEmpty(savedUsername) || string.IsNullOrEmpty(savedPassword))
+                {
+                    System.Windows.MessageBox.Show("⚠️ Không thể đăng nhập lại vì thiếu username/password.", "Lỗi đăng nhập lại", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var loginRequest = new
+                {
+                    command = "login",
+                    username = savedUsername,
+                    password = savedPassword
+                };
+                await tcpClient.SendMessageAsync(savedTempId, savedTempId, loginRequest);
+
+                await loginCompletedTcs.Task;
+
+                // Sau khi gửi register_room:
+                var registerRoomRequest = new
+                {
+                    command = "register_room",
+                    id = savedTempId,
+                    password = savedClientPassword
+                };
+                registerRoomCompletedTcs = new TaskCompletionSource<bool>();
+                await tcpClient.SendMessageAsync(savedTempId, null, registerRoomRequest);
+                await registerRoomCompletedTcs.Task;
+
+                // Chờ nhận được phản hồi thành công từ server
+                await registerRoomCompletedTcs.Task;
+
+                // Sau đó mới gửi join_room
+                var joinRoomRequest = new
+                {
+                    command = "join_room",
+                    my_id = savedTempId,
+                    my_password = savedClientPassword,
+                    target_id = targetId,
+                    target_password = targetPassword
+                };
+                await tcpClient.SendMessageAsync(savedTempId, targetId, joinRoomRequest);
+            }
+
+            else
             {
                 var joinRoomRequest = new
                 {
                     command = "join_room",
-                    my_id = clientId,
-                    my_password = clientPassword,
+                    my_id = savedTempId,
+                    my_password = savedClientPassword,
                     target_id = targetId,
                     target_password = targetPassword
                 };
-
-                string json = System.Text.Json.JsonSerializer.Serialize(joinRoomRequest);
-                await tcpClient.SendMessageAsync(json);
-            }
-            else
-            {
-                System.Windows.MessageBox.Show("Chưa kết nối WebSocket server.", "Lỗi kết nối", MessageBoxButton.OK, MessageBoxImage.Warning);
-                Console.WriteLine("Chưa kết nối WebSocket server.");
-                return;
+                await tcpClient.SendMessageAsync(savedTempId, targetId, joinRoomRequest);
             }
         }
+
 
 
         private void btnDisconnect_Click(object sender, RoutedEventArgs e)
@@ -274,7 +306,7 @@ namespace RemoteMonitoringApplication.Views
             else if (role == "partner") { }
             else
             {
-                System.Windows.MessageBox.Show("❌ Vai trò chưa được gán! Không thể thực hiện Play!");
+                System.Windows.MessageBox.Show("Vai trò chưa được gán! Không thể thực hiện Play!");
             }
         }
 
@@ -298,7 +330,7 @@ namespace RemoteMonitoringApplication.Views
 
         private async void btnTaskSync_Click(object sender, RoutedEventArgs e)
         {
-
+            Console.WriteLine($"[SYNC] role={role}, clientId={clientId}, targetId={targetId}");
             if (tcpClient != null)
             {
                 if (role == "controller")
@@ -309,8 +341,7 @@ namespace RemoteMonitoringApplication.Views
                         id = clientId,
                         target_id = targetId
                     };
-                    string json = JsonSerializer.Serialize(SyncRequest);
-                    await tcpClient.SendMessageAsync(json);
+                    await tcpClient.SendMessageAsync(clientId, targetId, SyncRequest);
                     Console.WriteLine("Sent Sync request to server:");
                 }
                 else
@@ -334,227 +365,382 @@ namespace RemoteMonitoringApplication.Views
 
         }
 
-        private async void OnServerMessage(string message)
+        public async void OnServerMessage(string message)
         {
+            var json = JsonDocument.Parse(message);
+            var root = json.RootElement;
+            string toId = root.TryGetProperty("to", out var toProp) ? toProp.GetString() : null;
+
+            // Nếu tcpClient.Id chưa có (null hoặc rỗng), gán luôn bằng toId
+            if (string.IsNullOrEmpty(tcpClient.Id) && !string.IsNullOrEmpty(toId))
+            {
+                tcpClient.Id = toId;
+                SessionManager.Instance.ClientId = toId;
+                Console.WriteLine($"[SYNC] Set tcpClient.Id = {toId}");
+            }
+
+            // Nếu message không gửi cho client này thì bỏ qua
+            if (!string.IsNullOrEmpty(toId) && toId != tcpClient.Id)
+            {
+                Console.WriteLine($"Message not for this client (to: {toId}, my id: {tcpClient.Id}). Ignoring.");
+                return;
+            }
+
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine("OnServerMessage received: " + message);
+
+            try
+            {
+                // Xử lý trường hợp KHÔNG có "payload"
+                if (root.TryGetProperty("command", out var commandProp) &&
+                    root.TryGetProperty("status", out var statusProp) &&
+                    commandProp.GetString() == "get_partner_port" &&
+                    statusProp.GetString() == "success" &&
+                    root.TryGetProperty("port", out var portProp))
+                {
+                    int port = portProp.GetInt32();
+                    Console.WriteLine($"✅ Received partner port (no payload): {port}");
+                    partnerPortTcs?.TrySetResult(port);
+                    return;
+                }
+
+                // Xử lý trường hợp CÓ "payload" (giữ lại cho các message khác)
+                if (root.TryGetProperty("payload", out var payload))
+                {
+                    string status = payload.GetProperty("status").GetString();
+                    string command = payload.GetProperty("command").GetString();
+
+                    if (command == "get_partner_port" && status == "success")
+                    {
+                        if (payload.TryGetProperty("port", out var portProp2))
+                        {
+                            int port = portProp2.GetInt32();
+                            Console.WriteLine($"✅ Received partner port (payload): {port}");
+                            partnerPortTcs?.TrySetResult(port);
+                        }
+                        return;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error parsing message before UI: {ex.Message}");
+            }
+
+
+
             await Dispatcher.Invoke(async () =>
             {
                 try
                 {
                     var json = JsonDocument.Parse(message);
                     var root = json.RootElement;
+                    string toId = root.TryGetProperty("to", out var toProp) ? toProp.GetString() : null;
 
-                    if (!root.TryGetProperty("status", out var statusProp) ||
-                        !root.TryGetProperty("command", out var commandProp))
-                        return;
-
-                    string status = statusProp.GetString();
-                    string command = commandProp.GetString();
-
-                    if (status == "success" && command == "join_room")
+                    if (root.TryGetProperty("payload", out var payload))
                     {
-                        if (root.TryGetProperty("user", out var userProp) &&
-                            root.TryGetProperty("partner", out var partnerProp))
+                        string status = payload.GetProperty("status").GetString();
+                        string command = payload.GetProperty("command").GetString();
+                        if (command == "login" && status == "success")
                         {
-                            var user = JsonSerializer.Deserialize<UserInfo>(userProp.GetRawText());
-                            var partner = JsonSerializer.Deserialize<UserInfo>(partnerProp.GetRawText());
+                            // Gán lại tcpClient.Id bằng toId (session id GUID)
+                            tcpClient.Id = toId;
+                            SessionManager.Instance.ClientId = toId;
+                            Console.WriteLine($"[SYNC][LOGIN] Set tcpClient.Id = {toId}");
 
-                            usrEmail.Content = user.email;
-                            usrName.Text = user.username;
-                            ptnEmail.Content = partner.email;
-                            ptnName.Text = partner.username;
-                            role = "controller";
-                            targetId = partner.id; // SỬA: lấy id, không phải username
+                            Console.WriteLine("==> LOGIN SUCCESS khi reconnect <==");
+                            loginCompletedTcs?.TrySetResult(true);
+
+                            // Gửi register_room sau khi login lại
+                            var registerRoomRequest = new
+                            {
+                                command = "register_room",
+                                id = savedTempId,
+                                password = savedClientPassword
+                            };
+                            registerRoomCompletedTcs = new TaskCompletionSource<bool>();
+                            await tcpClient.SendMessageAsync(savedTempId, null, registerRoomRequest);
+                            Console.WriteLine("📤 Sent register_room after reconnect");
+                            return;
                         }
-                        connected = true;
-                        System.Windows.MessageBox.Show("✅ Join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                        Remote.Visibility = Visibility.Visible;
-                    }
-                    else if (status == "info" && command == "partner_joined")
-                    {
-                        if (root.TryGetProperty("user", out var userProp) &&
-                            root.TryGetProperty("partner", out var partnerProp))
+                        else if (command == "register_room" && status == "success")
                         {
-                            var user = JsonSerializer.Deserialize<UserInfo>(userProp.GetRawText());
-                            var partner = JsonSerializer.Deserialize<UserInfo>(partnerProp.GetRawText());
+                            // Đăng ký phòng thành công
+                            Console.WriteLine("Room registered successfully!");
+                            registerRoomCompletedTcs?.TrySetResult(true);
+                            // Có thể cập nhật UI hoặc trạng thái tại đây nếu muốn
+                        }
 
-                            usrEmail.Content = partner.email;
-                            usrName.Text = partner.username;
-                            ptnEmail.Content = user.email;
-                            ptnName.Text = user.username;
+                        else if (status == "success" && command == "join_room")
+                        {
+                            if (payload.TryGetProperty("user", out var userProp) &&
+                                payload.TryGetProperty("partner", out var partnerProp))
+                            {
+                                var user = JsonSerializer.Deserialize<UserInfo>(userProp.GetRawText());
+                                var partner = JsonSerializer.Deserialize<UserInfo>(partnerProp.GetRawText());
+
+                                usrEmail.Content = user.email;
+                                usrName.Text = user.username;
+                                ptnEmail.Content = partner.email;
+                                ptnName.Text = partner.username;
+                                role = "controller";
+                                clientId = user.id;
+                                targetId = partner.id;
+                            }
+                            connected = true;
+                            System.Windows.MessageBox.Show("Join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                            Remote.Visibility = Visibility.Visible;
+                        }
+                        else if (command == "join_room" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"Join room failed: {msg}");
+                            System.Windows.MessageBox.Show($"Join room failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "register_room" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"Room registration failed: {msg}");
+                            System.Windows.MessageBox.Show($"Room registration failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "want_sync" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"Sync failed: {msg}");
+                            System.Windows.MessageBox.Show($"Sync failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "want_diskDetail" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"Disk detail failed: {msg}");
+                            System.Windows.MessageBox.Show($"Disk detail failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "want_CPUDetail" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"CPU detail failed: {msg}");
+                            System.Windows.MessageBox.Show($"CPU detail failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "want_MemoryDetail" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"Memory detail failed: {msg}");
+                            System.Windows.MessageBox.Show($"Memory detail failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "want_GPUDetail" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"GPU detail failed: {msg}");
+                            System.Windows.MessageBox.Show($"GPU detail failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "want_processList" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"Process list failed: {msg}");
+                            System.Windows.MessageBox.Show($"Process list failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "SentRemoteInfo" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"SentRemoteInfo failed: {msg}");
+                            System.Windows.MessageBox.Show($"SentRemoteInfo failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "SentDetail" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"SentDetail failed: {msg}");
+                            System.Windows.MessageBox.Show($"SentDetail failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (command == "SentprocessList" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"SentprocessList failed: {msg}");
+                            System.Windows.MessageBox.Show($"SentprocessList failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        else if (status == "info" && command == "partner_joined")
+                        {
+                            if (payload.TryGetProperty("user", out var userProp) &&
+                                payload.TryGetProperty("partner", out var partnerProp))
+                            {
+                                var user = JsonSerializer.Deserialize<UserInfo>(userProp.GetRawText());
+                                var partner = JsonSerializer.Deserialize<UserInfo>(partnerProp.GetRawText());
+
+                                // Partner là chính mình, user là người điều khiển
+                                usrEmail.Content = user.email;
+                                usrName.Text = user.username;
+                                ptnEmail.Content = partner.email;
+                                ptnName.Text = partner.username;
+                                role = "partner";
+                                clientId = partner.id;
+                                targetId = user.id;
+                            }
+
+                            System.Windows.MessageBox.Show("Partner join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                            Home_2.Visibility = Visibility.Visible;
+                        }
+                        else if (command == "start_share" && status == "info")
+                        {
                             role = "partner";
-                            targetId = user.id; // SỬA: lấy id, không phải username
-                        }
-                        System.Windows.MessageBox.Show("✅ Partner join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                        Home_2.Visibility = Visibility.Visible;
-                    }
-                    else if (command == "start_share" && status == "info")
-                    {
-                        role = "partner";
-                        var from_id = root.GetProperty("targetId").GetString();
-                        var sdp = root.GetProperty("sdp").GetString();
-                        var sdpType = root.GetProperty("sdpType").GetString();
+                            var from_id = root.GetProperty("targetId").GetString();
+                            var sdp = root.GetProperty("sdp").GetString();
+                            var sdpType = root.GetProperty("sdpType").GetString();
 
 
-                        if (sdpType == "offer")
-                        {
-                            await _shareScreen.HandleIncomingOffer(sdp, targetId);
-                        }
-                        else if (sdpType == "answer")
-                        {
-                            await _shareScreen.HandleIncomingAnswer(sdp, targetId);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"❌ SDP type không hợp lệ: {sdpType}");
-
-                        }
-                    }
-                    else if (command == "ice_candidate" && status == "info")
-                    {
-                        await _shareScreen.HandleIncomingIceCandidate(message);
-                    }
-                    else if (command == "want_sync" && status == "success")
-                    {
-                        Console.WriteLine("Received sync request from server");
-                        System.Windows.MessageBox.Show("Received sync request from server", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                        if (root.TryGetProperty("message", out var mess))
-                        {
-                            var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
-                            //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                            var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
-                            var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo());
-                            var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo());
-                            //Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
-                            var Info = new
+                            if (sdpType == "offer")
                             {
-                                command = "SentRemoteInfo",
-                                info = Diskinfo,
-                                infoMemory = Memoryinfo,
-                                infoCPU = CPUinfo,
-                                Monitor_id = Pair.id,//theo doi
-                                Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
-                            };
-                            string Infojson = JsonSerializer.Serialize(Info);
-                            await tcpClient.SendMessageAsync(Infojson);
-                            Console.WriteLine("Sent remote info to server, then to client (monitor) ", Pair.id);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Sync error: id and target id not found!");
-                        }
-                    }
-                    else if (command == "SentRemoteInfo" && status == "success")
-                    {
-
-                        if (root.TryGetProperty("message", out var Remote_info))
-                        {
-                            var options = new JsonSerializerOptions
+                                await _shareScreen.HandleIncomingOffer(sdp, targetId);
+                            }
+                            else if (sdpType == "answer")
                             {
-                                PropertyNameCaseInsensitive = true
-                            };
-
-                            var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText(), options);
-
-                            //Console.WriteLine($"Pair ID: {Info.Drives}, Target ID: {Info.Memory}");
-
-                            _GetInfo.showDiskBar(Info.Drives, diskBar, diskText);
-                            _GetInfo.showMemoryBar(Info.Memory, memoryBar, memoryText);
-                            _GetInfo.showCPUBar(Info.CPU, cpuBar, cpuText);
-
-
-
-                        }
-                        else
-                        {
-                            Console.WriteLine("Sync error: id and target id not found!");
-                        }
-                    }
-                    else if ((command == "want_diskDetail" || command == "want_CPUDetail" || command == "want_GPUDetail" || command == "want_MemoryDetail") && status == "success")
-                    {
-
-                        Console.WriteLine("Received want Detail request from server");
-                        System.Windows.MessageBox.Show("Received detail info request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-                        if (root.TryGetProperty("message", out var mess))
-                        {
-                            var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
-                            //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                            var Data = _viewModel.FetchRawInfo(command);
-
-
-                            var Info = new
+                                await _shareScreen.HandleIncomingAnswer(sdp, targetId);
+                            }
+                            else
                             {
-                                command = "SentDetail",
-                                info = Data,
+                                Console.WriteLine($"SDP type không hợp lệ: {sdpType}");
 
-                                Monitor_id = Pair.id,//theo doi
-                                Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
-                            };
-                            string Infojson = JsonSerializer.Serialize(Info);
-                            await tcpClient.SendMessageAsync(Infojson);
-                            Console.WriteLine("Sent remote info to server, then to client (monitor) ", Pair.id);
+                            }
                         }
-
-                        else
+                        else if (command == "ice_candidate" && status == "info")
                         {
-                            Console.WriteLine("Received detail request info error: id and target id not found!");
+                            await _shareScreen.HandleIncomingIceCandidate(message);
                         }
-                    }
-                    else if (command == "SentDetail" && status == "success")
-                    {
-                        if (root.TryGetProperty("message", out var DataDetail))
+                        else if (command == "want_sync" && status == "success")
                         {
-                            var infoDetail = DataDetail.GetString();
-                            TextBoxDetails.Document.Blocks.Clear();
-                            TextBoxDetails.AppendText(infoDetail);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Received detail info error: id and target id not found!");
-                        }
-                    }
-                    else if (command == "want_processList" && status == "success")
-                    {
-
-                        Console.WriteLine("Received want process list request from server");
-                        System.Windows.MessageBox.Show("Received want process list request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-                        if (root.TryGetProperty("message", out var mess))
-                        {
-                            var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
-                            //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                            var Data = _ProcessSerivce.getProcessList();
-                            Console.WriteLine($"Process list start sending");
-
-                            var Info = new
+                            Console.WriteLine("Received sync request from server");
+                            System.Windows.MessageBox.Show("Received sync request from server", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                            if (payload.TryGetProperty("message", out var mess))
                             {
-                                command = "SentprocessList",
-                                info = Data,
-
-                                Monitor_id = Pair.id,//theo doi
-                                Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
-                            };
-                            string Infojson = JsonSerializer.Serialize(Info);
-                            await tcpClient.SendMessageAsync(Infojson);
-                            Console.WriteLine("Sent process list to server, then to client (monitor) ", Pair.id);
+                                var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
+                                //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
+                                var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
+                                var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo());
+                                var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo());
+                                //Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
+                                var Info = new
+                                {
+                                    command = "SentRemoteInfo",
+                                    info = Diskinfo,
+                                    infoMemory = Memoryinfo,
+                                    infoCPU = CPUinfo,
+                                    Monitor_id = Pair.id,//theo doi
+                                    Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                                };
+                                await tcpClient.SendMessageAsync(clientId, targetId, Info);
+                                Console.WriteLine("Sent remote info to server, then to client (monitor) ", Pair.id);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Sync error: id and target id not found!");
+                            }
                         }
-                        else
+                        else if (command == "SentRemoteInfo" && status == "success")
                         {
-                            Console.WriteLine("Received detail info error: id and target id not found!");
+
+                            if (payload.TryGetProperty("message", out var Remote_info))
+                            {
+                                var options = new JsonSerializerOptions
+                                {
+                                    PropertyNameCaseInsensitive = true
+                                };
+
+                                var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText(), options);
+
+                                //Console.WriteLine($"Pair ID: {Info.Drives}, Target ID: {Info.Memory}");
+
+                                _GetInfo.showDiskBar(Info.Drives, diskBar, diskText);
+                                _GetInfo.showMemoryBar(Info.Memory, memoryBar, memoryText);
+                                _GetInfo.showCPUBar(Info.CPU, cpuBar, cpuText);
+
+                            }
+                            else
+                            {
+                                Console.WriteLine("Sync error: id and target id not found!");
+                            }
                         }
-                    }
-                    else if (command == "SentprocessList" && status == "success")
+                        else if ((command == "want_diskDetail" || command == "want_CPUDetail" || command == "want_GPUDetail" || command == "want_MemoryDetail") && status == "success")
+                        {
+
+                            Console.WriteLine("Received want Detail request from server");
+                            System.Windows.MessageBox.Show("Received detail info request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                            if (payload.TryGetProperty("message", out var mess))
+                            {
+                                var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
+                                //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
+                                var Data = _viewModel.FetchRawInfo(command);
+
+
+                                var Info = new
+                                {
+                                    command = "SentDetail",
+                                    info = Data,
+
+                                    Monitor_id = Pair.id,//theo doi
+                                    Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                                };
+                                await tcpClient.SendMessageAsync(clientId, targetId, Info);
+                                Console.WriteLine("Sent remote info to server, then to client (monitor) ", Pair.id);
+                            }
+
+                            else
+                            {
+                                Console.WriteLine("Received detail request info error: id and target id not found!");
+                            }
+                        }
+                        else if (command == "SentDetail" && status == "success")
+                        {
+                            if (payload.TryGetProperty("message", out var DataDetail))
+                            {
+                                var infoDetail = DataDetail.GetString();
+                                TextBoxDetails.Document.Blocks.Clear();
+                                TextBoxDetails.AppendText(infoDetail);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Received detail info error: id and target id not found!");
+                            }
+                        }
+                        else if (command == "want_processList" && status == "success")
+                        {
+
+                            Console.WriteLine("Received want process list request from server");
+                            System.Windows.MessageBox.Show("Received want process list request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                            if (payload.TryGetProperty("message", out var mess))
+                            {
+                                var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
+                                //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
+                                var Data = _ProcessSerivce.getProcessList();
+                                Console.WriteLine($"Process list start sending");
+
+                                var Info = new
+                                {
+                                    command = "SentprocessList",
+                                    info = Data,
+
+                                    Monitor_id = Pair.id,//theo doi
+                                    Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                                };
+                                await tcpClient.SendMessageAsync(clientId, targetId, Info);
+                                Console.WriteLine("Sent process list to server, then to client (monitor) ", Pair.id);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Received detail info error: id and target id not found!");
+                            }
+                        }
+                        else if (command == "SentprocessList" && status == "success")
                         {
                             Console.WriteLine("Received process list from server");
                             System.Windows.MessageBox.Show("Received want process list from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                            if (root.TryGetProperty("message", out var processList))
+                            if (payload.TryGetProperty("message", out var processList))
                             {
 
                                 var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText());
                                 Console.WriteLine($"Process list getting");
-                            timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time:{processListObj.RealTime}");
+                                timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time:{processListObj.RealTime}");
 
-                            _viewModelProcess.BindProcessListToDataGrid(processListObj, ProcessDataGrid);
+                                _viewModelProcess.BindProcessListToDataGrid(processListObj, ProcessDataGrid);
                             }
                             else
                             {
@@ -565,10 +751,7 @@ namespace RemoteMonitoringApplication.Views
                         {
                             Console.WriteLine($"Command not found '{command}' and state '{status}'");
                         }
-                    
-                        
-
-                    
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -616,8 +799,7 @@ namespace RemoteMonitoringApplication.Views
                                     id = clientId,
                                     target_id = targetId
                                 };
-                                string json = JsonSerializer.Serialize(DiskDetail);
-                                await tcpClient.SendMessageAsync(json);
+                                await tcpClient.SendMessageAsync(clientId, targetId, DiskDetail);
                                 Console.WriteLine("Sent diskDetail request to server.");
                             }
                             else
@@ -636,8 +818,7 @@ namespace RemoteMonitoringApplication.Views
                                     id = clientId,
                                     target_id = targetId
                                 };
-                                string json = JsonSerializer.Serialize(CPUDetail);
-                                await tcpClient.SendMessageAsync(json);
+                                await tcpClient.SendMessageAsync(clientId, targetId, CPUDetail);
                                 Console.WriteLine("Sent CPUDetail request to server.");
                             }
                             else
@@ -660,8 +841,7 @@ namespace RemoteMonitoringApplication.Views
                                     id = clientId,
                                     target_id = targetId
                                 };
-                                string json = JsonSerializer.Serialize(MemoryDetail);
-                                await tcpClient.SendMessageAsync(json);
+                                await tcpClient.SendMessageAsync(clientId, targetId, MemoryDetail);
                                 Console.WriteLine("Sent MemoryDetail request to server.");
                             }
                             else
@@ -684,8 +864,7 @@ namespace RemoteMonitoringApplication.Views
                                     id = clientId,
                                     target_id = targetId
                                 };
-                                string json = JsonSerializer.Serialize(MemoryDetail);
-                                await tcpClient.SendMessageAsync(json);
+                                await tcpClient.SendMessageAsync(clientId, targetId, MemoryDetail);
                                 Console.WriteLine("Sent GPUDetail request to server.");
                             }
                             else
@@ -727,8 +906,7 @@ namespace RemoteMonitoringApplication.Views
                         id = clientId,
                         target_id = targetId
                     };
-                    string json = JsonSerializer.Serialize(SyncRequest);
-                    await tcpClient.SendMessageAsync(json);
+                    await tcpClient.SendMessageAsync(clientId, targetId, SyncRequest);
                     Console.WriteLine("Sent processList request to server:");
                 }
                 else
@@ -753,6 +931,21 @@ namespace RemoteMonitoringApplication.Views
 
 
         }
+
+        private async Task<int> GetPartnerServerPortAsync(string targetId)
+        {
+            partnerPortTcs = new TaskCompletionSource<int>();
+
+            var getPortRequest = new
+            {
+                command = "get_partner_port",
+                target_id = targetId
+            };
+            await tcpClient.SendMessageAsync(savedTempId, savedTempId, getPortRequest);
+
+            // Chờ đến khi nhận được port từ server (OnServerMessage sẽ set kết quả)
+            return await partnerPortTcs.Task;
+        }
     }// public class
-    
+
 }// namespace

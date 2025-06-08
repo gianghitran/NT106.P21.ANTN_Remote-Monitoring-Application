@@ -14,13 +14,14 @@ namespace RemoteMonitoringApplication.Services
 
         public string id { get; set; }
         public string username { get; set; }
+        public string password { get; set; }
         public string email { get; set; }
         public string role { get; set; }
         public CClient tcpClient { get; set; }
         public string ClientId { get; set; }
         public string ClientPassword { get; set; }
 
-        //public string token { get; set; }
+        public string token { get; set; }
 
         private SessionManager() { }
 
@@ -28,11 +29,13 @@ namespace RemoteMonitoringApplication.Services
         {
             id = null;
             username = null;
+            password = null;
             email = null;
             role = null;
             tcpClient = null;
             ClientId = null;
             ClientPassword = null;
+            token = null;
         }
     }
 }

@@ -634,7 +634,7 @@
                            VerticalAlignment="Center"/>
             </Canvas>
             <Canvas x:Name="Remote"
-                    Visibility="Visible"
+                    Visibility="Collapsed"
                     Margin="283,0,0,0"
                     Background="#DCD7C9">
                 <Rectangle Height="154"

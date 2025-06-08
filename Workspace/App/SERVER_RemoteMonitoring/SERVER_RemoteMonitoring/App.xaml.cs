@@ -22,11 +22,18 @@ namespace SERVER_RemoteMonitoring
         {
             base.OnStartup(e);
 
-            //MessageBox.Show("Starting the server...");
-            await StartTCPServerAsync();
-            await GetDatabaseServiceAsync();
-            //MessageBox.Show("Database initialized successfully.");
-            // Initialize the server
+            // Lấy đúng đường dẫn file database
+            string dbPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RemoteMonitoring.db");
+            var dbService = new DatabaseService(dbPath);
+
+            // Tạo bảng RoomClient trên đúng file
+            await dbService.EnsureRoomClientTableAsync();
+
+            int port = 8080;
+            if (e.Args.Length > 0 && int.TryParse(e.Args[0], out int p))
+                port = p;
+
+            await StartTCPServerAsync(port, dbService); // Truyền dbService này vào
             var _server = new SERVER();
             _server.Show();
         }
@@ -42,11 +49,11 @@ namespace SERVER_RemoteMonitoring
             return _databaseService;
         }
 
-        private async Task StartTCPServerAsync()
+        // Sửa lại StartTCPServerAsync để nhận dbService
+        private async Task StartTCPServerAsync(int port, DatabaseService dbService)
         {
-            var db = await GetDatabaseServiceAsync();
-            var authService = new AuthService(db);
-            var _tcpServer = new TCPServer(authService);
+            var authService = new AuthService(dbService);
+            var _tcpServer = new TCPServer(authService, port, dbService);
             await Task.Run(() => _tcpServer.Start());
         }
     }

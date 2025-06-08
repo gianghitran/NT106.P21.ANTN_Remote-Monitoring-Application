@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using SQLite;
+using SERVER_RemoteMonitoring.Services;
+using SERVER_RemoteMonitoring.Models;
 
 namespace SERVER_RemoteMonitoring.Data
 {
@@ -27,5 +29,10 @@ namespace SERVER_RemoteMonitoring.Data
 
         public SQLiteAsyncConnection GetDataBaseConnection() => _database;
 
+        public async Task EnsureRoomClientTableAsync()
+        {
+            var db = GetDataBaseConnection();
+            await db.CreateTableAsync<Models.RoomClient>();
+        }
     }
 }

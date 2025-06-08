@@ -29,14 +29,16 @@ namespace RemoteMonitoringApplication.Views
             var viewModel = new ViewModels.LoginViewModel(_auth);
             viewModel.NavigateToClientAction = () =>
             {
-                Client clientWindow = new Client();
-                clientWindow.Show();
-                clientWindow.Activate();
+                // Giả sử bạn dùng SessionManager để lưu tcpClient
+                var client = new Client(_auth, SessionManager.Instance.tcpClient);
+                // Gán listener trước khi Show
+                client.Show();
+                client.Activate();
                 (this.DataContext as ViewModels.LoginViewModel)?.Reset();
                 this.ClearPassword();
                 this.Hide();
             };
-            
+
             this.DataContext = viewModel;
         }
 
@@ -103,5 +105,8 @@ namespace RemoteMonitoringApplication.Views
         {
             txtPassword.Clear();
         }
+
+        public string Password => txtPassword.Password;
+
     }
 }

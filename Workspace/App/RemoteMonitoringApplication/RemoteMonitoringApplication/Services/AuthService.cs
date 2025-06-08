@@ -37,43 +37,69 @@ namespace RemoteMonitoringApplication.Services
                 password = password
             };
 
-            var jsonRequest = System.Text.Json.JsonSerializer.Serialize(request);
-            await _client.SendMessageAsync(jsonRequest);
-         
+            // Lấy id hiện tại từ SessionManager
+            string clientId = SessionManager.Instance.ClientId;
+            if (string.IsNullOrEmpty(clientId))
+                clientId = ClientIdentity.GenerateRandomId();
+            SessionManager.Instance.ClientId = clientId;
+
+            await _client.SendMessageAsync(clientId, clientId, request);
         }
 
+        private string savedUsername;
+        private string savedPassword;
+
+        // Khi gọi LoginAsync:
         public async Task LoginAsync(string username, string password)
         {
+            savedUsername = username;
+            savedPassword = password;
+
             var request = new LoginRequest
             {
                 command = "login",
                 username = username,
                 password = password
             };
-            var jsonRequest = System.Text.Json.JsonSerializer.Serialize(request);
-            await _client.SendMessageAsync(jsonRequest);
+
+            string clientId = SessionManager.Instance.ClientId;
+            if (string.IsNullOrEmpty(clientId))
+                clientId = ClientIdentity.GenerateRandomId();
+            SessionManager.Instance.ClientId = clientId;
+
+            await _client.SendMessageAsync(clientId, clientId, request);
         }
 
         public void HandleMessageReceived(string message)
         {
             try
             {
-                var response = JsonSerializer.Deserialize<BaseResponse<JsonElement>>(message);
-                Console.WriteLine(response);
+                // Parse envelope
+                using var doc = JsonDocument.Parse(message);
+                var root = doc.RootElement;
 
-                if (response == null || response.status == null) return;
-
-                switch (response.command)
+                // Lấy phần payload
+                if (root.TryGetProperty("payload", out var payload))
                 {
-                    case "register":
-                        HandleRegisterResponse(response, message);
-                        break;
-                    case "login":
-                        HandleLoginResponse(response, message);
-                        break;
-                    default:
-                        Console.WriteLine($"Unknown command: {response.command}");
-                        break;
+                    var response = JsonSerializer.Deserialize<BaseResponse<JsonElement>>(payload.GetRawText());
+                    if (response == null || response.status == null) return;
+
+                    switch (response.command)
+                    {
+                        case "register":
+                            HandleRegisterResponse(response, payload.GetRawText());
+                            break;
+                        case "login":
+                            HandleLoginResponse(response, payload.GetRawText());
+                            break;
+                        default:
+                            Console.WriteLine($"Unknown command: {response.command}");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("⚠️ Không tìm thấy trường payload trong message!");
                 }
             }
             catch (Exception ex)
@@ -93,7 +119,7 @@ namespace RemoteMonitoringApplication.Services
                 var errorResponse = System.Text.Json.JsonSerializer.Deserialize<BaseResponse<string>>(message);
                 if (errorResponse != null && errorResponse.message != null)
                 {
-                    RegisterFailed?.Invoke(errorResponse.status ,errorResponse.message);
+                    RegisterFailed?.Invoke(errorResponse.status, errorResponse.message);
                 }
             }
             else
@@ -118,18 +144,24 @@ namespace RemoteMonitoringApplication.Services
                     return;
                 }
                 LoginSuccess?.Invoke(successResponse);
-                _client.MessageReceived -= HandleMessageReceived; // Unsubscribe from the event after successful login
+                _client.MessageReceived -= HandleMessageReceived;
                 Console.WriteLine($"Login successful for user: {successResponse.username}");
+
+                // Đừng gán _client.Id ở đây nữa!
+                // SessionManager.Instance.UserId = successResponse.id; // Nếu cần lưu id database
+                SessionManager.Instance.username = successResponse.username;
+                SessionManager.Instance.password = this.savedPassword;
             }
             else if (response.status == "error")
             {
                 var errorResponse = System.Text.Json.JsonSerializer.Deserialize<BaseResponse<string>>(message);
                 if (errorResponse != null && errorResponse.message != null)
                 {
-                    LoginFailed?.Invoke(errorResponse.status ,errorResponse.message);
+                    LoginFailed?.Invoke(errorResponse.status, errorResponse.message);
                 }
             }
-            else {
+            else
+            {
                 var failResponse = System.Text.Json.JsonSerializer.Deserialize<BaseResponse<string>>(message);
                 if (failResponse != null && failResponse.message != null)
                 {
@@ -174,7 +206,7 @@ namespace RemoteMonitoringApplication.Services
             public string token { get; set; }
         }
 
-        private class RegisterRequest : BaseRequest 
+        private class RegisterRequest : BaseRequest
         {
             [JsonPropertyName("username")]
             public string username { get; set; }
