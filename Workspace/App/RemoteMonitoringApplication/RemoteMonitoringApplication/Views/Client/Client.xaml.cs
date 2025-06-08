@@ -225,7 +225,6 @@ namespace RemoteMonitoringApplication.Views
                 oldClient.MessageReceived -= OnServerMessage;
 
                 await oldClient.DisconnectAsync();
-                await Task.Delay(300); // Chờ server đóng socket cũ hoàn toàn
                 tcpClient = new CClient("localhost", partnerPort);
                 tcpClient.MessageReceived -= OnServerMessage;
                 tcpClient.MessageReceived += OnServerMessage;

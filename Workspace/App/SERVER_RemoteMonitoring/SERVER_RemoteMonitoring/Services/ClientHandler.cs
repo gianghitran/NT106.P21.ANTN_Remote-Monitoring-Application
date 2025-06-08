@@ -241,6 +241,12 @@ namespace SERVER_RemoteMonitoring.Services
 
         public async Task HandleMessageAsync(string json)
         {
+            int firstBrace = json.IndexOf('{');
+            if (firstBrace > 0)
+            {
+                json = json.Substring(firstBrace);
+            }
+
             Envelope envelope;
             string from = null;
             string to = null;
@@ -622,7 +628,7 @@ namespace SERVER_RemoteMonitoring.Services
             {
                 Console.WriteLine($"❌ Error parsing envelope: {ex.Message}");
             }
-        } 
+        }
 
         // ... các class phụ trợ giữ nguyên ...
         private class BaseRequest
