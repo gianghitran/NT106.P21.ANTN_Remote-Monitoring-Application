@@ -29,13 +29,17 @@ namespace SERVER_RemoteMonitoring
             // Tạo bảng RoomClient trên đúng file
             await dbService.EnsureRoomClientTableAsync();
 
+            // Lấy port từ args nếu có
             int port = 8080;
             if (e.Args.Length > 0 && int.TryParse(e.Args[0], out int p))
                 port = p;
 
-            await StartTCPServerAsync(port, dbService); // Truyền dbService này vào
+            // Khởi động TCP server và truyền dbService
+            await StartTCPServerAsync(port, dbService);
 
+            // Khởi tạo UI server với database đã có
             var _server = new SERVER(dbService);
+
             _server.Show();
         }
 

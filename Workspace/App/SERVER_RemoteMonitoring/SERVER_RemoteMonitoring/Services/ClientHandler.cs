@@ -24,7 +24,13 @@ namespace SERVER_RemoteMonitoring.Services
         private readonly DatabaseService _dbService;
         private readonly SaveLogService _saveLogService;
 
-        public ClientHandler(TCPClient clientConnection, AuthService authService, SessionManager sessionManager, RoomManager roomManager, DatabaseService dbService, SaveLogService saveLogService)
+        public ClientHandler(
+            TCPClient clientConnection,
+            AuthService authService,
+            SessionManager sessionManager,
+            RoomManager roomManager,
+            DatabaseService dbService,
+            SaveLogService saveLogService)
         {
             _client = clientConnection;
             _authService = authService;
@@ -62,7 +68,7 @@ namespace SERVER_RemoteMonitoring.Services
                 Envelope envelope = null;
                 try
                 {
-                    envelope = System.Text.Json.JsonSerializer.Deserialize<Envelope>(message);
+                    envelope = JsonSerializer.Deserialize<Envelope>(message);
                 }
                 catch
                 {
@@ -77,7 +83,7 @@ namespace SERVER_RemoteMonitoring.Services
 
                 // Parse payload
                 var payloadJson = envelope.payload.GetRawText();
-                var baseRequest = System.Text.Json.JsonSerializer.Deserialize<BaseRequest>(payloadJson);
+                var baseRequest = JsonSerializer.Deserialize<BaseRequest>(payloadJson);
                 if (baseRequest == null)
                 {
                     await SendResponseAsync<string>("error", "", "Invalid payload format.");
@@ -89,11 +95,11 @@ namespace SERVER_RemoteMonitoring.Services
                 switch (command)
                 {
                     case "login":
-                        var loginData = System.Text.Json.JsonSerializer.Deserialize<LoginRequest>(payloadJson);
+                        var loginData = JsonSerializer.Deserialize<LoginRequest>(payloadJson);
                         return await HandleLoginAsync(loginData);
 
                     case "register":
-                        var registerData = System.Text.Json.JsonSerializer.Deserialize<RegisterRequest>(payloadJson);
+                        var registerData = JsonSerializer.Deserialize<RegisterRequest>(payloadJson);
                         await HandleRegisterAsync(registerData);
                         break;
 
@@ -201,7 +207,7 @@ namespace SERVER_RemoteMonitoring.Services
                 payload = response
             };
 
-            var jsonEnvelope = System.Text.Json.JsonSerializer.Serialize(envelope);
+            var jsonEnvelope = JsonSerializer.Serialize(envelope);
             await _client.SendMessageAsync(jsonEnvelope);
         }
 
@@ -213,7 +219,7 @@ namespace SERVER_RemoteMonitoring.Services
                 to = toClientId ?? _client.Id,
                 payload = payload
             };
-            var json = System.Text.Json.JsonSerializer.Serialize(envelope);
+            var json = JsonSerializer.Serialize(envelope);
 
             if (toClientId == null || toClientId == _client.Id)
             {
@@ -295,6 +301,7 @@ namespace SERVER_RemoteMonitoring.Services
 
                             var joiningSession = _sessionManager.GetSession(_client.Id);
 
+                            // Ví dụ với join_room:
                             var joinResponsePayload = new
                             {
                                 status = "success",
@@ -336,21 +343,7 @@ namespace SERVER_RemoteMonitoring.Services
                                 };
                                 await SendEnvelopeAsync(notifyResponsePayload, targetClient.Id);
                             }
-                            break;
-                        }
-
-                    case "register_room":
-                        {
-                            string id = root.GetProperty("id").GetString();
-                            string password = root.GetProperty("password").GetString();
-
-                            var session = _sessionManager.GetSession(_client.Id);
-
-                            await _roomManager.RegisterClient(id, password, _client, session);
-
-                            await _saveLogService.LogAsync(_client.Id, "", "", "register_room");
-
-                            await SendResponseAsync<string>("success", "register_room", "Room registered.");
+                            await _saveLogService.LogAsync(_client.Id, "Controller", targetId, "Join room");
                             break;
                         }
 
@@ -369,28 +362,42 @@ namespace SERVER_RemoteMonitoring.Services
                             {
                                 if (sdpType == "offer")
                                 {
-                                    string Controller_id = _client.Id;
                                     var offerMessage = new
                                     {
+                                        command = "start_share",
                                         status = "info",
-                                        command = "want_receive_share",
-                                        user = new
-                                        {
-                                            id = from,
-                                            username = joiningSession?.username,
-                                            email = joiningSession?.email
-                                        },
-                                        sdp,
-                                        sdpType
+                                        targetId = _client.Id, // ID của client gửi offer
+                                        sdp = sdp,
+                                        sdpType = sdpType
                                     };
 
                                     await _saveLogService.LogAsync(_client.Id, "Controller", targetClient.Id, "Want received share screen");
-                                    // Gửi offer đến client đích
                                     await targetClient.SendMessageAsync(JsonSerializer.Serialize(offerMessage));
                                 }
-                                break;
-                            }
+                                else if (sdpType == "answer")
+                                {
+                                    var answerMessage = new
+                                    {
+                                        command = "start_share",
+                                        status = "info",
+                                        targetId = _client.Id, // ID của client gửi answer
+                                        sdp = sdp,
+                                        sdpType = sdpType
+                                    };
 
+                                    await _saveLogService.LogAsync(_client.Id, "Remote", targetClient.Id, "Send share screen");
+                                    await targetClient.SendMessageAsync(JsonSerializer.Serialize(answerMessage));
+                                }
+                                else
+                                {
+                                    await SendResponseAsync<string>("error", "start_share", "Invalid SDP type.");
+                                }
+                            }
+                            else
+                            {
+                                await SendResponseAsync<string>("fail", "start_share", $"Không tìm thấy client có ID = {targetId}");
+                            }
+                            break;
                         }
 
                     case "register_room":
@@ -406,39 +413,7 @@ namespace SERVER_RemoteMonitoring.Services
                                 session.tempId = id;
                             }
                             await _roomManager.RegisterClient(id, password, _client, session, _client.ServerPort);
-                            await SendResponseAsync<string>("success", "register_room", "Đăng ký phòng thành công");
-                            break;
-                        }
-
-                    case "start_share":
-                        {
-                            string sdp = root.GetProperty("sdp").GetString();
-                            string sdpType = root.GetProperty("sdpType").GetString();
-                            string targetId = to;
-
-                            var targetClient = _roomManager.GetClientById(targetId);
-                            if (targetClient != null)
-                            {
-                                var message = new
-                                {
-                                    command = "start_share",
-                                    status = "info",
-                                    targetId = from,
-                                    sdp,
-                                    sdpType
-                                };
-                                await SendEnvelopeAsync(message, targetClient.Id);
-
-
-                                await _saveLogService.LogAsync(_client.Id, "Remote", target_id, "Send share screen");
-
-
-                                await targetClient.SendMessageAsync(JsonSerializer.Serialize(answerMessage));
-                            }
-                            else
-                            {
-                                await SendResponseAsync<string>("fail", "start_share", $"Không tìm thấy client có ID = {targetId}");
-                            }
+                            await SendResponseAsync<string>("success", "register_room", "Room registered successfully!");
                             break;
                         }
 
@@ -450,81 +425,16 @@ namespace SERVER_RemoteMonitoring.Services
                             var targetClient = _roomManager.GetClientById(targetId);
 
                             RTCIceCandidateInit iceCandidate = root.GetProperty("iceCandidate").Deserialize<RTCIceCandidateInit>();
-
-                            Console.WriteLine(iceCandidate);
-
                             var candidateMessage = new
                             {
                                 command = "ice_candidate",
                                 status = "info",
-                                iceCandidate = iceCandidate,
-                            };
-
-                            var jsonMessage = candidateMessage.ToJson();
-
-                            await _saveLogService.LogAsync(_client.Id, "Controller - Remote", targetClient.Id, "sharing screen connection checking...");
-
-                            await targetClient.SendMessageAsync(jsonMessage);
-
-                            break;
-                        }
-                    case "want_sync":
-                        {
-                            // Lấy targetId client
-                            string targetId = root.GetProperty("target_id").GetString();
-                            string Id = root.GetProperty("id").GetString();
-
-                            var targetClient = _roomManager.GetClientById(targetId);
-                            var Client = _roomManager.GetClientById(Id);
-
-
-                            if (targetClient != null)
-                            {
-                                //var SyncRequest = new
-                                //{
-                                //    status="success",
-                                //    command = "want_sync",
-                                //    id = Id,
-                                //    target_id = targetId
-                                //};
-                                var syncMessage = new BaseResponse<object>
-                                {
-                                    status = "success",
-                                    command = "want_sync",
-                                    message = new
-                                    {
-                                        id = Id,
-                                        target_id = targetId
-                                    }
-                                };
-
-                                await _saveLogService.LogAsync(Client.Id, "Controller", targetClient.Id, "Want sync remote data");
-
-                                await targetClient.SendMessageAsync(JsonSerializer.Serialize(syncMessage));
-
-                            }
-                            else
-                            {
-                                await SendResponseAsync<string>("fail", "want_sync", $"Không tìm thấy client có ID = {targetId}");
-                            }
-                            break;
-                        }
-
-                    case "ice_candidate":
-                        {
-                            string targetId = to;
-                            var targetClient = _roomManager.GetClientById(targetId);
-
-                            RTCIceCandidateInit iceCandidate = root.GetProperty("iceCandidate").Deserialize<RTCIceCandidateInit>();
-                            var candidateMessage = new
-                            {
-                                command = "ice_candidate",
-                                status = "info",
-                                iceCandidate
+                                iceCandidate = iceCandidate
                             };
                             await SendEnvelopeAsync(candidateMessage, targetClient.Id);
                             break;
                         }
+
 
                     case "want_sync":
                     case "want_diskDetail":
@@ -577,7 +487,6 @@ namespace SERVER_RemoteMonitoring.Services
                                 Memory = memory,
                                 CPU = cpu
                             };
-
 
                             var targetClient = _roomManager.GetClientById(targetId);
                             if (targetClient != null)
@@ -673,10 +582,38 @@ namespace SERVER_RemoteMonitoring.Services
                             }
                             break;
                         }
-
+                    case "get_partner_port":
+                        {
+                            string targetId = root.GetProperty("target_id").GetString();
+                            var db = _dbService.GetDataBaseConnection();
+                            var room = await db.Table<RoomClient>().Where(r => r.Id == targetId).FirstOrDefaultAsync();
+                            if (room != null)
+                            {
+                                var responsePayload = new
+                                {
+                                    status = "success",
+                                    command = "get_partner_port",
+                                    port = room.ServerPort
+                                };
+                                await SendEnvelopeAsync(responsePayload);
+                            }
+                            else
+                            {
+                                var response = new
+                                {
+                                    status = "fail",
+                                    command = "get_partner_port",
+                                    message = "Không tìm thấy partner"
+                                };
+                                await SendEnvelopeAsync(response);
+                            }
+                            break;
+                        }
                     default:
-                        await SendResponseAsync<string>("error", command, "Unknown command.");
-                        break;
+                        {
+                            await SendResponseAsync<string>("error", command, "Unknown command.");
+                            break;
+                        }
                 }
 
 
@@ -685,20 +622,9 @@ namespace SERVER_RemoteMonitoring.Services
             {
                 Console.WriteLine($"❌ Error parsing envelope: {ex.Message}");
             }
-        }
+        } 
 
-        //private async Task ListenMessageAsync()
-        //{
-        //    _client.MessageReceived += (msg) =>
-        //    {
-        //        Console.WriteLine($"Message from client {_client.Id}: {msg}");
-        //        // Handle incoming messages here
-        //    };
-
-        //    await _client.ListenForMessageAsync();
-        //}
-
-        // Define a base message json 
+        // ... các class phụ trợ giữ nguyên ...
         private class BaseRequest
         {
             public string command { get; set; }
@@ -710,7 +636,6 @@ namespace SERVER_RemoteMonitoring.Services
             public string password { get; set; }
         }
 
-        // Define a class to represent the expected JSON structure
         private class RegisterRequest : BaseRequest
         {
             public string username { get; set; }
@@ -723,7 +648,7 @@ namespace SERVER_RemoteMonitoring.Services
             public string id { get; set; }
             public string username { get; set; }
             public string email { get; set; }
-            public string role { get; set; } // e.g., "Admin", "User"
+            public string role { get; set; }
             public string token { get; set; }
         }
 
@@ -740,8 +665,5 @@ namespace SERVER_RemoteMonitoring.Services
             public string to { get; set; }
             public JsonElement payload { get; set; }
         }
-
-
-
-    }
+    } // <-- Đóng class ClientHandler
 }
