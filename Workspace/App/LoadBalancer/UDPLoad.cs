@@ -25,6 +25,7 @@ namespace LoadBalancer
             while (true)
             {
                 byte[] bytes = udpListener.Receive(ref groupEP);
+                //Console.WriteLine(bytes);
                 string request = Encoding.ASCII.GetString(bytes);
 
                 if (request == "DISCOVER_LOAD")
