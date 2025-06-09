@@ -89,24 +89,6 @@ namespace RemoteMonitoringApplication.Views
 
             lblYourID.Text = savedTempId;
             lblYourPass.Text = savedClientPassword;
-
-            // // Gán sự kiện login thành công để xử lý lại register_room sau reconnect
-            // _auth.LoginSuccess += async loginMsg =>
-            // {
-            //     // Lưu lại username/password vào SessionManager
-            //     SessionManager.Instance.username = loginMsg.username;
-            //     SessionManager.Instance.password = ((Login)System.Windows.Application.Current.Windows.OfType<Login>().FirstOrDefault())?.txtPassword.Password;
-
-            //     // Đăng ký lại room sau khi login lại
-            //     var registerRoomRequest = new
-            //     {
-            //         command = "register_room",
-            //         id = SessionManager.Instance.ClientId,
-            //         password = SessionManager.Instance.ClientPassword
-            //     };
-            //     await tcpClient.SendMessageAsync(SessionManager.Instance.ClientId, null, registerRoomRequest);
-            //     Console.WriteLine("📤 Sent register_room after reconnect");
-            // };
         }
 
         // Khi form tắt thì ngắt các kết nối
@@ -217,6 +199,8 @@ namespace RemoteMonitoringApplication.Views
             if (currentPort != partnerPort)
             {
                 loginCompletedTcs = new TaskCompletionSource<bool>();
+                registerRoomCompletedTcs = new TaskCompletionSource<bool>();
+
                 Console.WriteLine("🧹 Disconnecting...");
 
                 tcpClient.IsReconnecting = true;
@@ -247,17 +231,14 @@ namespace RemoteMonitoringApplication.Views
                     password = savedPassword
                 };
                 await tcpClient.SendMessageAsync(savedTempId, savedTempId, loginRequest);
-
                 await loginCompletedTcs.Task;
 
-                // Sau khi gửi register_room:
                 var registerRoomRequest = new
                 {
                     command = "register_room",
                     id = savedTempId,
                     password = savedClientPassword
                 };
-                registerRoomCompletedTcs = new TaskCompletionSource<bool>();
                 await tcpClient.SendMessageAsync(savedTempId, null, registerRoomRequest);
                 await registerRoomCompletedTcs.Task;
 
@@ -466,17 +447,8 @@ namespace RemoteMonitoringApplication.Views
                             Console.WriteLine("==> LOGIN SUCCESS khi reconnect <==");
                             loginCompletedTcs?.TrySetResult(true);
 
-                            // Gửi register_room sau khi login lại
-                            var registerRoomRequest = new
-                            {
-                                command = "register_room",
-                                id = savedTempId,
-                                password = savedClientPassword
-                            };
-                            registerRoomCompletedTcs = new TaskCompletionSource<bool>();
-                            await tcpClient.SendMessageAsync(savedTempId, null, registerRoomRequest);
-                            Console.WriteLine("📤 Sent register_room after reconnect");
-                            return;
+                            // DỌN DẸP BUFFER TRƯỚC KHI GỬI TIẾP
+                            await DrainSocketAsync(tcpClient);
                         }
                         else if (command == "register_room" && status == "success")
                         {
@@ -618,7 +590,16 @@ namespace RemoteMonitoringApplication.Views
                         }
                         else if (command == "ice_candidate" && status == "info")
                         {
-                            await _shareScreen.HandleIncomingIceCandidate(message);
+                            // Lấy iceCandidate từ payload
+                            if (payload.TryGetProperty("iceCandidate", out var iceCandidateProp))
+                            {
+                                var iceCandidateJson = iceCandidateProp.GetRawText();
+                                await _shareScreen.HandleIncomingIceCandidate(iceCandidateJson);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Không tìm thấy iceCandidate trong payload!");
+                            }
                         }
                         else if (command == "want_sync" && status == "success")
                         {
@@ -1036,8 +1017,7 @@ namespace RemoteMonitoringApplication.Views
                             id = clientId,
                             target_id = targetId
                         };
-                        string json = JsonSerializer.Serialize(SyncRequest);
-                        await tcpClient.SendMessageAsync(json);
+                        await tcpClient.SendMessageAsync(clientId, targetId, SyncRequest);
                         Console.WriteLine("Sent want_processDump request to server:");
                     }
                     else
@@ -1070,6 +1050,16 @@ namespace RemoteMonitoringApplication.Views
             // Chờ đến khi nhận được port từ server (OnServerMessage sẽ set kết quả)
             return await partnerPortTcs.Task;
         }
-    }// public class
 
-}// namespace
+        private async Task DrainSocketAsync(CClient tcpClient)
+        {
+            var stream = tcpClient.Stream;
+            while (stream != null && stream.DataAvailable)
+            {
+                byte[] buffer = new byte[1024];
+                await stream.ReadAsync(buffer, 0, buffer.Length);
+            }
+        }
+    }
+
+}

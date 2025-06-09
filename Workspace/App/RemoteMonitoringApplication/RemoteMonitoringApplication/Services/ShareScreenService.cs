@@ -57,15 +57,16 @@ namespace RemoteMonitoringApplication.Services
                         usernameFragment = candidate.usernameFragment
                     };
 
-                    var iceCandidateRequest = new
-                    {
-                        command = "ice_candidate",
-                        targetId = targetId,
-                        iceCandidate = iceCandidate
-                    };
-
-                    var jsonCandidate = iceCandidateRequest.ToJson();
-                    await _client.SendMessageAsync(jsonCandidate);
+                    await _client.SendMessageAsync(
+                        SessionManager.Instance.ClientId,
+                        targetId,
+                        new
+                        {
+                            command = "ice_candidate",
+                            targetId = targetId,
+                            iceCandidate = iceCandidate
+                        }
+                    );
                 }
             };
 
@@ -119,8 +120,11 @@ namespace RemoteMonitoringApplication.Services
                 sdpType = "offer"
             };
 
-            var jsonRequest = JsonSerializer.Serialize(request);
-            await _client.SendMessageAsync(jsonRequest);
+            await _client.SendMessageAsync(
+                SessionManager.Instance.ClientId,
+                targetId,
+                request
+            );
         }
 
         public async Task HandleIncomingOffer(string sdp, string targetId)
@@ -180,15 +184,16 @@ namespace RemoteMonitoringApplication.Services
                             usernameFragment = candidate.usernameFragment
                         };
 
-                        var iceCandidateRequest = new
-                        {
-                            command = "ice_candidate",
-                            targetId = targetId,
-                            iceCandidate = iceCandidate
-                        };
-
-                        var jsonCandidate = iceCandidateRequest.ToJson();
-                        await _client.SendMessageAsync(jsonCandidate);
+                        await _client.SendMessageAsync(
+                            SessionManager.Instance.ClientId,
+                            targetId,
+                            new
+                            {
+                                command = "ice_candidate",
+                                targetId = targetId,
+                                iceCandidate = iceCandidate
+                            }
+                        );
                     }
                 };
 
@@ -230,8 +235,11 @@ namespace RemoteMonitoringApplication.Services
                     sdpType = "answer"
                 };
 
-                var jsonAnswerRequest = JsonSerializer.Serialize(answerRequest);
-                await _client.SendMessageAsync(jsonAnswerRequest);
+                await _client.SendMessageAsync(
+                        SessionManager.Instance.ClientId,
+                        targetId,
+                        answerRequest
+                    );
             }
             catch (ArgumentNullException ex)
             {
@@ -272,20 +280,11 @@ namespace RemoteMonitoringApplication.Services
             }
         }
 
-        public async Task HandleIncomingIceCandidate(string message)
+        public async Task HandleIncomingIceCandidate(string iceCandidateJson)
         {
             try
             {
-                if (message == null)
-                {
-                    throw new ArgumentNullException(nameof(message), "Incoming ICE candidate message cannot be null.");
-                }
-
-                var doc = JsonDocument.Parse(message);
-                var root = doc.RootElement;
-
-                // 1. Add ICE candidate to peer connection
-                RTCIceCandidateInit data = root.GetProperty("iceCandidate").Deserialize<RTCIceCandidateInit>();
+                RTCIceCandidateInit data = JsonSerializer.Deserialize<RTCIceCandidateInit>(iceCandidateJson);
 
                 if (data.candidate == null || data.sdpMid == null)
                 {
@@ -303,10 +302,9 @@ namespace RemoteMonitoringApplication.Services
                     Console.WriteLine("✅ ICE candidate added.");
                 }
             }
-            catch (ArgumentNullException ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error handling incoming ICE candidate: {ex.Message}");
-                return;
             }
         }
 

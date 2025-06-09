@@ -33,6 +33,7 @@ namespace RemoteMonitoringApplication.Services
             get => _isReconnecting;
             set => _isReconnecting = value;
         }
+        public NetworkStream Stream => _stream;
 
         public string Id { get; set; }
 
@@ -244,7 +245,7 @@ namespace RemoteMonitoringApplication.Services
             }
         }
 
-        
+
         public async Task SendFileAsync(string filePath, string command, string targetId)
         {
             string fileID = Guid.NewGuid().ToString();
@@ -298,6 +299,5 @@ namespace RemoteMonitoringApplication.Services
 
 
         }
-
     }
 }
