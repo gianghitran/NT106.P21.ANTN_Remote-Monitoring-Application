@@ -360,6 +360,9 @@ namespace SERVER_RemoteMonitoring.Services
                                 await SendEnvelopeAsync(notifyResponsePayload, targetClient.Id);
                             }
                             await _saveLogService.LogAsync(_client.Id, "Controller", targetId, "Join room");
+                            await _saveLogService.ConnecionAsync(joiningSession?.username, joiningSession?.tempId, "Controller", targetSession?.username, targetSession?.tempId);
+                            await _saveLogService.ConnecionAsync(targetSession?.username, targetSession?.tempId, "Remote", joiningSession?.username, joiningSession?.tempId);
+
                             break;
                         }
                     case "send_pubkey":

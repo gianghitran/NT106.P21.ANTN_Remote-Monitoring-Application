@@ -381,19 +381,19 @@
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Width="135"/>
-            <Label x:Name="btnHistory"
+            <Label x:Name="ShowRole"
                    HorizontalContentAlignment="Center"
                    Cursor="Hand"
                    MouseLeftButtonDown="btnHistory_MouseLeftButtonDown"
-                   Content="History"
-                   Margin="59,438,0,0"
+                   Content="Role : User"
+                   Margin="0,438,0,0"
                    FontSize="32"
                    FontWeight="Bold"
                    Foreground="#DCD7C9"
                    FontFamily="{StaticResource MontserratFont}"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
-                   Width="149"/>
+                   Width="283"/>
 
             <!-- Button Controls -->
             <Grid HorizontalAlignment="Right"

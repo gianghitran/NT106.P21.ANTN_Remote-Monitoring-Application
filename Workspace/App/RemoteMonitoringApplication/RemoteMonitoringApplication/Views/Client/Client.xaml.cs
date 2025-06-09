@@ -24,6 +24,7 @@ using static System.Windows.Forms.Design.AxImporter;
 using RemoteMonitoringApplication.Services;
 using Windows.Media.Protection.PlayReady;
 using System.IO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -54,7 +55,7 @@ namespace RemoteMonitoringApplication.Views
         private readonly AuthService _auth;
         private string OtherPublicKey = "null";
         private string MyPrivKey = "null";
-        private string SharedKey = "null";
+        private byte[] SharedKey = null;
         private string SuperIV = "nghinghiadavit23";
 
         public Client(AuthService auth, CClient sharedClient)
@@ -303,6 +304,8 @@ namespace RemoteMonitoringApplication.Views
             usrName.Text = "";
             ptnEmail.Content = "";
             ptnName.Text = "";
+            ShowRole.Content = $"Role : User";
+
         }
 
         private async void btnPlay_Click(object sender, RoutedEventArgs e)
@@ -514,7 +517,9 @@ namespace RemoteMonitoringApplication.Views
                                 usrName.Text = user.username;
                                 ptnEmail.Content = partner.email;
                                 ptnName.Text = partner.username;
+                                
                                 role = "controller";
+                                ShowRole.Content=$"Role : {role}";
                                 clientId = user.id;
                                 targetId = partner.id;
                             }
@@ -636,7 +641,10 @@ namespace RemoteMonitoringApplication.Views
                                 usrName.Text = user.username;
                                 ptnEmail.Content = partner.email;
                                 ptnName.Text = partner.username;
+
                                 role = "partner";
+                                ShowRole.Content = $"Role : {role}";
+
                                 clientId = partner.id;
                                 targetId = user.id;
                             }
@@ -648,6 +656,7 @@ namespace RemoteMonitoringApplication.Views
                         {
                             if (status == "info")
                             {
+                                ShowRole.Content = $"Role : {role}";
                                 var from_id = payload.GetProperty("targetId").GetString();
                                 var sdp = payload.GetProperty("sdp").GetString();
                                 var sdpType = payload.GetProperty("sdpType").GetString();
@@ -707,9 +716,12 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
-                                var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo());
-                                var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo());
+                                var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo(),SharedKey,SuperIV);
+                                var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo(), SharedKey, SuperIV);
+                                var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo(), SharedKey, SuperIV);
+
+                          
+
                                 //Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
                                 var Info = new
                                 {
@@ -733,18 +745,63 @@ namespace RemoteMonitoringApplication.Views
 
                             if (payload.TryGetProperty("message", out var Remote_info))
                             {
-                                var options = new JsonSerializerOptions
+                                if (payload.TryGetProperty("message", out var remoteInfo))
                                 {
-                                    PropertyNameCaseInsensitive = true
-                                };
+                                    var options = new JsonSerializerOptions
+                                    {
+                                        PropertyNameCaseInsensitive = true
+                                    };
 
-                                var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText(), options);
+                                    // Lấy JSON chuỗi của phần "message"
+                                    string messageJson = remoteInfo.GetRawText();
 
-                                //Console.WriteLine($"Pair ID: {Info.Drives}, Target ID: {Info.Memory}");
+                                    // Tạo class model cho cấu trúc message
+                                        var info = JsonSerializer.Deserialize<RemoteInfoMessage>(messageJson, options);
+                                        List<DriveDiskModel> drivesEncrypted = info.Drives; // Danh sách drives
+                                        List<DriveDiskModel> drivesDecrypted = new List<DriveDiskModel>();
 
-                                _GetInfo.showDiskBar(Info.Drives, diskBar, diskText);
-                                _GetInfo.showMemoryBar(Info.Memory, memoryBar, memoryText);
-                                _GetInfo.showCPUBar(Info.CPU, cpuBar, cpuText);
+                                        foreach (var drive in drivesEncrypted)
+                                        {
+                                            var driveDecrypted = new DriveDiskModel
+                                            {
+                                                Caption = CryptoService.Decrypt(drive.Caption, SharedKey, SuperIV),
+                                                FreeSpace = CryptoService.Decrypt(drive.FreeSpace, SharedKey, SuperIV),
+                                                Size = CryptoService.Decrypt(drive.Size, SharedKey, SuperIV)
+                                            };
+                                            drivesDecrypted.Add(driveDecrypted);
+                                        }
+                                    List<DriveMemoryModel> MemEncrypted = info.Memory; // Danh sách drives
+                                    List<DriveMemoryModel> MemDecrypted = new List<DriveMemoryModel>();
+
+                                    foreach (var drive in MemEncrypted)
+                                    {
+                                        var MemsDecrypted = new DriveMemoryModel
+                                        {
+                                            FreeSpace = CryptoService.Decrypt(drive.FreeSpace, SharedKey, SuperIV),
+                                            Size = CryptoService.Decrypt(drive.Size, SharedKey, SuperIV)
+                                        };
+                                        MemDecrypted.Add(MemsDecrypted);
+                                    }
+                                    List<DriveCPUModel> CPUEncrypted = info.CPU; // Danh sách drives
+                                    List<DriveCPUModel> CPUDecrypted = new List<DriveCPUModel>();
+
+                                    foreach (var drive in CPUEncrypted)
+                                    {
+                                        var CPUsDecrypted = new DriveCPUModel
+                                        {
+                                            Used = CryptoService.Decrypt(drive.Used, SharedKey, SuperIV)
+                                        };
+                                        CPUDecrypted.Add(CPUsDecrypted);
+                                    }
+
+                                    // Hiển thị thông tin
+                                    _GetInfo.showDiskBar(drivesDecrypted, diskBar, diskText);
+                                    _GetInfo.showMemoryBar(MemDecrypted, memoryBar, memoryText);
+                                    _GetInfo.showCPUBar(CPUDecrypted, cpuBar, cpuText);
+                                }
+
+
+                                
 
                             }
                             else
@@ -761,7 +818,7 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Data = _viewModel.FetchRawInfo(command);
+                                var Data = _viewModel.FetchRawInfo(command, SharedKey,SuperIV); // Encrypted
 
 
                                 var Info = new
@@ -786,8 +843,9 @@ namespace RemoteMonitoringApplication.Views
                             if (payload.TryGetProperty("message", out var DataDetail))
                             {
                                 var infoDetail = DataDetail.GetString();
+                                var infoDecrypt = CryptoService.Decrypt(infoDetail,SharedKey,SuperIV);
                                 TextBoxDetails.Document.Blocks.Clear();
-                                TextBoxDetails.AppendText(infoDetail);
+                                TextBoxDetails.AppendText(infoDecrypt);
                             }
                             else
                             {
@@ -803,7 +861,7 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Data = _ProcessSerivce.getProcessList();
+                                var Data = _ProcessSerivce.getProcessList(SharedKey,SuperIV); // Đã mã hóa
                                 Console.WriteLine($"Process list start sending");
 
                                 var Info = new
@@ -829,8 +887,27 @@ namespace RemoteMonitoringApplication.Views
 
                             if (payload.TryGetProperty("message", out var processList))
                             {
+                                var options = new JsonSerializerOptions
+                                {
+                                    PropertyNameCaseInsensitive = true
+                                };
 
-                                var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText());
+                                var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText(), options);
+
+                                // Giải mã RealTime
+                                processListObj.RealTime = CryptoService.Decrypt(processListObj.RealTime, SharedKey, SuperIV);
+
+                                // Giải mã từng trường trong từng ProcessInfo
+                                foreach (var proc in processListObj.ProcessInfo)
+                                {
+                                    // PID có thể không cần giải mã nếu nó là số
+                                    proc.ProcessName = CryptoService.Decrypt(proc.ProcessName, SharedKey, SuperIV);
+                                    proc.CPU = CryptoService.Decrypt(proc.CPU, SharedKey, SuperIV);
+                                    proc.Memory = CryptoService.Decrypt(proc.Memory, SharedKey, SuperIV);
+                                    proc.DiskRead = CryptoService.Decrypt(proc.DiskRead, SharedKey, SuperIV);
+                                    proc.DiskWrite = CryptoService.Decrypt(proc.DiskWrite, SharedKey, SuperIV);
+                                }
+
                                 Console.WriteLine($"Process list getting");
                                 timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time: {processListObj.RealTime}");
 

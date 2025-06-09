@@ -18,11 +18,11 @@ namespace SERVER_RemoteMonitoring.Models
 
             [NotNull]
             public string UserSessionID { get; set; } // e.g., "Controller", "Partner"
-            public DateTime ConnectAt { get; set; }
+            public DateTimeOffset ConnectAt { get; set; }
 
             public UserLogin()
             {
-                ConnectAt = DateTime.Now;
+                ConnectAt = DateTimeOffset.Now;
             }
         
     }

@@ -12,11 +12,11 @@ namespace RemoteMonitoringApplication.Services
     public class ProcessMonitorService
     {
 
-        public ProcessList getProcessList()
+        public ProcessList getProcessList(byte[] Sharekey,string IV)
         {
             ProcessList processList = new ProcessList
             {
-                RealTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                RealTime = CryptoService.Encrypt(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),Sharekey,IV),
                 ProcessInfo = new List<ProcessInfo>()
             };
 
@@ -28,34 +28,34 @@ namespace RemoteMonitoringApplication.Services
             {
                 try
                 {
-                    Console.WriteLine($"PID: {process.Id} | Tên: {process.ProcessName}");
+                    Console.WriteLine($"PID getting... | Name getting...");
 
                     // RAM
-                    Console.WriteLine($"RAM: {process.WorkingSet64 / 1024} KB");
+                    Console.WriteLine($"RAM getting...");
 
                     // CPU
                     var cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
                     cpuCounter.NextValue();
                     Thread.Sleep(100);
                     float cpuUsage = cpuCounter.NextValue() / Environment.ProcessorCount;
-                    Console.WriteLine($"CPU: {cpuUsage:0.00}%");
+                    Console.WriteLine($"CPU getting...");
 
                     // Disk I/O
                     var diskReadCounter = new PerformanceCounter("Process", "IO Read Bytes/sec", process.ProcessName);
                     var diskWriteCounter = new PerformanceCounter("Process", "IO Write Bytes/sec", process.ProcessName);
-                    Console.WriteLine($"Disk Read: {diskReadCounter.NextValue() / 1024:0.00} KB/s");
-                    Console.WriteLine($"Disk Write: {diskWriteCounter.NextValue() / 1024:0.00} KB/s");
+                    Console.WriteLine($"Disk Read getting...");
+                    Console.WriteLine($"Disk Write getting...");
 
                     Console.WriteLine(new string('-', 50));
 
                     ProcessInfo processInfo = new ProcessInfo
                     {
                         PID = process.Id,
-                        ProcessName = process.ProcessName,
-                        CPU = $"{cpuUsage:0.00}%",
-                        Memory = $"{process.WorkingSet64 / 1024} KB",
-                        DiskRead = $"{diskReadCounter.NextValue() / 1024:0.00} KB/s",
-                        DiskWrite = $"{diskWriteCounter.NextValue() / 1024:0.00} KB/s"
+                        ProcessName = CryptoService.Encrypt(process.ProcessName,Sharekey,IV),
+                        CPU = CryptoService.Encrypt( $"{cpuUsage:0.00}%", Sharekey,IV),
+                        Memory = CryptoService.Encrypt($"{process.WorkingSet64 / 1024} KB", Sharekey,IV),
+                        DiskRead = CryptoService.Encrypt($"{diskReadCounter.NextValue() / 1024:0.00} KB/s",Sharekey,IV),
+                        DiskWrite = CryptoService.Encrypt($"{diskWriteCounter.NextValue() / 1024:0.00} KB/s", Sharekey,IV)
                     };
                     processList.ProcessInfo.Add(processInfo);
                 }

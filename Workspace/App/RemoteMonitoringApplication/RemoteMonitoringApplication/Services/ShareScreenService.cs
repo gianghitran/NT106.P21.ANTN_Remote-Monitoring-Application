@@ -329,6 +329,7 @@ namespace RemoteMonitoringApplication.Services
 
             if (_screenShare != null || _isSharing)
             {
+                await _screenShare.PauseVideo();
                 await _screenShare.CloseVideo();
             }
             //await _client.SendMessageAsync(jsonRequest);

@@ -19,11 +19,11 @@ namespace SERVER_RemoteMonitoring.Models
         public string Role { get; set; } // e.g., "Controller", "Partner"
         public string PartnerId { get; set; } 
         public string Action { get; set; } 
-        public DateTime LogAt { get; set; }
+        public DateTimeOffset LogAt { get; set; }
 
         public Log()
         {
-            LogAt = DateTime.Now;
+            LogAt = DateTimeOffset.Now;
         }
 
         //public ICollection<Log> Logs { get; set; }

@@ -51,25 +51,23 @@ namespace RemoteMonitoringApplication.Services
         }
         //private static byte[] key = Encoding.UTF8.GetBytes("12345678");
         //private static byte[] iv = Encoding.UTF8.GetBytes("87654321");
-        public static string ComputeSharedKey(string PriKey, string TheirPK)
+        public static byte[] ComputeSharedKey(string PriKey, string TheirPK)
         {
             using (SHA256 sha256 = SHA256.Create())
             {
                 string combined = string.Compare(PriKey, TheirPK) < 0 ? PriKey + TheirPK : TheirPK + PriKey;
-                byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(combined));
-
-                return Convert.ToBase64String(hashBytes);
+                return sha256.ComputeHash(Encoding.UTF8.GetBytes(combined));
             }
         }
 
-        public static string Encrypt(string plainText, string strKey, string strIV)
+
+        public static string Encrypt(string plainText, byte[] strKey, string strIV)
         {
             using (System.Security.Cryptography.Aes aes = System.Security.Cryptography.Aes.Create())
             {
-                byte[] key = Encoding.UTF8.GetBytes(strKey);
                 byte[] iv = Encoding.UTF8.GetBytes(strIV);
 
-                aes.Key = key;
+                aes.Key = strKey;
                 aes.IV = iv;
 
                 byte[] input = Encoding.UTF8.GetBytes(plainText);
@@ -84,11 +82,11 @@ namespace RemoteMonitoringApplication.Services
                 }
             }
         }
-        public static string Decrypt(string encryptedText, string strKey, string strIV)
+        public static string Decrypt(string encryptedText, byte[] strKey, string strIV)
         {
             using (System.Security.Cryptography.Aes aes = System.Security.Cryptography.Aes.Create())
             {
-                byte[] key = Encoding.UTF8.GetBytes(strKey);
+                byte[] key = strKey;
                 byte[] iv = Encoding.UTF8.GetBytes(strIV);
 
                 byte[] input = Convert.FromBase64String(encryptedText);

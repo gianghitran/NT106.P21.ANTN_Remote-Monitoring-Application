@@ -20,11 +20,11 @@ namespace SERVER_RemoteMonitoring.Models
         public string Role { get; set; } // e.g., "Controller", "Partner"
         public string PartnerName { get; set; } // Name of the partner
         public string PartnerId { get; set; }
-        public DateTime ConnectAt { get; set; }
+        public DateTimeOffset ConnectAt { get; set; }
 
         public Connections()
         {
-            ConnectAt = DateTime.Now;;
+            ConnectAt = DateTimeOffset.Now;;
         }
     }
 }
