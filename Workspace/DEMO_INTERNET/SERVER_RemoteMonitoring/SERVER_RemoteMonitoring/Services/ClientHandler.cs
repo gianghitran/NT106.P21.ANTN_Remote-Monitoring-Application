@@ -659,7 +659,7 @@ namespace SERVER_RemoteMonitoring.Services
 
                             string targetId = root.GetProperty("Monitor_id").GetString();//người theo dõi
                             string Id = root.GetProperty("Remote_id").GetString();//bị theo dõi
-                            var processDumpIn4= root.GetProperty("info");
+                            var processDumpIn4 = root.GetProperty("info");
 
                             var targetClient = _roomManager.GetClientById(targetId);
                             if (targetClient != null)
@@ -747,6 +747,42 @@ namespace SERVER_RemoteMonitoring.Services
                                 };
                                 await SendEnvelopeAsync(response);
                             }
+                            break;
+                        }
+                    case "leave_room":
+                        {
+                            string id = from;
+                            string targetId = to;
+
+                            // Lưu lại thông tin partner trước khi xóa
+                            var targetClient = _roomManager.GetClientById(targetId);
+
+                            // Gửi thông báo cho partner (nếu cần)
+                            if (targetClient != null)
+                            {
+                                var notify = new
+                                {
+                                    status = "info",
+                                    command = "partner_left",
+                                    message = $"{id} has left the room."
+                                };
+                                await SendEnvelopeAsync(notify, targetClient.Id);
+                            }
+
+                            // Gửi xác nhận cho client vừa rời phòng
+                            var response = new
+                            {
+                                status = "success",
+                                command = "leave_room",
+                                message = "You have left the room."
+                            };
+                            await SendEnvelopeAsync(response);
+
+                            // Sau khi đã gửi thông báo, mới xóa mapping phòng ở RoomManager
+                            _roomManager.RemoveClient(id);
+
+                            Console.WriteLine($"[ROOM] Client {id} left room with {targetId}");
+
                             break;
                         }
                     default:

@@ -27,7 +27,6 @@ using System.IO;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using DirectShowLib.DMO;
 using Microsoft.Win32;
-using System.Windows.Forms;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -145,7 +144,7 @@ namespace RemoteMonitoringApplication.Views
         {
             public string id { get; set; }
             public string target_id { get; set; }
-            public string savepath { get;set;} 
+            public string savepath { get; set; }
             public string PID { get; set; } // Thêm PID để yêu cầu dump của tiến trình cụ thể
         }
         public class RemoteInfoMessage
@@ -313,15 +312,42 @@ namespace RemoteMonitoringApplication.Views
 
 
 
-        private void btnDisconnect_Click(object sender, RoutedEventArgs e)
+        private async void btnDisconnect_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                // Gửi thông báo rời phòng cho phía còn lại (nếu cần)
+                if (tcpClient != null && connected)
+                {
+                    var leaveRoomRequest = new
+                    {
+                        command = "leave_room",
+                        id = clientId,
+                        target_id = targetId
+                    };
+                    await tcpClient.SendMessageAsync(clientId, targetId, leaveRoomRequest);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending leave_room: {ex.Message}");
+            }
+
+            // Đặt lại trạng thái UI và biến
             connected = false;
+            role = null;
+            clientId = null;
+            targetId = null;
             usrEmail.Content = "";
             usrName.Text = "";
             ptnEmail.Content = "";
             ptnName.Text = "";
             ShowRole.Content = $"Role : User";
+            Home_2.Visibility = Visibility.Collapsed;
+            Remote.Visibility = Visibility.Collapsed;
 
+            // Nếu muốn, có thể đóng socket hoặc chỉ giữ lại kết nối chờ join phòng mới
+            // await tcpClient.DisconnectAsync(); // Nếu muốn đóng socket hoàn toàn
         }
 
         private async void btnPlay_Click(object sender, RoutedEventArgs e)
@@ -555,7 +581,8 @@ namespace RemoteMonitoringApplication.Views
                             await tcpClient.SendMessageAsync(clientId, targetId, sharedPubkey);
                             System.Windows.MessageBox.Show("Join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
 
-
+                            txtUser.Text = "";
+                            txtPassword.Password = "";
 
                             Remote.Visibility = Visibility.Visible;
                         }
@@ -667,7 +694,6 @@ namespace RemoteMonitoringApplication.Views
                                 targetId = user.id;
                             }
 
-                            System.Windows.MessageBox.Show("Partner join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                             Home_2.Visibility = Visibility.Visible;
                         }
                         else if (command == "start_share")
@@ -1003,10 +1029,10 @@ namespace RemoteMonitoringApplication.Views
                             }
                             Console.WriteLine("Received process dump info from server");
                             string targetId = targetIdProp.GetString();
-                            string infDecrypt = CryptoService.Decrypt(InfoProp.GetString(),SharedKey,SuperIV);
+                            string infDecrypt = CryptoService.Decrypt(InfoProp.GetString(), SharedKey, SuperIV);
                             System.Windows.MessageBox.Show($"Received process dump information: {infDecrypt}", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                            
+
                         }
                         else if (command == "backend_dead")
                         {
@@ -1017,6 +1043,27 @@ namespace RemoteMonitoringApplication.Views
 
                             // Gọi OnClientDisconnected để tự động reconnect
                             Dispatcher.Invoke(OnClientDisconnected);
+                            return;
+                        }
+                        else if (command == "partner_left" || command == "leave_room")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "Partner has left the room.";
+                            Console.WriteLine($"[ROOM] {msg}");
+                            System.Windows.MessageBox.Show(msg, "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                            // Đặt lại trạng thái UI và biến
+                            connected = false;
+                            role = null;
+                            clientId = null;
+                            targetId = null;
+                            usrEmail.Content = "";
+                            usrName.Text = "";
+                            ptnEmail.Content = "";
+                            ptnName.Text = "";
+                            ShowRole.Content = $"Role : User";
+                            Home_2.Visibility = Visibility.Collapsed;
+                            Remote.Visibility = Visibility.Collapsed;
+                            // Nếu muốn, có thể chuyển về Home_1 hoặc trạng thái chờ
                             return;
                         }
                         else
@@ -1214,8 +1261,8 @@ namespace RemoteMonitoringApplication.Views
                         var SyncRequest = new
                         {
                             command = "want_processDump",
-                            ProcessPID = CryptoService.Encrypt(Textbox_PID.Text.Trim(),SharedKey,SuperIV),
-                            savepath= CryptoService.Encrypt(Textbox_Savepath.Text.Trim(), SharedKey, SuperIV),
+                            ProcessPID = CryptoService.Encrypt(Textbox_PID.Text.Trim(), SharedKey, SuperIV),
+                            savepath = CryptoService.Encrypt(Textbox_Savepath.Text.Trim(), SharedKey, SuperIV),
                             id = clientId,
                             target_id = targetId
                         };
