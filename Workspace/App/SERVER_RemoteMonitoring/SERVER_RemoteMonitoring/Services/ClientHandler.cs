@@ -382,7 +382,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     message = pubkey
                                 };
                                 Console.WriteLine($"message {pubkey}");
-
+                                _saveLogService.LogAsync(_client.Id, "Controller", targetId, "Send public key to compute share key");
                                 await SendEnvelopeAsync(Datapubkey, targetClient.Id);
                             }
                             break;
@@ -494,6 +494,7 @@ namespace SERVER_RemoteMonitoring.Services
                                 session.tempId = id;
                             }
                             await _roomManager.RegisterClient(id, password, _client, session, _client.ServerPort);
+                            _saveLogService.LogAsync(_client.Id, "Controller", "", "register_room");
                             await SendResponseAsync<string>("success", "register_room", "Room registered successfully!");
                             break;
                         }
@@ -546,6 +547,8 @@ namespace SERVER_RemoteMonitoring.Services
                                         target_id = targetId
                                     }
                                 };
+                                _saveLogService.LogAsync(_client.Id, "Controller", targetId, $"Request: {command}.");
+
                                 await SendEnvelopeAsync(Data, targetClient.Id);
                             }
                             else
@@ -584,6 +587,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     command = "SentRemoteInfo",
                                     message = remoteInfo
                                 };
+                                _saveLogService.LogAsync(_client.Id, "Remote", targetId, "Sent Remote Information.");
                                 await SendEnvelopeAsync(remoteData, targetClient.Id);
                             }
                             else
@@ -608,6 +612,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     command = command,
                                     message = info
                                 };
+                                _saveLogService.LogAsync(_client.Id, "Remote", targetId, $"Sent: {command} Information.");
                                 await SendEnvelopeAsync(response, targetClient.Id);
                             }
                             else
@@ -639,6 +644,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     }
                                 };
 
+                                _saveLogService.LogAsync(_client.Id, "Controller", targetId, $"Sent: {command} Information.");
 
                                 await SendEnvelopeAsync(WantPID, targetClient.Id);
                             }
@@ -664,6 +670,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     command = "SentprocessDumpInfo",
                                     message = processDumpIn4
                                 };
+                                _saveLogService.LogAsync(_client.Id, "Remote", targetId, $"Sent: {command} Information.");
 
                                 await SendEnvelopeAsync(DetailData, targetClient.Id);
                             }
