@@ -749,7 +749,7 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Data = _viewModel.FetchRawInfo(command);
+                                var Data = _viewModel.FetchRawInfo(command, SharedKey,SuperIV); // Encrypted
 
 
                                 var Info = new
@@ -774,8 +774,9 @@ namespace RemoteMonitoringApplication.Views
                             if (payload.TryGetProperty("message", out var DataDetail))
                             {
                                 var infoDetail = DataDetail.GetString();
+                                var infoDecrypt = CryptoService.Decrypt(infoDetail,SharedKey,SuperIV);
                                 TextBoxDetails.Document.Blocks.Clear();
-                                TextBoxDetails.AppendText(infoDetail);
+                                TextBoxDetails.AppendText(infoDecrypt);
                             }
                             else
                             {

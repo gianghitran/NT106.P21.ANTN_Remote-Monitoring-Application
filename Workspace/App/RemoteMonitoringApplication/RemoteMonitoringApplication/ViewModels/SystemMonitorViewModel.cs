@@ -173,7 +173,7 @@ namespace RemoteMonitoringApplication.ViewModels
 
             return result;
         }
-        public string FetchRawInfo(string type)
+        public string FetchRawInfo(string type, byte[] Sharekey, string IV)
         {
             string result="";
             if (type == "want_CPUDetail")
@@ -200,7 +200,7 @@ namespace RemoteMonitoringApplication.ViewModels
             {
                 result = "Invalid type specified. Please use 'cpu', 'gpu', 'memory', or 'disk'.";
             }
-             return result;
+             return CryptoService.Encrypt(result,Sharekey, IV);
         }
         //public string[] FetchAllInfo()
         //{
