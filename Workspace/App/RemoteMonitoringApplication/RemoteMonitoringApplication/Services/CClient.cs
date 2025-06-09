@@ -144,15 +144,24 @@ namespace RemoteMonitoringApplication.Services
 
         public async Task DisconnectAsync()
         {
-            try { _stream?.Close(); } catch { }
-            try { _client?.Close(); } catch { }
-            try { _client?.Dispose(); } catch { }
-            _stream = null;
-            _client = null;
-            _disposed = true;
-            _cts?.Cancel();
-            Disconnected?.Invoke();
+            try
+            {
+                await _stream.FlushAsync();
+                _stream?.Close();
+                _client?.Close();
+                _client?.Dispose();
+                _stream = null;
+                _client = null;
+                _disposed = true;
+                _cts?.Cancel();
+                Disconnected?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Disconnect error: " + ex.Message);
+            }
         }
+
 
         public int Port => _port;
 

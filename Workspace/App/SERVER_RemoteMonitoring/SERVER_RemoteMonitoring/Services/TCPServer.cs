@@ -10,6 +10,7 @@ using System.Windows;
 using System.Net.Sockets;
 using WebSocketSharp.Net;
 using SERVER_RemoteMonitoring.Data;
+using System.Text.Json;
 
 namespace SERVER_RemoteMonitoring.Services
 {
@@ -38,33 +39,103 @@ namespace SERVER_RemoteMonitoring.Services
             _dbService = dbService;
         }
 
-        public void Start()
+        public async void Start()
         {
             _tcpListener.Start();
+            await RegisterWithLoadBalancer();
+
             Console.WriteLine("TCP server started at " + _port);
             Task.Run(AcceptClientsAsync);
         }
+
+        private async Task RegisterWithLoadBalancer()
+        {
+            try
+            {
+                using TcpClient client = new TcpClient("127.0.0.1", 8001); // IP và port của Load Balancer
+                using NetworkStream stream = client.GetStream();
+
+                var registerPayload = new
+                {
+                    type = "register_server",
+                    ip = "127.0.0.1",
+                    port = _port
+                };
+
+                string json = JsonSerializer.Serialize(registerPayload);
+                byte[] messageBytes = Encoding.UTF8.GetBytes(json);
+                byte[] lengthBytes = BitConverter.GetBytes(messageBytes.Length);
+
+                await stream.WriteAsync(lengthBytes, 0, 4);
+                await stream.WriteAsync(messageBytes, 0, messageBytes.Length);
+
+                Console.WriteLine($"Registered with LoadBalancer: {_port}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to register with LoadBalancer: {ex.Message}");
+            }
+        }
+
 
         public async Task AcceptClientsAsync()
         {
             while (true)
             {
                 TcpClient tcpClient = await _tcpListener.AcceptTcpClientAsync();
+                NetworkStream stream = tcpClient.GetStream();
+
+                // Đọc trước 4 byte đầu
+                byte[] lengthBuffer = new byte[4];
+                int read = 0;
+                try
+                {
+                    read = await stream.ReadAsync(lengthBuffer, 0, 4);
+                }
+                catch
+                {
+                    tcpClient.Close();
+                    continue;
+                }
+
+                if (read < 4)
+                {
+                    tcpClient.Close();
+                    continue;
+                }
+
+                int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
+                byte[] messageBuffer = new byte[messageLength];
+                int totalRead = 0;
+                while (totalRead < messageLength)
+                {
+                    int bytesRead = await stream.ReadAsync(messageBuffer, totalRead, messageLength - totalRead);
+                    if (bytesRead == 0)
+                    {
+                        tcpClient.Close();
+                        continue;
+                    }
+                    totalRead += bytesRead;
+                }
 
                 string clientIp = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
+
+                // Tạo client và gán gói đầu tiên
                 var client = new TCPClient(tcpClient, _roomManager, _port)
                 {
-                    IP = clientIp
+                    IP = clientIp,
+                    InitialLengthBuffer = lengthBuffer,
+                    InitialMessageBuffer = messageBuffer
                 };
 
                 _clients.Add(client);
-
                 Console.WriteLine("Client connected: " + client.Id + " from IP: " + clientIp);
 
-                // Bắt đầu xử lý client trong một task riêng
+                // Bắt đầu xử lý client
                 _ = Task.Run(() => HandleClient(client));
             }
         }
+
 
         private async Task HandleClient(TCPClient client)
         {
@@ -75,41 +146,34 @@ namespace SERVER_RemoteMonitoring.Services
                 var handler = new ClientHandler(client, _authservice, _sessionManager, _roomManager, _dbService, _saveLogService);
                 client.Handler = handler;
 
-                while (!authenticated)
+                // Truyền message đầu tiên vào ProcessAsync
+                authenticated = await handler.ProcessAsync(
+                    client.InitialMessageBuffer,
+                    client.InitialMessageBuffer != null ? client.InitialMessageBuffer.Length : 0
+                );
+
+                if (authenticated)
                 {
-                    if (!client._tcpClient.Connected)
+                    Console.WriteLine("Client authenticated: " + client.Id);
+
+                    var session = _sessionManager.GetSession(client.Id);
+                    client.Session = session;
+
+                    await client.ListenForMessageAsync(); // Lắng nghe đến khi client đóng
+                }
+                else
+                {
+                    Console.WriteLine("Client authentication failed: " + client.Id);
+
+                    if (client._tcpClient.Connected)
                     {
-                        Console.WriteLine("Client disconnected before authentication: " + client.Id);
-                        return;
-                    }
-
-                    authenticated = await handler.ProcessAsync();
-
-                    if (authenticated)
-                    {
-                        Console.WriteLine("Client authenticated: " + client.Id);
-
-                        var session = _sessionManager.GetSession(client.Id);
-                        client.Session = session;
-
-                        await client.SendMessageAsync("Welcome to the WebSocket server!");
-                        await client.ListenForMessageAsync(); // Lắng nghe đến khi client đóng
-                    }
-                    else
-                    {
-                        Console.WriteLine("Client authentication failed: " + client.Id);
-
-                        // Nếu socket vẫn mở, gửi phản hồi
-                        if (client._tcpClient.Connected)
+                        var errorJson = System.Text.Json.JsonSerializer.Serialize(new
                         {
-                            var errorJson = System.Text.Json.JsonSerializer.Serialize(new
-                            {
-                                status = "fail",
-                                command = "auth",
-                                message = "Authentication failed."
-                            });
-                            await client.SendMessageAsync(errorJson);
-                        }
+                            status = "fail",
+                            command = "auth",
+                            message = "Authentication failed."
+                        });
+                        await client.SendMessageAsync(errorJson);
                     }
                 }
             }
@@ -119,7 +183,6 @@ namespace SERVER_RemoteMonitoring.Services
             }
             finally
             {
-                // Chỉ cleanup nếu client đã thật sự ngắt kết nối hoặc gặp lỗi
                 if (!client._tcpClient.Connected)
                 {
                     _sessionManager.RemoveSession(client.Id);

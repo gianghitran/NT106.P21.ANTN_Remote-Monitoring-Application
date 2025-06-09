@@ -230,6 +230,7 @@ namespace RemoteMonitoringApplication.Views
                 tcpClient.MessageReceived += OnServerMessage;
                 await tcpClient.ConnectAsync();
 
+                SessionManager.Instance.tcpClient = tcpClient;
                 savedUsername = SessionManager.Instance.username;
                 savedPassword = SessionManager.Instance.password;
 
@@ -307,7 +308,7 @@ namespace RemoteMonitoringApplication.Views
             if (role == "controller")
             {
                 System.Windows.MessageBox.Show($"Join channel để XEM màn hình {targetId}");
-
+                _shareScreen = new ShareScreenService();
                 await _shareScreen.StartScreenSharingAsync(targetId);
 
             }
@@ -375,6 +376,12 @@ namespace RemoteMonitoringApplication.Views
 
         public async void OnServerMessage(string message)
         {
+            if (string.IsNullOrWhiteSpace(message) || !message.TrimStart().StartsWith("{"))
+            {
+                Console.WriteLine($"[WARN] Received non-JSON message: {message}");
+                return;
+            }
+
             var json = JsonDocument.Parse(message);
             var root = json.RootElement;
             string toId = root.TryGetProperty("to", out var toProp) ? toProp.GetString() : null;

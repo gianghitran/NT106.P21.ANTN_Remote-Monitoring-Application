@@ -40,16 +40,21 @@ namespace SERVER_RemoteMonitoring.Services
             _saveLogService = saveLogService;
         }
 
-        public async Task<bool> ProcessAsync()
+        public async Task<bool> ProcessAsync(byte[] firstMessageBuffer = null, int firstMessageLength = 0)
         {
             try
             {
-                bool authenticated = await AuthenticateClientAsync();
+                bool authenticated;
+                if (firstMessageBuffer != null && firstMessageLength > 0)
+                {
+                    authenticated = await AuthenticateClientAsync(firstMessageBuffer, firstMessageLength);
+                }
+                else
+                {
+                    authenticated = await AuthenticateClientAsync();
+                }
                 Console.WriteLine($"Client {_client.Id} authenticated: {authenticated}");
-                if (!authenticated) return false;
-
-                await _client.ListenForMessageAsync();
-                return true;
+                return authenticated;
             }
             catch (Exception ex)
             {
@@ -58,11 +63,21 @@ namespace SERVER_RemoteMonitoring.Services
             }
         }
 
-        private async Task<bool> AuthenticateClientAsync()
+        private async Task<bool> AuthenticateClientAsync(byte[] firstMessageBuffer = null, int firstMessageLength = 0)
         {
+            bool first = firstMessageBuffer != null && firstMessageLength > 0;
             while (true)
             {
-                var message = await _client.ReceiveMessageAsync();
+                string message;
+                if (first)
+                {
+                    message = Encoding.UTF8.GetString(firstMessageBuffer, 0, firstMessageLength);
+                    first = false;
+                }
+                else
+                {
+                    message = await _client.ReceiveMessageAsync();
+                }
 
                 // Parse envelope
                 Envelope envelope = null;
@@ -241,12 +256,6 @@ namespace SERVER_RemoteMonitoring.Services
 
         public async Task HandleMessageAsync(string json)
         {
-            int firstBrace = json.IndexOf('{');
-            if (firstBrace > 0)
-            {
-                json = json.Substring(firstBrace);
-            }
-
             Envelope envelope;
             string from = null;
             string to = null;
@@ -261,6 +270,7 @@ namespace SERVER_RemoteMonitoring.Services
                 if (envelope?.payload.ValueKind != JsonValueKind.Object)
                 {
                     Console.WriteLine("❌ Invalid payload");
+                    Console.WriteLine($"Payload kind: {envelope?.payload.ValueKind}, Json kind: {JsonValueKind.Object}");
                     return;
                 }
 
@@ -630,7 +640,6 @@ namespace SERVER_RemoteMonitoring.Services
             }
         }
 
-        // ... các class phụ trợ giữ nguyên ...
         private class BaseRequest
         {
             public string command { get; set; }

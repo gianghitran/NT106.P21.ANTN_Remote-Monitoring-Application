@@ -42,6 +42,8 @@ namespace SERVER_RemoteMonitoring.Services
         private readonly RoomManager _roomManager;
 
         public int ServerPort { get; private set; } // Thêm dòng này
+        public byte[]? InitialLengthBuffer { get; set; }
+        public byte[]? InitialMessageBuffer { get; set; }
 
         public TCPClient(TcpClient client, RoomManager roomManager, int serverPort)
         {
@@ -87,21 +89,32 @@ namespace SERVER_RemoteMonitoring.Services
         {
             try
             {
+                // Xử lý gói đầu tiên nếu có
+                if (InitialMessageBuffer != null)
+                {
+                    var jsonMessage = Encoding.UTF8.GetString(InitialMessageBuffer, 0, InitialMessageBuffer.Length).Trim();
+                    Console.WriteLine($"[RECEIVED-FIRST] {jsonMessage}");
+
+                    if (Handler != null)
+                    {
+                        await Handler.HandleMessageAsync(jsonMessage);
+                    }
+
+                    // Reset lại để không xử lý lần 2
+                    InitialMessageBuffer = null;
+                    InitialLengthBuffer = null;
+                }
+
                 while (_tcpClient.Connected)
                 {
-
-                    // Read first 4 bytes to get the length of the incoming message
+                    // Read 4 byte độ dài
                     byte[] lengthBuffer = new byte[4];
                     int totalRead = 0;
-                    int lengthBytesNeeded = 4;
-
-                    // Read the length of the message until we have 4 bytes
-                    while (totalRead < lengthBytesNeeded)
+                    while (totalRead < 4)
                     {
-                        int bytesRead = await stream.ReadAsync(lengthBuffer, totalRead, lengthBytesNeeded - totalRead);
+                        int bytesRead = await stream.ReadAsync(lengthBuffer, totalRead, 4 - totalRead);
                         if (bytesRead == 0)
                         {
-                            // Connection closed
                             Console.WriteLine("Connection closed by client.");
                             return;
                         }
@@ -109,8 +122,6 @@ namespace SERVER_RemoteMonitoring.Services
                     }
 
                     int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
-
-                    // Read all message bytes based on the length
                     byte[] messageBuffer = new byte[messageLength];
                     totalRead = 0;
 
@@ -119,19 +130,17 @@ namespace SERVER_RemoteMonitoring.Services
                         int bytesRead = await stream.ReadAsync(messageBuffer, totalRead, messageLength - totalRead);
                         if (bytesRead == 0)
                         {
-                            // Connection closed
                             Console.WriteLine("Connection closed by client.");
                             return;
                         }
-
                         totalRead += bytesRead;
                     }
 
                     var jsonMessage = Encoding.UTF8.GetString(messageBuffer, 0, messageLength).Trim();
+                    Console.WriteLine($"Received message from client {Id}: {jsonMessage}");
 
                     if (Handler != null)
                     {
-                        Console.WriteLine($"Received message from client {Id}: {jsonMessage}");
                         await Handler.HandleMessageAsync(jsonMessage);
                     }
                     else
@@ -145,6 +154,7 @@ namespace SERVER_RemoteMonitoring.Services
                 Console.WriteLine($"Error while listening for messages: {ex.Message}");
             }
         }
+
         //public async Task ListenForMessageAsync()
         //{
         //    try
@@ -247,51 +257,29 @@ namespace SERVER_RemoteMonitoring.Services
         // Listen for message from the TCP client
         public async Task<string> ReceiveMessageAsync()
         {
-            byte[] lengthBuffer = new byte[4];
-            int totalRead = 0;
-            int lengthBytesNeeded = 4;
+            var stream = _tcpClient.GetStream();
 
-            // Read the length of the message
-            while (totalRead < lengthBytesNeeded)
-            {
-                int bytesRead = await stream.ReadAsync(lengthBuffer, totalRead, lengthBytesNeeded - totalRead);
-                if (bytesRead == 0)
-                {
-                    // Connection closed
-                    Console.WriteLine("Connection closed by client.");
-                    return null;
-                }
-                totalRead += bytesRead;
-            }
+            // Đọc 4 byte độ dài
+            byte[] lengthBuffer = new byte[4];
+            int read = await stream.ReadAsync(lengthBuffer, 0, 4);
+            if (read < 4)
+                throw new IOException("Không đọc đủ 4 byte độ dài");
 
             int messageLength = BitConverter.ToInt32(lengthBuffer, 0);
-            byte[] messageBuffer = new byte[messageLength];
-            totalRead = 0;
 
-            // Read the message bytes
+            // Đọc message
+            byte[] messageBuffer = new byte[messageLength];
+            int totalRead = 0;
             while (totalRead < messageLength)
             {
                 int bytesRead = await stream.ReadAsync(messageBuffer, totalRead, messageLength - totalRead);
                 if (bytesRead == 0)
-                {
-                    // Connection closed
-                    Console.WriteLine("Connection closed by client.");
-                    return null;
-                }
+                    throw new IOException("Stream closed unexpectedly");
                 totalRead += bytesRead;
             }
-
-            var jsonMessage = Encoding.UTF8.GetString(messageBuffer, 0, messageLength).Trim();
-            //Console.WriteLine($"Received message from client {Id}: {jsonMessage}");
-            Console.WriteLine($"Received message from client {Id}.");
-
-            if (Handler != null)
-            {
-                //await Handler.HandleMessageAsync(jsonMessage);
-                return jsonMessage; // Return the message after handling
-            }
-
-            return null;
+            Console.WriteLine($"[DEBUG] Expecting {messageLength} bytes, actually read {totalRead} bytes");
+            string json = Encoding.UTF8.GetString(messageBuffer, 0, messageLength);
+            return json;
         }
 
         public async Task SendMessageAsync(string message, string command = "")
