@@ -362,7 +362,28 @@ namespace SERVER_RemoteMonitoring.Services
                             await _saveLogService.LogAsync(_client.Id, "Controller", targetId, "Join room");
                             break;
                         }
+                    case "send_pubkey":
+                        {
+                            string targetId = to;
 
+                            var send_pubkey = root.GetProperty("Pubkey");
+                            string pubkey = send_pubkey.ToString();
+
+                            var targetClient = _roomManager.GetClientById(targetId);
+                            if (targetClient != null)
+                            {
+                                var Datapubkey = new
+                                {
+                                    status = "success",
+                                    command = "send_pubkey",
+                                    message = pubkey
+                                };
+                                Console.WriteLine($"message {pubkey}");
+
+                                await SendEnvelopeAsync(Datapubkey, targetClient.Id);
+                            }
+                            break;
+                        }
                     case "start_share":
                         {
                             // Lấy targetId, sdp và sdp_type từ client

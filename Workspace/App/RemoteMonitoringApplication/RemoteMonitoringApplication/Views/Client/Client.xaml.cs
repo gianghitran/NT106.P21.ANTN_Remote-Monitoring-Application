@@ -52,7 +52,10 @@ namespace RemoteMonitoringApplication.Views
         private string savedUsername;
         private string savedPassword;
         private readonly AuthService _auth;
-
+        private string OtherPublicKey = "null";
+        private string MyPrivKey = "null";
+        private string SharedKey = "null";
+        private string SuperIV = "nghinghiadavit23";
 
         public Client(AuthService auth, CClient sharedClient)
         {
@@ -475,9 +478,43 @@ namespace RemoteMonitoringApplication.Views
                                 targetId = partner.id;
                             }
                             connected = true;
+                            ////////////////////////////////////////// TRAO ĐỔI KEY - TÍNH KEY
+                            Console.WriteLine("Computing shared key.....");
+                            MyPrivKey = lblYourPass.Text;
+                            OtherPublicKey = txtPassword.Password;
+                            SharedKey = CryptoService.ComputeSharedKey(MyPrivKey, OtherPublicKey);
+                            Console.WriteLine($"Computed shared key: {SharedKey}");
+
+                            //Console.WriteLine($"OtherPublicKey: {OtherPublicKey}");
+                            //Console.WriteLine($"MyPrivKey: {MyPrivKey}");
+                            ///////////////////////////////////////// TRAO ĐỔI KEY - REMOTE GỬI PUBKEY
+                            var sharedPubkey = new
+                            {
+                                command = "send_pubkey",
+                                Pubkey = lblYourPass.Text
+
+                            };
+                            await tcpClient.SendMessageAsync(clientId, targetId, sharedPubkey);
                             System.Windows.MessageBox.Show("Join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
 
+
+
                             Remote.Visibility = Visibility.Visible;
+                        }
+                        else if (command == "send_pubkey" && status == "success")
+                        {
+                            ////////////////////////////////////////// TRAO ĐỔI KEY - NHẬN PUBKEY VÀ TÍNH
+                            if (payload.TryGetProperty("message", out var PubkeyProp))
+                            {
+                                var Pubkey = PubkeyProp.GetString();
+                                OtherPublicKey = Pubkey;
+                                Console.WriteLine($"Pubkey{Pubkey}");
+                            }
+                            MyPrivKey = lblYourPass.Text;
+                            SharedKey = CryptoService.ComputeSharedKey(OtherPublicKey, MyPrivKey);
+                            Console.WriteLine($"Computed shared key: {SharedKey}");
+                            //Console.WriteLine($"MyPrivKey: {MyPrivKey}");
+                            //Console.WriteLine($"OtherPublicKey: {OtherPublicKey}");
                         }
                         else if (command == "join_room" && status != "success")
                         {
