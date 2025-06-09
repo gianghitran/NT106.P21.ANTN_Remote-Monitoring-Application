@@ -212,7 +212,7 @@ namespace RemoteMonitoringApplication.Services
             return Task.CompletedTask;
         }
 
-        public Task CloseVideo()
+        public async Task CloseVideo()
         {
             if (!_isClosed)
             {
@@ -220,15 +220,16 @@ namespace RemoteMonitoringApplication.Services
                 _isStarted = false;
                 _isPaused = true;
 
-                ManualResetEventSlim mre = new ManualResetEventSlim();
-                _sendTimer?.Dispose(mre.WaitHandle);
+                // Dừng timer ngay lập tức
+                _sendTimer?.Change(Timeout.Infinite, Timeout.Infinite);
 
+                // Đợi một chút để đảm bảo không còn callback nào chạy
+                await Task.Delay(100);
+
+                // Cleanup resource
                 CleanupResources();
                 logger.LogInformation("Screen video source closed");
-
-                return Task.Run(() => mre.Wait(TIMER_DISPOSE_WAIT_MILLISECONDS));
             }
-            return Task.CompletedTask;
         }
         private void InitializeBitmaps()
         {
@@ -257,15 +258,20 @@ namespace RemoteMonitoringApplication.Services
         {
             lock (_lockObject)
             {
-                _reusableBitmap?.Dispose();
-                _resizedBitmap?.Dispose();
-                _reusableGraphics?.Dispose();
-                _captureSemaphore?.Dispose();
+                var bitmap = _reusableBitmap;
+                var resized = _resizedBitmap;
+                var graphics = _reusableGraphics;
+                var semaphore = _captureSemaphore;
 
                 _reusableBitmap = null;
                 _resizedBitmap = null;
                 _reusableGraphics = null;
                 _reuseableBuffer = null;
+
+                bitmap?.Dispose();
+                resized?.Dispose();
+                graphics?.Dispose();
+                semaphore?.Dispose();
             }
         }
 
@@ -311,6 +317,7 @@ namespace RemoteMonitoringApplication.Services
         private void CaptureFrame(object state)
         {
             if (!_isStarted || _isPaused || _isClosed) return;
+            if (_reusableBitmap == null || _reusableGraphics == null) return;
 
             // Use semaphore to prevent concurrent captures
             if (!_captureSemaphore.Wait(0)) return;
@@ -407,7 +414,6 @@ namespace RemoteMonitoringApplication.Services
                         if (i420Buffer != null)
                         {
                             var encodedBuffer = _videoEncoder.EncodeVideo(processedBitmap.Width, processedBitmap.Height, i420Buffer, VideoPixelFormatsEnum.I420, _formatManager.SelectedFormat.Codec);
-
                             if (encodedBuffer != null)
                             {
                                 uint fps = _frameSpacing > 0 ? (uint)(1000 / _frameSpacing) : DEFAULT_FRAMES_PER_SECOND;

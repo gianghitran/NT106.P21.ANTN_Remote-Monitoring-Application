@@ -34,17 +34,21 @@ namespace RemoteMonitoringApplication.Services
 
         public async Task StartScreenSharingAsync(string targetId)
         {
+            if (_client != SessionManager.Instance.tcpClient)
+            {
+                _client = SessionManager.Instance.tcpClient;
+            }
+
             var config = new RTCConfiguration
             {
                 iceServers = new List<RTCIceServer>
-                    {
-                        new RTCIceServer { urls = "stun:stun.l.google.com:19302" }
-                    }
+               {
+                   new RTCIceServer { urls = "stun:stun.l.google.com:19302" },
+               }
             };
 
             _peerConnection = new RTCPeerConnection(config);
 
-            //Dùng để xác định kết nối tốt nhất giữa hai client
             _peerConnection.onicecandidate += async (candidate) =>
             {
                 if (candidate != null)
@@ -70,29 +74,27 @@ namespace RemoteMonitoringApplication.Services
                 }
             };
 
-            var screen = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+            // Fix for CS8602: Ensure Screen.PrimaryScreen is not null before accessing Bounds
+            var screen = Screen.PrimaryScreen?.Bounds ?? throw new InvalidOperationException("Primary screen is not available.");
 
             IVideoEncoder encoder = new FFmpegVideoEncoder();
 
             _screenShare = new ScreenVideoSource(encoder, screen.Width, screen.Height);
             _screenShare.SetVideoSourceFormat(ScreenVideoSource.SupportedFormats
-                                            .First(f => f.Codec == VideoCodecsEnum.H264));
+                                                .First(f => f.Codec == VideoCodecsEnum.H264));
 
             var videoTrack = new MediaStreamTrack(_screenShare.GetVideoSourceFormats(), MediaStreamStatusEnum.SendOnly);
             _peerConnection.addTrack(videoTrack);
 
             await _peerConnection.Start();
 
-            // Subscribe to video frame events for host
             _screenShare.OnVideoSourceRawSample += (uint duration, int width, int height, byte[] rawSample, VideoPixelFormatsEnum type) =>
             {
                 OnFrameReceived?.Invoke(rawSample, duration, type.ToString(), width, height);
             };
 
-            // Send encoded video frames to peer connection
             _screenShare.OnVideoSourceEncodedSample += (uint duration, byte[] encodedSample) =>
             {
-                //Console.WriteLine($"📦 Encoded frame: {encodedSample.Length} bytes");
                 try
                 {
                     if (_peerConnection != null)
@@ -106,12 +108,9 @@ namespace RemoteMonitoringApplication.Services
                 }
             };
 
-
-            // Create offer and set it as the local description
             var offer = _peerConnection.createOffer();
             await _peerConnection.setLocalDescription(offer);
 
-            // Send the offer to the server
             var request = new ShareScreenRequest
             {
                 command = "start_share",
@@ -131,6 +130,11 @@ namespace RemoteMonitoringApplication.Services
         {
             try
             {
+                if (_client != SessionManager.Instance.tcpClient)
+                {
+                    _client = SessionManager.Instance.tcpClient;
+                }
+
                 if (sdp == null)
                 {
                     throw new ArgumentNullException(nameof(sdp), "Incoming offer message cannot be null.");
@@ -140,13 +144,15 @@ namespace RemoteMonitoringApplication.Services
                 {
                     iceServers = new List<RTCIceServer>
                     {
-                        new RTCIceServer { urls = "stun:stun.l.google.com:19302" }
+                        new RTCIceServer { urls = "stun:stun.l.google.com:19302" },
                     }
                 };
 
+
                 _peerConnection = new RTCPeerConnection(config);
 
-                var screen = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+                var screen = Screen.PrimaryScreen?.Bounds ?? throw new InvalidOperationException("Primary screen is not available.");
+
                 IVideoEncoder encoder = new FFmpegVideoEncoder();
 
                 _peerConnection.onconnectionstatechange += async (RTCPeerConnectionState newState) =>
@@ -167,6 +173,7 @@ namespace RemoteMonitoringApplication.Services
 
                 _peerConnection.OnVideoFrameReceived += (IPEndPoint ep, uint timestamp, byte[] sample, VideoFormat type) =>
                 {
+                    Console.WriteLine(sample.Length);
                     DecodeH264Frame(sample, timestamp);
                 };
 
@@ -197,9 +204,12 @@ namespace RemoteMonitoringApplication.Services
                     }
                 };
 
+
+                Console.WriteLine("DANG O PARTNER", sdp);
                 // 1. Đặt SDP offer từ client A
                 var offerSdp = SDP.ParseSDPDescription(sdp);
                 _peerConnection.SetRemoteDescription(SdpType.offer, offerSdp);
+                Console.WriteLine("da se remote offer");
 
                 _remoteDescriptionSet = true;
 
@@ -261,6 +271,7 @@ namespace RemoteMonitoringApplication.Services
                 var answerSdp = SDP.ParseSDPDescription(sdp);
                 _peerConnection.SetRemoteDescription(SdpType.answer, answerSdp);
 
+
                 _remoteDescriptionSet = true;
 
                 // Thêm các ICE đã lưu trước đó
@@ -316,10 +327,9 @@ namespace RemoteMonitoringApplication.Services
                 _peerConnection = null;
             }
 
-            var request = new BaseRequest { command = "stop_share" };
-            var jsonRequest = System.Text.Json.JsonSerializer.Serialize(request);
             if (_screenShare != null || _isSharing)
             {
+                await _screenShare.PauseVideo();
                 await _screenShare.CloseVideo();
             }
             //await _client.SendMessageAsync(jsonRequest);
