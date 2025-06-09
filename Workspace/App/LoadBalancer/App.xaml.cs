@@ -22,7 +22,8 @@ namespace LoadBalancer
         private static TcpListener listener;
         private static int loadBalancerPort = 8001;
 
-        private static Dictionary<string, TcpClient> clientMap = new();
+        private static Dictionary<TcpClient, ServerInfo> clientToServer = new();
+        private static object clientLock = new();
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -120,15 +121,21 @@ namespace LoadBalancer
             Queue<(byte[] len, byte[] msg)> initialQueue = new();
             initialQueue.Enqueue((lengthBuffer, messageBuffer));
 
-            var clientToServer = new Thread(() => ForwardJson(clientStream, serverStream, client, initialQueue).Wait());
+            var clientToServerThread = new Thread(() => ForwardJson(clientStream, serverStream, client, initialQueue).Wait());
             var serverToClient = new Thread(() => ForwardJson(serverStream, clientStream, serverClient).Wait());
+
+            // Sau khi tạo serverClient:
+            lock (clientLock)
+            {
+                clientToServer[client] = server;
+            }
 
             try
             {
-                clientToServer.Start();
+                clientToServerThread.Start();
                 serverToClient.Start();
 
-                clientToServer.Join();
+                clientToServerThread.Join();
                 serverToClient.Join();
             }
             finally
@@ -206,8 +213,6 @@ namespace LoadBalancer
                     if (totalRead == messageLength)
                     {
                         string json = Encoding.UTF8.GetString(messageBuffer);
-                        string hex = BitConverter.ToString(messageBuffer, 0, messageLength).Replace("-", " ");
-                        Console.WriteLine($"[RAW HEX] {hex}");
 
                         // Bỏ qua nếu là ping
                         if (json.Contains("\"type\":\"ping\"") || json.Contains("\"command\":\"ping\""))
@@ -300,6 +305,42 @@ namespace LoadBalancer
                         }
                         foreach (var s in toRemove)
                         {
+                            // Gửi thông báo tới các client đang dùng backend này
+                            lock (clientLock)
+                            {
+                                var affectedClients = clientToServer.Where(kv => kv.Value == s).Select(kv => kv.Key).ToList();
+                                foreach (var client in affectedClients)
+                                {
+                                    try
+                                    {
+                                        var stream = client.GetStream();
+                                        var payload = new
+                                        {
+                                            from = "loadbalancer",
+                                            to = "",
+                                            payload = new
+                                            {
+                                                status = "fail",
+                                                command = "backend_dead",
+                                                port = s.Port,
+                                                message = $"Backend server {s.IP}:{s.Port} is dead"
+                                            }
+                                        };
+                                        string json = System.Text.Json.JsonSerializer.Serialize(payload);
+                                        byte[] data = Encoding.UTF8.GetBytes(json);
+                                        byte[] len = BitConverter.GetBytes(data.Length);
+                                        stream.Write(len, 0, 4);
+                                        stream.Write(data, 0, data.Length);
+                                    }
+                                    catch { }
+                                    finally
+                                    {
+                                        // Chủ động đóng kết nối luôn để client phát hiện mất kết nối
+                                        try { client.Close(); } catch { }
+                                        clientToServer.Remove(client);
+                                    }
+                                }
+                            }
                             servers.Remove(s);
                         }
                         if (toRemove.Count > 0)

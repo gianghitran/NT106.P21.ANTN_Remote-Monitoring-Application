@@ -125,8 +125,8 @@ namespace RemoteMonitoringApplication.ViewModels
                 session.username = res.username;
                 session.email = res.email;
                 session.role = res.role;
+                session.password = Password;
 
-                // Đảm bảo ClientId/ClientPassword đã có giá trị
                 if (string.IsNullOrEmpty(session.ClientId) || string.IsNullOrEmpty(session.ClientPassword))
                 {
                     session.ClientId = ClientIdentity.GenerateRandomId();

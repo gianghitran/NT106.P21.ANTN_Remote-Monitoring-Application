@@ -234,12 +234,18 @@ namespace RemoteMonitoringApplication.Views
                 tcpClient.IsReconnecting = true;
 
                 var oldClient = tcpClient; // lưu client cũ
+
+                // TẠM THỜI BỎ ĐĂNG KÝ SỰ KIỆN DISCONNECTED
                 oldClient.MessageReceived -= OnServerMessage;
+                oldClient.Disconnected -= OnClientDisconnected;
 
                 await oldClient.DisconnectAsync();
+
                 tcpClient = new CClient("localhost", partnerPort);
                 tcpClient.MessageReceived -= OnServerMessage;
                 tcpClient.MessageReceived += OnServerMessage;
+                tcpClient.Disconnected -= OnClientDisconnected;
+                tcpClient.Disconnected += OnClientDisconnected;
                 await tcpClient.ConnectAsync();
 
                 Console.WriteLine($"[AFTER RECONNECT] Now connected to port: {tcpClient.Port}");
@@ -995,6 +1001,17 @@ namespace RemoteMonitoringApplication.Views
                             }
 
                         }
+                        else if (command == "backend_dead")
+                        {
+                            int deadPort = payload.TryGetProperty("port", out var portProp) ? portProp.GetInt32() : -1;
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"[BACKEND DEAD] {msg}");
+                            System.Windows.MessageBox.Show(msg, "Server Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                            // Gọi OnClientDisconnected để tự động reconnect
+                            Dispatcher.Invoke(OnClientDisconnected);
+                            return;
+                        }
                         else
                         {
                             Console.WriteLine($"Command not found '{command}' and state '{status}'");
@@ -1269,7 +1286,6 @@ namespace RemoteMonitoringApplication.Views
                     _reconnectAttempts++;
                     Console.WriteLine($"[RECONNECT] Thử kết nối lại lần {_reconnectAttempts}...");
 
-                    // Tạo lại client mới, luôn kết nối qua load balancer
                     tcpClient = new CClient("localhost", 8001);
                     tcpClient.MessageReceived -= OnServerMessage;
                     tcpClient.MessageReceived += OnServerMessage;
@@ -1279,7 +1295,16 @@ namespace RemoteMonitoringApplication.Views
                     await tcpClient.ConnectAsync();
                     SessionManager.Instance.tcpClient = tcpClient;
 
-                    // Đăng nhập lại
+                    // LUÔN GÁN LẠI Ở ĐÂY!
+                    savedUsername = SessionManager.Instance.username;
+                    savedPassword = SessionManager.Instance.password;
+
+                    if (string.IsNullOrEmpty(savedUsername) || string.IsNullOrEmpty(savedPassword))
+                    {
+                        System.Windows.MessageBox.Show("⚠️ Không thể đăng nhập lại vì thiếu username/password.", "Lỗi đăng nhập lại", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
                     var loginRequest = new
                     {
                         command = "login",
