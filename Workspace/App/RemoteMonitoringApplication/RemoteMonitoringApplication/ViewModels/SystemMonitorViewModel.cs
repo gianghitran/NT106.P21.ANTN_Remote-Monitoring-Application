@@ -69,29 +69,28 @@ namespace RemoteMonitoringApplication.ViewModels
         }
 
 
-        public ObservableCollection<DriveDiskModel> diskInfo(string drawIn4)
+        public ObservableCollection<DriveDiskModel> diskInfo(string drawIn4, byte[] Sharekey, string IV)
         {
             var Drives = new ObservableCollection<DriveDiskModel>();
-            Drives = ParseOutput(drawIn4);
+            Drives = ParseOutput(drawIn4,Sharekey, IV);
             return Drives;
         }
-        public ObservableCollection<DriveMemoryModel> MemoryInfo(string drawIn4)
+        public ObservableCollection<DriveMemoryModel> MemoryInfo(string drawIn4, byte[] Sharekey, string IV)
         {
             var DrivesMemory = new ObservableCollection<DriveMemoryModel>();
-            DrivesMemory = ParseOutput_Memory(drawIn4);
+            DrivesMemory = ParseOutput_Memory(drawIn4, Sharekey, IV);
             return DrivesMemory;
         }
-        public ObservableCollection<DriveCPUModel> CPUInfo(string drawIn4)
+        public ObservableCollection<DriveCPUModel> CPUInfo(string drawIn4, byte[] Sharekey, string IV)
         {
             var DrivesCPU = new ObservableCollection<DriveCPUModel>();
-            DrivesCPU = ParseOutput_CPU(drawIn4);
+            DrivesCPU = ParseOutput_CPU(drawIn4, Sharekey, IV);
             return DrivesCPU;
         }
 
         public string FetchDiskInfo()
         {
             string output = _service.RunCMD("wmic logicaldisk get size,freespace,caption");
-            Drives = ParseOutput(output);
             //Console.WriteLine("Caption\tFreeSpace\tSize");
 
             //foreach (var drive in Drives)
@@ -103,20 +102,18 @@ namespace RemoteMonitoringApplication.ViewModels
         public string FetchMemoryInfo()
         {
             string output = _service.RunCMD("wmic OS get FreePhysicalMemory,TotalVisibleMemorySize");
-            DrivesMemory = ParseOutput_Memory(output);
             return output;
         }
         public string FetchCPUInfo()
         {
             string output = _service.RunCMD("wmic cpu get LoadPercentage");
-            DrivesCPU = ParseOutput_CPU(output);
             return output;// 1 giá trị duy nhất
 
         }
         
 
         
-        private ObservableCollection<DriveDiskModel> ParseOutput(string output)
+        private ObservableCollection<DriveDiskModel> ParseOutput(string output,byte[] Sharekey, string IV)
         {
             var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var result = new ObservableCollection<DriveDiskModel>();
@@ -128,16 +125,16 @@ namespace RemoteMonitoringApplication.ViewModels
                 {
                     result.Add(new DriveDiskModel
                     {
-                        Caption = parts[0],
-                        FreeSpace = parts[1],
-                        Size = parts[2]
+                        Caption = CryptoService.Encrypt(parts[0], Sharekey, IV),
+                        FreeSpace = CryptoService.Encrypt(parts[1], Sharekey, IV),
+                        Size = CryptoService.Encrypt(parts[2], Sharekey, IV)
                     });
                 }
             }
 
             return result;
         }
-        private ObservableCollection<DriveMemoryModel> ParseOutput_Memory(string output)
+        private ObservableCollection<DriveMemoryModel> ParseOutput_Memory(string output, byte[] Sharekey, string IV)
         {
             var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var result = new ObservableCollection<DriveMemoryModel>();
@@ -149,15 +146,15 @@ namespace RemoteMonitoringApplication.ViewModels
                 {
                     result.Add(new DriveMemoryModel
                     {
-                        FreeSpace = parts[0],
-                        Size = parts[1]
+                        FreeSpace = CryptoService.Encrypt(parts[0], Sharekey, IV),
+                        Size = CryptoService.Encrypt(parts[1], Sharekey, IV)
                     });
                 }
             }
 
             return result;
         }
-        private ObservableCollection<DriveCPUModel> ParseOutput_CPU(string output)
+        private ObservableCollection<DriveCPUModel> ParseOutput_CPU(string output, byte[] Sharekey, string IV)
         {
             var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var result = new ObservableCollection<DriveCPUModel>();
@@ -169,7 +166,7 @@ namespace RemoteMonitoringApplication.ViewModels
                 {
                     result.Add(new DriveCPUModel
                     {
-                        Used = parts[0]
+                        Used = CryptoService.Encrypt(parts[0], Sharekey, IV)
                     });
                 }
             }

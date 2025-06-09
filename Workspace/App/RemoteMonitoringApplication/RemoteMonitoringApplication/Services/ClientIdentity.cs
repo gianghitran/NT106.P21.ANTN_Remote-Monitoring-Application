@@ -19,7 +19,7 @@ namespace RemoteMonitoringApplication.Services
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%";
             var rnd = new Random();
             var sb = new StringBuilder();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 16; i++)
                 sb.Append(chars[rnd.Next(chars.Length)]);
             return sb.ToString();
         }

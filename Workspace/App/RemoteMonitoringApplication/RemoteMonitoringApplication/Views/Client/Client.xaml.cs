@@ -24,6 +24,7 @@ using static System.Windows.Forms.Design.AxImporter;
 using RemoteMonitoringApplication.Services;
 using Windows.Media.Protection.PlayReady;
 using System.IO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -54,7 +55,7 @@ namespace RemoteMonitoringApplication.Views
         private readonly AuthService _auth;
         private string OtherPublicKey = "null";
         private string MyPrivKey = "null";
-        private string SharedKey = "null";
+        private byte[] SharedKey = null;
         private string SuperIV = "nghinghiadavit23";
 
         public Client(AuthService auth, CClient sharedClient)
@@ -646,9 +647,12 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo());
-                                var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo());
-                                var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo());
+                                var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo(),SharedKey,SuperIV);
+                                var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo(), SharedKey, SuperIV);
+                                var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo(), SharedKey, SuperIV);
+
+                          
+
                                 //Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
                                 var Info = new
                                 {
@@ -672,18 +676,63 @@ namespace RemoteMonitoringApplication.Views
 
                             if (payload.TryGetProperty("message", out var Remote_info))
                             {
-                                var options = new JsonSerializerOptions
+                                if (payload.TryGetProperty("message", out var remoteInfo))
                                 {
-                                    PropertyNameCaseInsensitive = true
-                                };
+                                    var options = new JsonSerializerOptions
+                                    {
+                                        PropertyNameCaseInsensitive = true
+                                    };
 
-                                var Info = JsonSerializer.Deserialize<RemoteInfoMessage>(Remote_info.GetRawText(), options);
+                                    // Lấy JSON chuỗi của phần "message"
+                                    string messageJson = remoteInfo.GetRawText();
 
-                                //Console.WriteLine($"Pair ID: {Info.Drives}, Target ID: {Info.Memory}");
+                                    // Tạo class model cho cấu trúc message
+                                        var info = JsonSerializer.Deserialize<RemoteInfoMessage>(messageJson, options);
+                                        List<DriveDiskModel> drivesEncrypted = info.Drives; // Danh sách drives
+                                        List<DriveDiskModel> drivesDecrypted = new List<DriveDiskModel>();
 
-                                _GetInfo.showDiskBar(Info.Drives, diskBar, diskText);
-                                _GetInfo.showMemoryBar(Info.Memory, memoryBar, memoryText);
-                                _GetInfo.showCPUBar(Info.CPU, cpuBar, cpuText);
+                                        foreach (var drive in drivesEncrypted)
+                                        {
+                                            var driveDecrypted = new DriveDiskModel
+                                            {
+                                                Caption = CryptoService.Decrypt(drive.Caption, SharedKey, SuperIV),
+                                                FreeSpace = CryptoService.Decrypt(drive.FreeSpace, SharedKey, SuperIV),
+                                                Size = CryptoService.Decrypt(drive.Size, SharedKey, SuperIV)
+                                            };
+                                            drivesDecrypted.Add(driveDecrypted);
+                                        }
+                                    List<DriveMemoryModel> MemEncrypted = info.Memory; // Danh sách drives
+                                    List<DriveMemoryModel> MemDecrypted = new List<DriveMemoryModel>();
+
+                                    foreach (var drive in MemEncrypted)
+                                    {
+                                        var MemsDecrypted = new DriveMemoryModel
+                                        {
+                                            FreeSpace = CryptoService.Decrypt(drive.FreeSpace, SharedKey, SuperIV),
+                                            Size = CryptoService.Decrypt(drive.Size, SharedKey, SuperIV)
+                                        };
+                                        MemDecrypted.Add(MemsDecrypted);
+                                    }
+                                    List<DriveCPUModel> CPUEncrypted = info.CPU; // Danh sách drives
+                                    List<DriveCPUModel> CPUDecrypted = new List<DriveCPUModel>();
+
+                                    foreach (var drive in CPUEncrypted)
+                                    {
+                                        var CPUsDecrypted = new DriveCPUModel
+                                        {
+                                            Used = CryptoService.Decrypt(drive.Used, SharedKey, SuperIV)
+                                        };
+                                        CPUDecrypted.Add(CPUsDecrypted);
+                                    }
+
+                                    // Hiển thị thông tin
+                                    _GetInfo.showDiskBar(drivesDecrypted, diskBar, diskText);
+                                    _GetInfo.showMemoryBar(MemDecrypted, memoryBar, memoryText);
+                                    _GetInfo.showCPUBar(CPUDecrypted, cpuBar, cpuText);
+                                }
+
+
+                                
 
                             }
                             else
