@@ -408,7 +408,7 @@ namespace SERVER_RemoteMonitoring.Services
                                 }
                             }
                             catch
-                            {}
+                            { }
 
                             // Lấy targetId, sdp và sdp_type từ client
                             string sdp = root.GetProperty("sdp").GetString();
@@ -694,7 +694,49 @@ namespace SERVER_RemoteMonitoring.Services
                                 {
                                     status = "fail",
                                     command = "get_partner_port",
-                                    message = "Không tìm thấy partner"
+                                    message = "No partner found!"
+                                };
+                                await SendEnvelopeAsync(response);
+                            }
+                            break;
+                        }
+                    case "get_my_port":
+                        {
+                            var db = _dbService.GetDataBaseConnection();
+                            // Lấy tempId của client hiện tại
+                            var session = _sessionManager.GetSession(_client.Id);
+                            string tempId = session?.tempId;
+                            if (!string.IsNullOrEmpty(tempId))
+                            {
+                                var room = await db.Table<RoomClient>().Where(r => r.Id == tempId).FirstOrDefaultAsync();
+                                if (room != null)
+                                {
+                                    var responsePayload = new
+                                    {
+                                        status = "success",
+                                        command = "get_my_port",
+                                        port = room.ServerPort
+                                    };
+                                    await SendEnvelopeAsync(responsePayload);
+                                }
+                                else
+                                {
+                                    var response = new
+                                    {
+                                        status = "fail",
+                                        command = "get_my_port",
+                                        message = "Your room not found!"
+                                    };
+                                    await SendEnvelopeAsync(response);
+                                }
+                            }
+                            else
+                            {
+                                var response = new
+                                {
+                                    status = "fail",
+                                    command = "get_my_port",
+                                    message = "Session not found!"
                                 };
                                 await SendEnvelopeAsync(response);
                             }
