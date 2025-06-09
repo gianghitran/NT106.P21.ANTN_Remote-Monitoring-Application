@@ -983,8 +983,8 @@ namespace RemoteMonitoringApplication.Views
                                     Monitor_id = Pair.id,//theo doi
                                     Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
                                 };
-                                string Infojson = JsonSerializer.Serialize(Info);
-                                await tcpClient.SendMessageAsync(Infojson);
+                                //string Infojson = JsonSerializer.Serialize(Info);
+                                await tcpClient.SendMessageAsync(clientId, targetId, Info);
                                 Console.WriteLine("Sent process dump length to server, then to client (monitor) ", Pair.id);
                             }
                             else
