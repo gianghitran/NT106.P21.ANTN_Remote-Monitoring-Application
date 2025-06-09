@@ -635,9 +635,8 @@
             </Canvas>
             <!-- REMOTE -->
             <Canvas x:Name="Remote"
-                    Visibility="Collapsed"
                     Margin="283,0,0,0"
-                    Background="#DCD7C9">
+                    Background="#DCD7C9" Visibility="Collapsed">
                 <Rectangle Height="154"
                            Stroke="White"
                            Canvas.Top="-47"
@@ -745,8 +744,8 @@
                             FontWeight="Medium"
                             VerticalContentAlignment="Center"
                             Click="btnPlay_Click"
-                            Canvas.Top="599"
-                            Canvas.Left="344"
+                            Canvas.Top="591"
+                            Canvas.Left="364"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center">
                         <Button.Style>
@@ -775,46 +774,7 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <Button x:Name="btnPause"
-                            BorderThickness="0"
-                            Cursor="Hand"
-                            Content="Pause"
-                            FontSize="18"
-                            Foreground="#DCD7C9"
-                            FontFamily="{StaticResource MontserratFont}"
-                            FontWeight="Medium"
-                            VerticalContentAlignment="Center"
-                            Click="btnPlay_Click"
-                            Canvas.Top="599"
-                            Canvas.Left="480"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center">
-                        <Button.Style>
-                            <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background"
-                                        Value="#A27B5C"/>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver"
-                                             Value="True">
-                                        <Setter Property="Background"
-                                                Value="#D9A57B"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
 
-                        <Button.Template>
-                            <ControlTemplate TargetType="{x:Type Button}">
-                                <Border Width="80"
-                                        Height="40"
-                                        CornerRadius="20"
-                                        Background="{TemplateBinding Background}">
-                                    <ContentPresenter HorizontalAlignment="Center"
-                                                      VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
                     <Button x:Name="btnStop"
                             BorderThickness="0"
                             Cursor="Hand"
@@ -825,8 +785,8 @@
                             FontWeight="Medium"
                             VerticalContentAlignment="Center"
                             Click="btnStop_Click"
-                            Canvas.Top="599"
-                            Canvas.Left="620"
+                            Canvas.Top="591"
+                            Canvas.Left="600"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center">
                         <Button.Style>

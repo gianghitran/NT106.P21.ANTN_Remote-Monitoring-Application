@@ -12,43 +12,7 @@ namespace RemoteMonitoringApplication.Services
 {
     public class CryptoService
     {
-        public static CngKey CreateECCKeyFromString(string seedString, bool isPrivateKey)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(seedString));
-                byte[] keyMaterial = new byte[32];
-                Array.Copy(hash, keyMaterial, 32); // P-256 cần 32 bytes
-
-                CngKeyCreationParameters parameters = new CngKeyCreationParameters
-                {
-                    ExportPolicy = CngExportPolicies.AllowPlaintextExport,
-                    KeyUsage = isPrivateKey ? CngKeyUsages.KeyAgreement : CngKeyUsages.AllUsages,
-                    Parameters = {
-                    new CngProperty("Length", BitConverter.GetBytes(256), CngPropertyOptions.None)
-                }
-                };
-
-                CngKey key = CngKey.Create(CngAlgorithm.ECDiffieHellmanP256, null, parameters);
-                return key;
-            }
-        }
-
-        public static byte[] GetPrivateKeyBlobFromString(string seedString)
-        {
-            using (var ecdh = new ECDiffieHellmanCng(CreateECCKeyFromString(seedString, true)))
-            {
-                return ecdh.Key.Export(CngKeyBlobFormat.EccPrivateBlob);
-            }
-        }
-
-        public static byte[] GetPublicKeyBlobFromString(string seedString)
-        {
-            using (var ecdh = new ECDiffieHellmanCng(CreateECCKeyFromString(seedString, false)))
-            {
-                return ecdh.PublicKey.ToByteArray();
-            }
-        }
+       
         //private static byte[] key = Encoding.UTF8.GetBytes("12345678");
         //private static byte[] iv = Encoding.UTF8.GetBytes("87654321");
         public static byte[] ComputeSharedKey(string PriKey, string TheirPK)
