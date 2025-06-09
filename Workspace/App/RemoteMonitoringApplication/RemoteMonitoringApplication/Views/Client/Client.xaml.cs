@@ -25,6 +25,8 @@ using RemoteMonitoringApplication.Services;
 using Windows.Media.Protection.PlayReady;
 using System.IO;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using DirectShowLib.DMO;
+using Microsoft.Win32;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -142,6 +144,7 @@ namespace RemoteMonitoringApplication.Views
         {
             public string id { get; set; }
             public string target_id { get; set; }
+            public string savepath { get;set;} 
             public string PID { get; set; } // Thêm PID để yêu cầu dump của tiến trình cụ thể
         }
         public class RemoteInfoMessage
@@ -636,6 +639,12 @@ namespace RemoteMonitoringApplication.Views
                             Console.WriteLine($"SentprocessList failed: {msg}");
                             System.Windows.MessageBox.Show($"SentprocessList failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
+                        else if (command == "want_processDump" && status != "success")
+                        {
+                            string msg = payload.TryGetProperty("message", out var msgProp) ? msgProp.GetString() : "";
+                            Console.WriteLine($"Process want_processDump failed: {msg}");
+                            System.Windows.MessageBox.Show($"Process Dump failed: {msg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                         else if (status == "info" && command == "partner_joined")
                         {
                             if (payload.TryGetProperty("user", out var userProp) &&
@@ -929,77 +938,74 @@ namespace RemoteMonitoringApplication.Views
                         else if (command == "want_processDump" && status == "success")
                         {
                             Console.WriteLine("Received process dump request from server");
-                            System.Windows.MessageBox.Show("Received want process dump request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-                            if (root.TryGetProperty("message", out var mess))
+
+                            //System.Windows.MessageBox.Show("Received want process dump request from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                            if (root.TryGetProperty("payload", out var pay) &&
+                                pay.TryGetProperty("message", out var mess))
                             {
                                 var Mess = JsonSerializer.Deserialize<RequestPCDump>(mess.GetRawText());
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //var Data = _ProcessSerivce.getProcessList();
-                                _viewModelPCdump.ProcessDump(Mess.PID);
-                                Console.WriteLine($"Process dump start sending.........");
-                                byte[] fileBytes = File.ReadAllBytes("dumpTemp.dmp");
-                                byte[] compress_data = CompressService.Compress(fileBytes);
-                                string base64Data = Convert.ToBase64String(compress_data);
+                                var savePATH = CryptoService.Decrypt(Mess.savepath,SharedKey,SuperIV);
+                                var PID_decrypt = CryptoService.Decrypt(Mess.PID, SharedKey, SuperIV);
 
+                                if (!Directory.Exists(savePATH))
+                                {
+                                    using (var dialog = new FolderBrowserDialog())
+                                    {
+                                        dialog.Description = "Choose folder to save dump file";
+                                        dialog.UseDescriptionForTitle = true;
+                                        dialog.ShowNewFolderButton = true;
 
-                                Console.WriteLine($"Process dump data length: {compress_data.Length} bytes");
+                                        DialogResult result = dialog.ShowDialog();
+
+                                        if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                                        {
+                                            savePATH = dialog.SelectedPath;
+
+                                        }
+                                    }
+                                }
+                                Console.WriteLine($"Process dump start dumping.........");
+
+                                string infoDump =_viewModelPCdump.ProcessDump(PID_decrypt, savePATH);
+                           
+
+                                var infotoSent = "File dump completed in partner side! " + infoDump;
+                                var infotoSentEncrypt = CryptoService.Encrypt(infotoSent,SharedKey,SuperIV);
+                                Console.WriteLine($"Process dump data length: {infoDump.Length} bytes");
                                 //await tcpClient.SendFileAsync("dumpTemp.dmp");
-                                //await tcpClient.SendFileAsync("dumpTemp.dmp", "SentprocessDump", Mess.id);
+                                //await tcpClient.SendFileAsync("dumpTemp.dmp", "SentprocessDumpInfo", Mess.id);
                                 var Info = new
                                 {
-                                    command = "SentprocessDump",
-                                    info = compress_data,
-
+                                    command = "SentprocessDumpInfo",
+                                    info = infotoSentEncrypt,
                                     Monitor_id = Pair.id,//theo doi
                                     Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
                                 };
                                 string Infojson = JsonSerializer.Serialize(Info);
                                 await tcpClient.SendMessageAsync(Infojson);
-                                Console.WriteLine("Sent process dump to server, then to client (monitor) ", Pair.id);
+                                Console.WriteLine("Sent process dump length to server, then to client (monitor) ", Pair.id);
                             }
                             else
                             {
                                 Console.WriteLine("Received detail info error: id and target id not found!");
                             }
                         }
-                        else if (command == "SentprocessDump" && status == "success")
+                        else if (command == "SentprocessDumpInfo" && status == "success")
                         {
                             if (!root.TryGetProperty("target_id", out var targetIdProp) ||
-                                !root.TryGetProperty("length", out var lengthProp))
+                                !root.TryGetProperty("info", out var InfoProp))
                             {
-                                Console.WriteLine("fail", "SentprocessDump", "Thiếu thông tin cần thiết.");
+                                Console.WriteLine("fail", "SentprocessDumpInfo", "Thiếu thông tin cần thiết.");
                                 return;
                             }
-                            Console.WriteLine("Received process dump from server");
-                            System.Windows.MessageBox.Show("Received process dump from server", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+                            Console.WriteLine("Received process dump info from server");
                             string targetId = targetIdProp.GetString();
-                            long dumpLength = lengthProp.GetInt64();
+                            string infDecrypt = CryptoService.Decrypt(InfoProp.GetString(),SharedKey,SuperIV);
+                            System.Windows.MessageBox.Show($"Received process dump information: {infDecrypt}", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                            if (dumpLength <= 0)
-                            {
-                                Console.WriteLine("fail", "SentprocessDump", "Dump length không hợp lệ.");
-                                return;
-                            }
-                            Console.WriteLine($"Starting saved dump file of {dumpLength} bytes");
-
-                            try
-                            {
-                                //string path = "dumpReceived.dmp";
-                                //if (!Directory.Exists(path))
-                                //{
-                                //    Directory.CreateDirectory(path);
-                                //}
-                                string filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Savedata", "dumpReceived.dmp");
-
-                                //await tcpClient.RelayFileAsync(filePath, dumpLength);
-                                Console.WriteLine($"Saved completed. {dumpLength} bytes sent to {targetId}");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"Relay failed: {ex.Message}");
-                                Console.WriteLine("fail", "SentprocessDump", $"Relay failed: {ex.Message}");
-                            }
-
+                            
                         }
                         else if (command == "backend_dead")
                         {
@@ -1195,8 +1201,8 @@ namespace RemoteMonitoringApplication.Views
 
         private async void btnProcessDump_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("Feature is in development", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
+            //System.Windows.MessageBox.Show("Feature is in development", "Notification", MessageBoxButton.OK, MessageBoxImage.Information);
+            //return;
             //byte[] dumpdata = _viewModelPCdump.ProcessDump(Textbox_PID);
             if (role == "controller")
             {
@@ -1207,12 +1213,13 @@ namespace RemoteMonitoringApplication.Views
                         var SyncRequest = new
                         {
                             command = "want_processDump",
-                            ProcessPID = Textbox_PID.Text.Trim(),
+                            ProcessPID = CryptoService.Encrypt(Textbox_PID.Text.Trim(),SharedKey,SuperIV),
+                            savepath= CryptoService.Encrypt(Textbox_Savepath.Text.Trim(), SharedKey, SuperIV),
                             id = clientId,
                             target_id = targetId
                         };
                         await tcpClient.SendMessageAsync(clientId, targetId, SyncRequest);
-                        Console.WriteLine("Sent want_processDump request to server:");
+                        Console.WriteLine("Sent processDump request to server:");
                     }
                     else
                     {
