@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows10.0.18362</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64</Platforms>
+	<UseWindowsForms>true</UseWindowsForms>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <None Include="Libs\**\*.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <TargetPath>%(Filename)%(Extension)</TargetPath>
+	  </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Views\Client\copy.png" />
+    <None Remove="Views\Client\home.png" />
+    <None Remove="Views\Client\icon.png" />
+    <None Remove="Views\Client\tt.png" />
+
+	<None Remove="Images\Icons\minimize.png" />
+	<None Remove="Images\Icons\close.png" />
+	<None Remove="Images\Icons\user.png" />
+    <None Remove="Images\Icons\password.png" />
+	<None Remove="Images\Icons\email.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SIPSorcery" Version="8.0.14" />
+    <PackageReference Include="SIPSorceryMedia.FFmpeg" Version="8.0.10" />
+    <PackageReference Include="SIPSorceryMedia.Windows" Version="8.0.11" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Views\Client\close.png" />
+    <Resource Include="Images\Icons\home.png" />
+    <Resource Include="Images\Icons\icon.png" />
+    <Resource Include="Views\Client\copy.png" />
+    <Resource Include="Views\Client\minimize.png" />
+    <Resource Include="Images\Icons\tt.png" />
+
+	<Resource Include="Images\Icons\minimize.png" />
+	<Resource Include="Images\Icons\close.png" />
+	<Resource Include="Images\Icons\user.png" />
+	<Resource Include="Images\Icons\password.png" />
+	<Resource Include="Images\Icons\email.png" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Font\Montserrat.ttf" />
+	</ItemGroup>
+</Project>
