@@ -621,6 +621,8 @@ namespace SERVER_RemoteMonitoring.Services
                             string targetId = root.GetProperty("target_id").GetString();
                             string Id = root.GetProperty("id").GetString();
                             String ProcessID = root.GetProperty("ProcessPID").GetString();
+                            String Path = root.GetProperty("savepath").GetString();
+
                             var targetClient = _roomManager.GetClientById(targetId);
                             if (targetClient != null)
                             {
@@ -632,11 +634,13 @@ namespace SERVER_RemoteMonitoring.Services
                                     {
                                         id = Id,
                                         target_id = targetId,
-                                        PID = ProcessID
+                                        PID = ProcessID,
+                                        savepath = Path
                                     }
                                 };
 
-                                await targetClient.SendMessageAsync(JsonSerializer.Serialize(WantPID));
+
+                                await SendEnvelopeAsync(WantPID, targetClient.Id);
                             }
                             else
                             {
@@ -644,12 +648,12 @@ namespace SERVER_RemoteMonitoring.Services
                             }
                             break;
                         }
-                    case "SentprocessDump":
+                    case "SentprocessDumpInfo":
                         {
 
                             string targetId = root.GetProperty("Monitor_id").GetString();//người theo dõi
                             string Id = root.GetProperty("Remote_id").GetString();//bị theo dõi
-                            var processDumpLength = root.GetProperty("info");
+                            var processDumpIn4= root.GetProperty("info");
 
                             var targetClient = _roomManager.GetClientById(targetId);
                             if (targetClient != null)
@@ -657,15 +661,15 @@ namespace SERVER_RemoteMonitoring.Services
                                 var DetailData = new
                                 {
                                     status = "success",
-                                    command = "SentprocessDump",
-                                    message = processDumpLength
+                                    command = "SentprocessDumpInfo",
+                                    message = processDumpIn4
                                 };
 
-                                await targetClient.SendMessageAsync(JsonSerializer.Serialize(DetailData), "SentprocessDump");
+                                await SendEnvelopeAsync(DetailData, targetClient.Id);
                             }
                             else
                             {
-                                await SendResponseAsync<string>("fail", "SentprocessList", $"Client not found ID ID = {targetId}");
+                                await SendResponseAsync<string>("fail", "SentprocessDumpInfo", $"Client not found ID ID = {targetId}");
                             }
                             break;
                         }
