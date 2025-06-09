@@ -792,7 +792,7 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Data = _ProcessSerivce.getProcessList();
+                                var Data = _ProcessSerivce.getProcessList(SharedKey,SuperIV); // Đã mã hóa
                                 Console.WriteLine($"Process list start sending");
 
                                 var Info = new
@@ -818,8 +818,27 @@ namespace RemoteMonitoringApplication.Views
 
                             if (payload.TryGetProperty("message", out var processList))
                             {
+                                var options = new JsonSerializerOptions
+                                {
+                                    PropertyNameCaseInsensitive = true
+                                };
 
-                                var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText());
+                                var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText(), options);
+
+                                // Giải mã RealTime
+                                processListObj.RealTime = CryptoService.Decrypt(processListObj.RealTime, SharedKey, SuperIV);
+
+                                // Giải mã từng trường trong từng ProcessInfo
+                                foreach (var proc in processListObj.ProcessInfo)
+                                {
+                                    // PID có thể không cần giải mã nếu nó là số
+                                    proc.ProcessName = CryptoService.Decrypt(proc.ProcessName, SharedKey, SuperIV);
+                                    proc.CPU = CryptoService.Decrypt(proc.CPU, SharedKey, SuperIV);
+                                    proc.Memory = CryptoService.Decrypt(proc.Memory, SharedKey, SuperIV);
+                                    proc.DiskRead = CryptoService.Decrypt(proc.DiskRead, SharedKey, SuperIV);
+                                    proc.DiskWrite = CryptoService.Decrypt(proc.DiskWrite, SharedKey, SuperIV);
+                                }
+
                                 Console.WriteLine($"Process list getting");
                                 timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time: {processListObj.RealTime}");
 
