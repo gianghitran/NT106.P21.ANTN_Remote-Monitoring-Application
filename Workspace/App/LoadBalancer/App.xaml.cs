@@ -25,15 +25,16 @@ namespace LoadBalancer
         private static Dictionary<TcpClient, ServerInfo> clientToServer = new();
         private static object clientLock = new();
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             Console.WriteLine($"Load Balancer is running on port: {loadBalancerPort}");
-            StartLoadBalancer();
+            await StartUDPServerAsync(); // Bắt đầu server UDP
+            await StartLoadBalancer();
             StartPingServers(); // Thêm dòng này
         }
 
-        private static void StartLoadBalancer()
+        private static async Task StartLoadBalancer()
         {
             listener = new TcpListener(IPAddress.Any, loadBalancerPort);
             listener.Start();
@@ -350,6 +351,12 @@ namespace LoadBalancer
                 }
             })
             { IsBackground = true }.Start();
+        }
+
+        private async Task StartUDPServerAsync()
+        {
+            var _udpServer = new UDPLoad();
+            await Task.Run(() => _udpServer.StartListeningAsync());
         }
 
         public class ServerInfo

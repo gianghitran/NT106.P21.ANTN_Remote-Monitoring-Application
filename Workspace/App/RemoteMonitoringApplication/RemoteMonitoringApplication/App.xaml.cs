@@ -13,13 +13,17 @@ namespace RemoteMonitoringApplication;
 public partial class App : System.Windows.Application
 {
 
-    static ConnectServer _connect = new ConnectServer();
-
+    static ConnectServer _connect = null;
+    static BroadcastLANServer _broadcastServer = new BroadcastLANServer();
 
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        
+
+        string host = await _broadcastServer.DiscoverServer();
+
+        _connect = new ConnectServer(host, 8001);
+
         await ConnectToServer();
 
         var _authService = new AuthService(_connect.GetClient());
