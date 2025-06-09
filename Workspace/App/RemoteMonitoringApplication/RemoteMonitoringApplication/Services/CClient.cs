@@ -168,7 +168,22 @@ namespace RemoteMonitoringApplication.Services
         }
 
 
-        public int Port => _port;
+        public int Port
+        {
+            get
+            {
+                try
+                {
+                    if (_client != null && _client.Connected)
+                    {
+                        // Lấy port của server đang kết nối (remote endpoint)
+                        return ((System.Net.IPEndPoint)_client.Client.RemoteEndPoint).Port;
+                    }
+                }
+                catch { }
+                return -1;
+            }
+        }
 
         public static class DispatcherHelper
         {

@@ -68,6 +68,9 @@ namespace RemoteMonitoringApplication.Views
             {
                 tcpClient.MessageReceived -= OnServerMessage;
                 tcpClient.MessageReceived += OnServerMessage;
+                // ĐĂNG KÝ SỰ KIỆN DISCONNECTED
+                tcpClient.Disconnected -= OnClientDisconnected;
+                tcpClient.Disconnected += OnClientDisconnected;
             }
 
 
@@ -210,6 +213,7 @@ namespace RemoteMonitoringApplication.Views
         private TaskCompletionSource<bool> loginCompletedTcs;
         private TaskCompletionSource<int> partnerPortTcs;
         private TaskCompletionSource<bool> registerRoomCompletedTcs;
+        private TaskCompletionSource<int> myPortTcs;
 
         private async void btnConnect_Click(object sender, RoutedEventArgs e)
         {
@@ -217,10 +221,10 @@ namespace RemoteMonitoringApplication.Views
             string targetPassword = txtPassword.Password;
 
             int partnerPort = await GetPartnerServerPortAsync(targetId).ConfigureAwait(false);
-            int currentPort = tcpClient.Port;
-            Console.WriteLine($"Current port: {currentPort}, Partner port: {partnerPort}");
+            int myPort = await GetMyServerPortAsync().ConfigureAwait(false);
+            Console.WriteLine($"My backend port: {myPort}, Partner port: {partnerPort}");
 
-            if (currentPort != partnerPort)
+            if (myPort != partnerPort)
             {
                 loginCompletedTcs = new TaskCompletionSource<bool>();
                 registerRoomCompletedTcs = new TaskCompletionSource<bool>();
@@ -237,6 +241,8 @@ namespace RemoteMonitoringApplication.Views
                 tcpClient.MessageReceived -= OnServerMessage;
                 tcpClient.MessageReceived += OnServerMessage;
                 await tcpClient.ConnectAsync();
+
+                Console.WriteLine($"[AFTER RECONNECT] Now connected to port: {tcpClient.Port}");
 
                 SessionManager.Instance.tcpClient = tcpClient;
                 savedUsername = SessionManager.Instance.username;
@@ -434,31 +440,27 @@ namespace RemoteMonitoringApplication.Views
 
             try
             {
-                // Xử lý trường hợp KHÔNG có "payload"
-                if (root.TryGetProperty("command", out var commandProp) &&
-                    root.TryGetProperty("status", out var statusProp) &&
-                    commandProp.GetString() == "get_partner_port" &&
-                    statusProp.GetString() == "success" &&
-                    root.TryGetProperty("port", out var portProp))
-                {
-                    int port = portProp.GetInt32();
-                    Console.WriteLine($"✅ Received partner port (no payload): {port}");
-                    partnerPortTcs?.TrySetResult(port);
-                    return;
-                }
-
-                // Xử lý trường hợp CÓ "payload" (giữ lại cho các message khác)
                 if (root.TryGetProperty("payload", out var payload))
                 {
                     string status = payload.GetProperty("status").GetString();
                     string command = payload.GetProperty("command").GetString();
 
+                    if (command == "get_my_port" && status == "success")
+                    {
+                        if (payload.TryGetProperty("port", out var portProp))
+                        {
+                            int port = portProp.GetInt32();
+                            Console.WriteLine($"Received my backend port: {port}");
+                            myPortTcs?.TrySetResult(port);
+                        }
+                        return;
+                    }
                     if (command == "get_partner_port" && status == "success")
                     {
-                        if (payload.TryGetProperty("port", out var portProp2))
+                        if (payload.TryGetProperty("port", out var portProp))
                         {
-                            int port = portProp2.GetInt32();
-                            Console.WriteLine($"✅ Received partner port (payload): {port}");
+                            int port = portProp.GetInt32();
+                            Console.WriteLine($"Received partner port (payload): {port}");
                             partnerPortTcs?.TrySetResult(port);
                         }
                         return;
@@ -517,9 +519,9 @@ namespace RemoteMonitoringApplication.Views
                                 usrName.Text = user.username;
                                 ptnEmail.Content = partner.email;
                                 ptnName.Text = partner.username;
-                                
+
                                 role = "controller";
-                                ShowRole.Content=$"Role : {role}";
+                                ShowRole.Content = $"Role : {role}";
                                 clientId = user.id;
                                 targetId = partner.id;
                             }
@@ -716,11 +718,11 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo(),SharedKey,SuperIV);
+                                var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo(), SharedKey, SuperIV);
                                 var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo(), SharedKey, SuperIV);
                                 var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo(), SharedKey, SuperIV);
 
-                          
+
 
                                 //Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
                                 var Info = new
@@ -756,20 +758,20 @@ namespace RemoteMonitoringApplication.Views
                                     string messageJson = remoteInfo.GetRawText();
 
                                     // Tạo class model cho cấu trúc message
-                                        var info = JsonSerializer.Deserialize<RemoteInfoMessage>(messageJson, options);
-                                        List<DriveDiskModel> drivesEncrypted = info.Drives; // Danh sách drives
-                                        List<DriveDiskModel> drivesDecrypted = new List<DriveDiskModel>();
+                                    var info = JsonSerializer.Deserialize<RemoteInfoMessage>(messageJson, options);
+                                    List<DriveDiskModel> drivesEncrypted = info.Drives; // Danh sách drives
+                                    List<DriveDiskModel> drivesDecrypted = new List<DriveDiskModel>();
 
-                                        foreach (var drive in drivesEncrypted)
+                                    foreach (var drive in drivesEncrypted)
+                                    {
+                                        var driveDecrypted = new DriveDiskModel
                                         {
-                                            var driveDecrypted = new DriveDiskModel
-                                            {
-                                                Caption = CryptoService.Decrypt(drive.Caption, SharedKey, SuperIV),
-                                                FreeSpace = CryptoService.Decrypt(drive.FreeSpace, SharedKey, SuperIV),
-                                                Size = CryptoService.Decrypt(drive.Size, SharedKey, SuperIV)
-                                            };
-                                            drivesDecrypted.Add(driveDecrypted);
-                                        }
+                                            Caption = CryptoService.Decrypt(drive.Caption, SharedKey, SuperIV),
+                                            FreeSpace = CryptoService.Decrypt(drive.FreeSpace, SharedKey, SuperIV),
+                                            Size = CryptoService.Decrypt(drive.Size, SharedKey, SuperIV)
+                                        };
+                                        drivesDecrypted.Add(driveDecrypted);
+                                    }
                                     List<DriveMemoryModel> MemEncrypted = info.Memory; // Danh sách drives
                                     List<DriveMemoryModel> MemDecrypted = new List<DriveMemoryModel>();
 
@@ -801,7 +803,7 @@ namespace RemoteMonitoringApplication.Views
                                 }
 
 
-                                
+
 
                             }
                             else
@@ -818,7 +820,7 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Data = _viewModel.FetchRawInfo(command, SharedKey,SuperIV); // Encrypted
+                                var Data = _viewModel.FetchRawInfo(command, SharedKey, SuperIV); // Encrypted
 
 
                                 var Info = new
@@ -843,7 +845,7 @@ namespace RemoteMonitoringApplication.Views
                             if (payload.TryGetProperty("message", out var DataDetail))
                             {
                                 var infoDetail = DataDetail.GetString();
-                                var infoDecrypt = CryptoService.Decrypt(infoDetail,SharedKey,SuperIV);
+                                var infoDecrypt = CryptoService.Decrypt(infoDetail, SharedKey, SuperIV);
                                 TextBoxDetails.Document.Blocks.Clear();
                                 TextBoxDetails.AppendText(infoDecrypt);
                             }
@@ -861,7 +863,7 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Data = _ProcessSerivce.getProcessList(SharedKey,SuperIV); // Đã mã hóa
+                                var Data = _ProcessSerivce.getProcessList(SharedKey, SuperIV); // Đã mã hóa
                                 Console.WriteLine($"Process list start sending");
 
                                 var Info = new
@@ -1226,6 +1228,17 @@ namespace RemoteMonitoringApplication.Views
             return await partnerPortTcs.Task;
         }
 
+        private async Task<int> GetMyServerPortAsync()
+        {
+            myPortTcs = new TaskCompletionSource<int>();
+            var getPortRequest = new
+            {
+                command = "get_my_port"
+            };
+            await tcpClient.SendMessageAsync(savedTempId, savedTempId, getPortRequest);
+            return await myPortTcs.Task;
+        }
+
         private async Task DrainSocketAsync(CClient tcpClient)
         {
             var stream = tcpClient.Stream;
@@ -1233,6 +1246,71 @@ namespace RemoteMonitoringApplication.Views
             {
                 byte[] buffer = new byte[1024];
                 await stream.ReadAsync(buffer, 0, buffer.Length);
+            }
+        }
+
+        private bool _isReconnecting = false;
+        private int _reconnectAttempts = 0;
+
+        private async void OnClientDisconnected()
+        {
+            if (_isReconnecting) return;
+            _isReconnecting = true;
+
+            Dispatcher.Invoke(() =>
+            {
+                System.Windows.MessageBox.Show("Mất kết nối tới server. Đang thử kết nối lại...", "Mất kết nối", MessageBoxButton.OK, MessageBoxImage.Warning);
+            });
+
+            while (true)
+            {
+                try
+                {
+                    _reconnectAttempts++;
+                    Console.WriteLine($"[RECONNECT] Thử kết nối lại lần {_reconnectAttempts}...");
+
+                    // Tạo lại client mới, luôn kết nối qua load balancer
+                    tcpClient = new CClient("localhost", 8001);
+                    tcpClient.MessageReceived -= OnServerMessage;
+                    tcpClient.MessageReceived += OnServerMessage;
+                    tcpClient.Disconnected -= OnClientDisconnected;
+                    tcpClient.Disconnected += OnClientDisconnected;
+
+                    await tcpClient.ConnectAsync();
+                    SessionManager.Instance.tcpClient = tcpClient;
+
+                    // Đăng nhập lại
+                    var loginRequest = new
+                    {
+                        command = "login",
+                        username = savedUsername,
+                        password = savedPassword
+                    };
+                    await tcpClient.SendMessageAsync(savedTempId, savedTempId, loginRequest);
+
+                    // Đăng ký phòng lại
+                    var registerRoomRequest = new
+                    {
+                        command = "register_room",
+                        id = savedTempId,
+                        password = savedClientPassword
+                    };
+                    await tcpClient.SendMessageAsync(savedTempId, null, registerRoomRequest);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        System.Windows.MessageBox.Show("Kết nối lại thành công!", "Reconnect", MessageBoxButton.OK, MessageBoxImage.Information);
+                    });
+
+                    _isReconnecting = false;
+                    _reconnectAttempts = 0;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[RECONNECT] Lỗi: {ex.Message}. Thử lại sau 2 giây...");
+                    await Task.Delay(2000);
+                }
             }
         }
     }
