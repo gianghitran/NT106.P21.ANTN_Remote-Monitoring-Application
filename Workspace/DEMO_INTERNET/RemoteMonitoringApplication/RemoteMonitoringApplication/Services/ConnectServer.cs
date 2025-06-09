@@ -13,7 +13,7 @@ namespace RemoteMonitoringApplication.Services
 
         public ConnectServer()
         {
-            _client = new CClient("05fjdolnt.localto.net", 9777); 
+            _client = new CClient("05fjdolnt.localto.net", 2766); 
             _client.MessageReceived += HandleMessageReceived;
         }
 

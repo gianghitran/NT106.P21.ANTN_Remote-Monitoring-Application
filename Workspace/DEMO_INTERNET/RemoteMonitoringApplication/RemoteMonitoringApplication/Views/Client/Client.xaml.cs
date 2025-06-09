@@ -1294,7 +1294,7 @@ namespace RemoteMonitoringApplication.Views
                     _reconnectAttempts++;
                     Console.WriteLine($"[RECONNECT] Thử kết nối lại lần {_reconnectAttempts}...");
 
-                    tcpClient = new CClient("05fjdolnt.localto.net", 9777);
+                    tcpClient = new CClient("05fjdolnt.localto.net", 2766);
                     tcpClient.MessageReceived -= OnServerMessage;
                     tcpClient.MessageReceived += OnServerMessage;
                     tcpClient.Disconnected -= OnClientDisconnected;

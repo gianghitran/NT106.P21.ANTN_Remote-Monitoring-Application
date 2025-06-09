@@ -52,7 +52,7 @@ namespace SERVER_RemoteMonitoring.Services
         {
             try
             {
-                using TcpClient client = new TcpClient("05fjdolnt.localto.net", 9777); // IP và port của Load Balancer
+                using TcpClient client = new TcpClient("05fjdolnt.localto.net", 2766); // IP và port của Load Balancer
                 using NetworkStream stream = client.GetStream();
 
                 var registerPayload = new
