@@ -92,6 +92,26 @@ namespace RemoteMonitoringApplication.Views
 
             lblYourID.Text = savedTempId;
             lblYourPass.Text = savedClientPassword;
+
+
+            // Fix for the errors related to the event handler for `_shareScreen.OnFrameReceived`  
+            _shareScreen.OnFrameReceived += (frame, timestamp, codec, width, height) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    if (frame != null && frame.Length > 0)
+                    {
+                        // Convert byte[] to BitmapImage  
+                        var bitmap = _shareScreen.ConvertToBitmap(frame, codec, width, height);
+                        var image = _shareScreen.BitmapToImageSource(bitmap);
+                        imgAgoraVideo.Source = image;
+                    }
+                    else
+                    {
+                        imgAgoraVideo.Source = null; // Clear image if no frame is available  
+                    }
+                });
+            };
         }
 
         // Khi form tắt thì ngắt các kết nối
@@ -292,9 +312,14 @@ namespace RemoteMonitoringApplication.Views
             if (role == "controller")
             {
                 System.Windows.MessageBox.Show($"Join channel để XEM màn hình {targetId}");
-                _shareScreen = new ShareScreenService();
-                await _shareScreen.StartScreenSharingAsync(targetId);
-
+                //await _shareScreen.StartScreenSharingAsync(targetId);
+                var shareOffer = new
+                {
+                    command = "start_share",
+                    type = "offer",
+                    targetId = targetId,
+                };
+                await tcpClient.SendMessageAsync(clientId, targetId, shareOffer);
             }
             else if (role == "partner") { }
             else
@@ -303,15 +328,31 @@ namespace RemoteMonitoringApplication.Views
             }
         }
 
-        // Nút dừng share màn hình
+        // Nút dừng share màn hình cho Controller
         private async void btnStop_Click(object sender, RoutedEventArgs e)
         {
-            await _shareScreen.StopScreenSharingAsync();
-            Dispatcher.Invoke(() =>
+            if (role == "controller")
             {
-                // Dừng hiển thị
-                imgAgoraVideo.Source = null;
-            });
+                //await _shareScreen.StopScreenSharingAsync();
+                var stopShareRequest = new
+                {
+                    command = "stop_share",
+                    type = "stop",
+                    targetId = targetId
+                };
+
+                await tcpClient.SendMessageAsync(clientId, targetId, stopShareRequest);
+
+                Dispatcher.Invoke(() =>
+                {
+                    // Dừng hiển thị
+                    imgAgoraVideo.Source = null;
+                });
+            }
+            else if (role == "partner")
+            {
+                System.Windows.MessageBox.Show("Only controller can stop share screen");
+            }
         }
 
         private void lblTaskManager_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -603,26 +644,46 @@ namespace RemoteMonitoringApplication.Views
                             System.Windows.MessageBox.Show("Partner join room thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                             Home_2.Visibility = Visibility.Visible;
                         }
-                        else if (command == "start_share" && status == "info")
+                        else if (command == "start_share")
                         {
-                            role = "partner";
-                            var from_id = root.GetProperty("targetId").GetString();
-                            var sdp = root.GetProperty("sdp").GetString();
-                            var sdpType = root.GetProperty("sdpType").GetString();
-
-
-                            if (sdpType == "offer")
+                            if (status == "info")
                             {
-                                await _shareScreen.HandleIncomingOffer(sdp, targetId);
+                                var from_id = payload.GetProperty("targetId").GetString();
+                                var sdp = payload.GetProperty("sdp").GetString();
+                                var sdpType = payload.GetProperty("sdpType").GetString();
+
+
+                                if (sdpType == "offer")
+                                {
+                                    await _shareScreen.HandleIncomingOffer(sdp, targetId);
+                                }
+                                else if (sdpType == "answer")
+                                {
+                                    await _shareScreen.HandleIncomingAnswer(sdp, targetId);
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"SDP type không hợp lệ: {sdpType}");
+
+                                }
                             }
-                            else if (sdpType == "answer")
+                            else if (status == "request")
                             {
-                                await _shareScreen.HandleIncomingAnswer(sdp, targetId);
+                                role = "partner";
+                                await _shareScreen.StartScreenSharingAsync(targetId);
                             }
-                            else
+                        }
+                        else if (command == "stop_share")
+                        {
+                            if (status == "request")
                             {
-                                Console.WriteLine($"SDP type không hợp lệ: {sdpType}");
-
+                                Console.WriteLine("Received stop share request from controller");
+                                await _shareScreen.StopScreenSharingAsync();
+                                Dispatcher.Invoke(() =>
+                                {
+                                    // Dừng hiển thị
+                                    imgAgoraVideo.Source = null;
+                                });
                             }
                         }
                         else if (command == "ice_candidate" && status == "info")

@@ -147,8 +147,12 @@ namespace RemoteMonitoringApplication.Services
         {
             try
             {
-                await _stream.FlushAsync();
-                _stream?.Close();
+                if (_stream != null)
+                {
+                    await _stream.FlushAsync();
+                    _stream?.Close();
+                }
+
                 _client?.Close();
                 _client?.Dispose();
                 _stream = null;

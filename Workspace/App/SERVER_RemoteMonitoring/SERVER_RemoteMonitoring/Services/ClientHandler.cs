@@ -386,13 +386,32 @@ namespace SERVER_RemoteMonitoring.Services
                         }
                     case "start_share":
                         {
-                            // Lấy targetId, sdp và sdp_type từ client
                             string targetId = root.GetProperty("targetId").GetString();
+                            var targetClient = _roomManager.GetClientById(targetId);
+
+                            try
+                            {
+                                string type = root.GetProperty("type").GetString();
+                                if (type == "offer")
+                                {
+                                    var offerShareMessage = new
+                                    {
+                                        command = "start_share",
+                                        status = "request",
+                                        targetId = _client.Id, // ID của client gửi offer
+                                    };
+                                    await _saveLogService.LogAsync(_client.Id, "Controller", targetClient.Id, "Offer share screen");
+                                    await SendEnvelopeAsync(offerShareMessage, targetClient.Id);
+                                }
+                            }
+                            catch
+                            {}
+
+                            // Lấy targetId, sdp và sdp_type từ client
                             string sdp = root.GetProperty("sdp").GetString();
                             string sdpType = root.GetProperty("sdpType").GetString();
 
                             // Tìm client đích theo targetId (người share màn hình)
-                            var targetClient = _roomManager.GetClientById(targetId);
 
 
                             if (targetClient != null)
@@ -409,7 +428,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     };
 
                                     await _saveLogService.LogAsync(_client.Id, "Controller", targetClient.Id, "Want received share screen");
-                                    await targetClient.SendMessageAsync(JsonSerializer.Serialize(offerMessage));
+                                    await SendEnvelopeAsync(offerMessage, targetClient.Id);
                                 }
                                 else if (sdpType == "answer")
                                 {
@@ -423,7 +442,7 @@ namespace SERVER_RemoteMonitoring.Services
                                     };
 
                                     await _saveLogService.LogAsync(_client.Id, "Remote", targetClient.Id, "Send share screen");
-                                    await targetClient.SendMessageAsync(JsonSerializer.Serialize(answerMessage));
+                                    await SendEnvelopeAsync(answerMessage, targetClient.Id);
                                 }
                                 else
                                 {
@@ -433,6 +452,28 @@ namespace SERVER_RemoteMonitoring.Services
                             else
                             {
                                 await SendResponseAsync<string>("fail", "start_share", $"Không tìm thấy client có ID = {targetId}");
+                            }
+                            break;
+                        }
+
+                    case "stop_share":
+                        {
+                            string targetId = root.GetProperty("targetId").GetString();
+                            var targetClient = _roomManager.GetClientById(targetId);
+                            if (targetClient != null)
+                            {
+                                var stopShareMessage = new
+                                {
+                                    command = "stop_share",
+                                    status = "request",
+                                    targetId = _client.Id // ID của client gửi yêu cầu dừng share
+                                };
+                                await _saveLogService.LogAsync(_client.Id, "Controller", targetClient.Id, "Stop share screen");
+                                await SendEnvelopeAsync(stopShareMessage, targetClient.Id);
+                            }
+                            else
+                            {
+                                await SendResponseAsync<string>("fail", "stop_share", $"Không tìm thấy client có ID = {targetId}");
                             }
                             break;
                         }
@@ -462,6 +503,12 @@ namespace SERVER_RemoteMonitoring.Services
                             var targetClient = _roomManager.GetClientById(targetId);
 
                             RTCIceCandidateInit iceCandidate = root.GetProperty("iceCandidate").Deserialize<RTCIceCandidateInit>();
+
+                            if (iceCandidate.sdpMid == null)
+                            {
+                                return;
+                            }
+
                             var candidateMessage = new
                             {
                                 command = "ice_candidate",
