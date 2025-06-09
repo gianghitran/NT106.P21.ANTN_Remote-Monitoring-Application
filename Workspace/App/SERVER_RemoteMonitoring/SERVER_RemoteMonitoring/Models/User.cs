@@ -19,13 +19,13 @@ namespace SERVER_RemoteMonitoring.Models
         [Unique, NotNull]
         public string Email { get; set; }
         public string Role { get; set; } // e.g., "Admin", "User"
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; }
 
         public User()
         {
-            CreatedAt = DateTime.Now;
-            UpdatedAt = DateTime.Now; ;
+            CreatedAt = DateTimeOffset.Now;
+            UpdatedAt = DateTimeOffset.Now; ;
         }
 
         //public ICollection<Log> Logs { get; set; }
