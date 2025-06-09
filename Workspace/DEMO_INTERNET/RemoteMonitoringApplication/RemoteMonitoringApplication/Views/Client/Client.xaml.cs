@@ -27,6 +27,7 @@ using System.IO;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using DirectShowLib.DMO;
 using Microsoft.Win32;
+using System.Windows.Forms;
 namespace RemoteMonitoringApplication.Views
 {
     /// <summary>
@@ -946,7 +947,7 @@ namespace RemoteMonitoringApplication.Views
                                 var Mess = JsonSerializer.Deserialize<RequestPCDump>(mess.GetRawText());
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //var Data = _ProcessSerivce.getProcessList();
-                                var savePATH = CryptoService.Decrypt(Mess.savepath,SharedKey,SuperIV);
+                                var savePATH = CryptoService.Decrypt(Mess.savepath, SharedKey, SuperIV);
                                 var PID_decrypt = CryptoService.Decrypt(Mess.PID, SharedKey, SuperIV);
 
                                 if (!Directory.Exists(savePATH))
@@ -968,11 +969,11 @@ namespace RemoteMonitoringApplication.Views
                                 }
                                 Console.WriteLine($"Process dump start dumping.........");
 
-                                string infoDump =_viewModelPCdump.ProcessDump(PID_decrypt, savePATH);
-                           
+                                string infoDump = _viewModelPCdump.ProcessDump(PID_decrypt, savePATH);
+
 
                                 var infotoSent = "File dump completed in partner side! " + infoDump;
-                                var infotoSentEncrypt = CryptoService.Encrypt(infotoSent,SharedKey,SuperIV);
+                                var infotoSentEncrypt = CryptoService.Encrypt(infotoSent, SharedKey, SuperIV);
                                 Console.WriteLine($"Process dump data length: {infoDump.Length} bytes");
                                 //await tcpClient.SendFileAsync("dumpTemp.dmp");
                                 //await tcpClient.SendFileAsync("dumpTemp.dmp", "SentprocessDumpInfo", Mess.id);
