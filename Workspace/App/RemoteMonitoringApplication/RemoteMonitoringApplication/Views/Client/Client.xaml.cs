@@ -284,6 +284,8 @@ namespace RemoteMonitoringApplication.Views
             usrName.Text = "";
             ptnEmail.Content = "";
             ptnName.Text = "";
+            ShowRole.Content = $"Role : User";
+
         }
 
         private async void btnPlay_Click(object sender, RoutedEventArgs e)
@@ -474,7 +476,9 @@ namespace RemoteMonitoringApplication.Views
                                 usrName.Text = user.username;
                                 ptnEmail.Content = partner.email;
                                 ptnName.Text = partner.username;
+                                
                                 role = "controller";
+                                ShowRole.Content=$"Role : {role}";
                                 clientId = user.id;
                                 targetId = partner.id;
                             }
@@ -596,7 +600,10 @@ namespace RemoteMonitoringApplication.Views
                                 usrName.Text = user.username;
                                 ptnEmail.Content = partner.email;
                                 ptnName.Text = partner.username;
+
                                 role = "partner";
+                                ShowRole.Content = $"Role : {role}";
+
                                 clientId = partner.id;
                                 targetId = user.id;
                             }
@@ -607,6 +614,8 @@ namespace RemoteMonitoringApplication.Views
                         else if (command == "start_share" && status == "info")
                         {
                             role = "partner";
+                            ShowRole.Content = $"Role : {role}";
+
                             var from_id = root.GetProperty("targetId").GetString();
                             var sdp = root.GetProperty("sdp").GetString();
                             var sdpType = root.GetProperty("sdpType").GetString();
