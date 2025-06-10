@@ -19,9 +19,16 @@ namespace SERVER_RemoteMonitoring.Services
         public void RemoveClient(string id)
         {
             Console.WriteLine($"[RoomManager] Removing client {id}");
-            _idToClient.Remove(id);
-            _idToSession.Remove(id);
-            _clientPasswords.Remove(id);
+
+            // Chỉ xóa mapping phòng, KHÔNG xóa thông tin đăng ký client
+            _targetToController.Remove(id);
+
+            TCPClient clientObj = null;
+            _idToClient.TryGetValue(id, out clientObj);
+            if (clientObj != null)
+            {
+                _controllerToTargets.Remove(clientObj);
+            }
         }
 
 
