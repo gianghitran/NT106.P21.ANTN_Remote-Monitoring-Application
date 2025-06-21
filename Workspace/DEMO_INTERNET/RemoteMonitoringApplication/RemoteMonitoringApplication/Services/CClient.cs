@@ -67,7 +67,7 @@ namespace RemoteMonitoringApplication.Services
 
             try
             {
-                while (_client.Connected && !token.IsCancellationRequested)
+                while (_client.Connected)
                 {
                     int totalRead = 0;
                     int lengthNeeded = 4;
@@ -147,18 +147,34 @@ namespace RemoteMonitoringApplication.Services
         {
             try
             {
-                if (_stream != null)
-                {
-                    await _stream.FlushAsync();
-                    _stream?.Close();
-                }
-
-                _client?.Close();
-                _client?.Dispose();
-                _stream = null;
-                _client = null;
                 _disposed = true;
                 _cts?.Cancel();
+
+                if (_client != null)
+                {
+                    try
+                    {
+                        // Đảm bảo shutdown cả hai chiều để LB phát hiện EOF
+                        _client.Client.Shutdown(SocketShutdown.Both);
+                    }
+                    catch { }
+                }
+
+                if (_stream != null)
+                {
+                    try { await _stream.FlushAsync(); } catch { }
+                    try { _stream.Close(); } catch { }
+                    try { _stream.Dispose(); } catch { }
+                    _stream = null;
+                }
+
+                if (_client != null)
+                {
+                    try { _client.Close(); } catch { }
+                    try { _client.Dispose(); } catch { }
+                    _client = null;
+                }
+
                 Disconnected?.Invoke();
             }
             catch (Exception ex)

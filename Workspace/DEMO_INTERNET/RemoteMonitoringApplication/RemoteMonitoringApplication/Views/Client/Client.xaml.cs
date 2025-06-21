@@ -244,7 +244,16 @@ namespace RemoteMonitoringApplication.Views
 
                 await oldClient.DisconnectAsync();
 
-                tcpClient = new CClient("05fjdolnt.localto.net", partnerPort);
+                // Đợi đến khi oldClient thực sự null và socket đóng hoàn toàn
+                while (oldClient != null && (oldClient.Stream != null || oldClient.Port != -1))
+                {
+                    await Task.Delay(100);
+                }
+
+                // Đảm bảo oldClient đã null (nếu bạn set null trong DisconnectAsync)
+                oldClient = null;
+
+                tcpClient = new CClient("localhost", partnerPort);
                 tcpClient.MessageReceived -= OnServerMessage;
                 tcpClient.MessageReceived += OnServerMessage;
                 tcpClient.Disconnected -= OnClientDisconnected;
@@ -1021,8 +1030,8 @@ namespace RemoteMonitoringApplication.Views
                         }
                         else if (command == "SentprocessDumpInfo" && status == "success")
                         {
-                            if (!payload.TryGetProperty("target_id", out var targetIdProp) ||
-                                !payload.TryGetProperty("info", out var InfoProp))
+                            if (!root.TryGetProperty("target_id", out var targetIdProp) ||
+                                !root.TryGetProperty("info", out var InfoProp))
                             {
                                 Console.WriteLine("fail", "SentprocessDumpInfo", "Thiếu thông tin cần thiết.");
                                 return;
@@ -1341,7 +1350,7 @@ namespace RemoteMonitoringApplication.Views
                     _reconnectAttempts++;
                     Console.WriteLine($"[RECONNECT] Thử kết nối lại lần {_reconnectAttempts}...");
 
-                    tcpClient = new CClient("05fjdolnt.localto.net", 2003);
+                    tcpClient = new CClient("localhost", 8001);
                     tcpClient.MessageReceived -= OnServerMessage;
                     tcpClient.MessageReceived += OnServerMessage;
                     tcpClient.Disconnected -= OnClientDisconnected;

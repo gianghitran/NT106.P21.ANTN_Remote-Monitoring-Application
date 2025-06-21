@@ -102,7 +102,7 @@ namespace LoadBalancer
             ServerInfo server;
             try
             {
-                server = GetServerWithLeastConnections();
+                server = GetWeightedRoundRobinServer();
             }
             catch (InvalidOperationException)
             {
@@ -151,15 +151,37 @@ namespace LoadBalancer
         }
 
 
-        private static ServerInfo GetServerWithLeastConnections()
+        private static ServerInfo GetWeightedRoundRobinServer()
         {
             if (servers.Count == 0)
             {
                 Console.WriteLine("No backend server registered! Rejecting client.");
                 throw new InvalidOperationException("No backend server registered.");
             }
-            servers.Sort((s1, s2) => s1.ConnectionCount.CompareTo(s2.ConnectionCount));
-            return servers[0];
+
+            ServerInfo selected = null;
+            int totalWeight = 0;
+
+            lock (servers)
+            {
+                foreach (var server in servers)
+                {
+                    totalWeight += server.Weight;
+                    server.CurrentWeight += server.Weight;
+
+                    if (selected == null || server.CurrentWeight > selected.CurrentWeight)
+                    {
+                        selected = server;
+                    }
+                }
+
+                if (selected != null)
+                {
+                    selected.CurrentWeight -= totalWeight;
+                }
+            }
+
+            return selected;
         }
 
         private static async Task ForwardJson(NetworkStream input, NetworkStream output, TcpClient origin, Queue<(byte[] len, byte[] msg)> initialQueue = null)
@@ -363,14 +385,17 @@ namespace LoadBalancer
         {
             public string IP { get; }
             public int Port { get; }
+
+            public int Weight { get; set; } = 1;
+            public int CurrentWeight { get; set; } = 0;
             private int connectionCount;
             public int ConnectionCount => connectionCount;
 
-            public ServerInfo(string ip, int port)
+            public ServerInfo(string ip, int port, int weight = 1)
             {
                 IP = ip;
                 Port = port;
-                connectionCount = 0;
+                Weight = weight;
             }
 
             public void IncrementConnection()

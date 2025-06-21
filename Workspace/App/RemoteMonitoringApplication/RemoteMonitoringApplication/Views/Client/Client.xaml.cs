@@ -244,6 +244,15 @@ namespace RemoteMonitoringApplication.Views
 
                 await oldClient.DisconnectAsync();
 
+                // Đợi đến khi oldClient thực sự null và socket đóng hoàn toàn
+                while (oldClient != null && (oldClient.Stream != null || oldClient.Port != -1))
+                {
+                    await Task.Delay(100);
+                }
+
+                // Đảm bảo oldClient đã null (nếu bạn set null trong DisconnectAsync)
+                oldClient = null;
+
                 tcpClient = new CClient("localhost", partnerPort);
                 tcpClient.MessageReceived -= OnServerMessage;
                 tcpClient.MessageReceived += OnServerMessage;
