@@ -57,7 +57,8 @@ namespace RemoteMonitoringApplication.Services
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error connecting to WebSocket server: {ex.Message}");
+                System.Windows.MessageBox.Show($"Error connecting to TCP server: Server not found");
+                throw new Exception("Failed to connect to TCP server", ex);
             }
         }
 
