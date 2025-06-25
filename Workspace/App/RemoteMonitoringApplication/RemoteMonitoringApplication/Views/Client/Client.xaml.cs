@@ -768,26 +768,40 @@ namespace RemoteMonitoringApplication.Views
                             if (payload.TryGetProperty("message", out var mess))
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
-                                //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo(), SharedKey, SuperIV);
-                                var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo(), SharedKey, SuperIV);
-                                var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo(), SharedKey, SuperIV);
-
-
-
-                                //Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
-                                var Info = new
+                                new Thread(async () =>
                                 {
-                                    command = "SentRemoteInfo",
-                                    info = Diskinfo,
-                                    infoMemory = Memoryinfo,
-                                    infoCPU = CPUinfo,
-                                    Monitor_id = Pair.id,//theo doi
-                                    Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
-                                };
-                                await tcpClient.SendMessageAsync(clientId, targetId, Info);
-                                Console.WriteLine("Sent remote info to server, then to client (monitor) ", Pair.id);
+                                    try
+                                    {
+                                        //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
+                                        var Diskinfo = _viewModel.diskInfo(_viewModel.FetchDiskInfo(), SharedKey, SuperIV);
+                                        var Memoryinfo = _viewModel.MemoryInfo(_viewModel.FetchMemoryInfo(), SharedKey, SuperIV);
+                                        var CPUinfo = _viewModel.CPUInfo(_viewModel.FetchCPUInfo(), SharedKey, SuperIV);
+
+
+
+                                        //Console.WriteLine($"Disk info: {Diskinfo.Count} drives, Memory info: {Memoryinfo.Count} items, CPU info: {CPUinfo.Count} items");
+                                        var Info = new
+                                        {
+                                            command = "SentRemoteInfo",
+                                            info = Diskinfo,
+                                            infoMemory = Memoryinfo,
+                                            infoCPU = CPUinfo,
+                                            Monitor_id = Pair.id,//theo doi
+                                            Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                                        };
+                                        await Dispatcher.InvokeAsync(async () =>
+                                        {
+                                            await tcpClient.SendMessageAsync(clientId, targetId, Info);
+                                            Console.WriteLine("Sent remote info to server, then to client (monitor): " + Pair.id);
+                                        });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("Exception in want_sync thread: " + ex.Message);
+                                    }
+                                }).Start();
                             }
+
                             else
                             {
                                 Console.WriteLine("Sync error: id and target id not found!");
@@ -856,21 +870,33 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Data = _viewModel.FetchRawInfo(command, SharedKey, SuperIV); // Encrypted
-
-
-                                var Info = new
+                                new Thread(async () =>
                                 {
-                                    command = "SentDetail",
-                                    info = Data,
+                                    try
+                                    {
+                                        var Data = _viewModel.FetchRawInfo(command, SharedKey, SuperIV); // Encrypted
 
-                                    Monitor_id = Pair.id,//theo doi
-                                    Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
-                                };
-                                await tcpClient.SendMessageAsync(clientId, targetId, Info);
-                                Console.WriteLine("Sent remote info to server, then to client (monitor) ", Pair.id);
+
+                                        var Info = new
+                                        {
+                                            command = "SentDetail",
+                                            info = Data,
+
+                                            Monitor_id = Pair.id,//theo doi
+                                            Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                                        };
+                                        await Dispatcher.InvokeAsync(async () =>
+                                        {
+                                            await tcpClient.SendMessageAsync(clientId, targetId, Info);
+                                            Console.WriteLine("Sent detail info to server, then to client (monitor): " + Pair.id);
+                                        });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("Exception in want_detail thread: " + ex.Message);
+                                    }
+                                }).Start();
                             }
-
                             else
                             {
                                 Console.WriteLine("Received detail request info error: id and target id not found!");
@@ -880,10 +906,23 @@ namespace RemoteMonitoringApplication.Views
                         {
                             if (payload.TryGetProperty("message", out var DataDetail))
                             {
-                                var infoDetail = DataDetail.GetString();
-                                var infoDecrypt = CryptoService.Decrypt(infoDetail, SharedKey, SuperIV);
-                                TextBoxDetails.Document.Blocks.Clear();
-                                TextBoxDetails.AppendText(infoDecrypt);
+                                new Thread(() =>
+                                {
+                                    try
+                                    {
+                                        var infoDetail = DataDetail.GetString();
+                                        var infoDecrypt = CryptoService.Decrypt(infoDetail, SharedKey, SuperIV);
+                                        Dispatcher.Invoke(() =>
+                                        {
+                                            TextBoxDetails.Document.Blocks.Clear();
+                                            TextBoxDetails.AppendText(infoDecrypt);
+                                        });
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("Exception in SentDetail thread: " + ex.Message);
+                                    }
+                                }).Start();
                             }
                             else
                             {
@@ -899,19 +938,32 @@ namespace RemoteMonitoringApplication.Views
                             {
                                 var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
                                 //Console.WriteLine($"Pair ID: {Pair.id}, Target ID: {Pair.target_id}");
-                                var Data = _ProcessSerivce.getProcessList(SharedKey, SuperIV); // Đã mã hóa
-                                Console.WriteLine($"Process list start sending");
-
-                                var Info = new
+                                new Thread(async () =>
                                 {
-                                    command = "SentprocessList",
-                                    info = Data,
+                                    try
+                                    {
+                                        var Data = _ProcessSerivce.getProcessList(SharedKey, SuperIV); // Đã mã hóa
+                                        Console.WriteLine($"Process list start sending");
 
-                                    Monitor_id = Pair.id,//theo doi
-                                    Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
-                                };
-                                await tcpClient.SendMessageAsync(clientId, targetId, Info);
-                                Console.WriteLine("Sent process list to server, then to client (monitor) ", Pair.id);
+                                        var Info = new
+                                        {
+                                            command = "SentprocessList",
+                                            info = Data,
+
+                                            Monitor_id = Pair.id,//theo doi
+                                            Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
+                                        };
+                                        await Dispatcher.InvokeAsync(async () =>
+                                        {
+                                            await tcpClient.SendMessageAsync(clientId, targetId, Info);
+                                            Console.WriteLine("Sent process list to server, then to client (monitor): " + Pair.id);
+                                        });
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Console.WriteLine("Exception in process list thread: " + ex.Message);
+                                        }
+                                    }).Start();
                             }
                             else
                             {
