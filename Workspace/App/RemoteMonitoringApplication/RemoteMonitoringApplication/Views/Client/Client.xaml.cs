@@ -808,54 +808,39 @@ namespace RemoteMonitoringApplication.Views
                                     // Lấy JSON chuỗi của phần "message"
                                     string messageJson = remoteInfo.GetRawText();
 
-                                    // Tạo class model cho cấu trúc message
-                                    var info = JsonSerializer.Deserialize<RemoteInfoMessage>(messageJson, options);
-                                    List<DriveDiskModel> drivesEncrypted = info.Drives; // Danh sách drives
-                                    List<DriveDiskModel> drivesDecrypted = new List<DriveDiskModel>();
 
-                                    foreach (var drive in drivesEncrypted)
+                                    new Thread(() =>
                                     {
-                                        var driveDecrypted = new DriveDiskModel
+                                        var info = JsonSerializer.Deserialize<RemoteInfoMessage>(messageJson, options);
+
+                                        var drivesDecrypted = info.Drives.Select(drive => new DriveDiskModel
                                         {
                                             Caption = CryptoService.Decrypt(drive.Caption, SharedKey, SuperIV),
                                             FreeSpace = CryptoService.Decrypt(drive.FreeSpace, SharedKey, SuperIV),
                                             Size = CryptoService.Decrypt(drive.Size, SharedKey, SuperIV)
-                                        };
-                                        drivesDecrypted.Add(driveDecrypted);
-                                    }
-                                    List<DriveMemoryModel> MemEncrypted = info.Memory; // Danh sách drives
-                                    List<DriveMemoryModel> MemDecrypted = new List<DriveMemoryModel>();
+                                        }).ToList();
 
-                                    foreach (var drive in MemEncrypted)
-                                    {
-                                        var MemsDecrypted = new DriveMemoryModel
+                                        var memDecrypted = info.Memory.Select(mem => new DriveMemoryModel
                                         {
-                                            FreeSpace = CryptoService.Decrypt(drive.FreeSpace, SharedKey, SuperIV),
-                                            Size = CryptoService.Decrypt(drive.Size, SharedKey, SuperIV)
-                                        };
-                                        MemDecrypted.Add(MemsDecrypted);
-                                    }
-                                    List<DriveCPUModel> CPUEncrypted = info.CPU; // Danh sách drives
-                                    List<DriveCPUModel> CPUDecrypted = new List<DriveCPUModel>();
+                                            FreeSpace = CryptoService.Decrypt(mem.FreeSpace, SharedKey, SuperIV),
+                                            Size = CryptoService.Decrypt(mem.Size, SharedKey, SuperIV)
+                                        }).ToList();
 
-                                    foreach (var drive in CPUEncrypted)
-                                    {
-                                        var CPUsDecrypted = new DriveCPUModel
+                                        var cpuDecrypted = info.CPU.Select(cpu => new DriveCPUModel
                                         {
-                                            Used = CryptoService.Decrypt(drive.Used, SharedKey, SuperIV)
-                                        };
-                                        CPUDecrypted.Add(CPUsDecrypted);
-                                    }
+                                            Used = CryptoService.Decrypt(cpu.Used, SharedKey, SuperIV)
+                                        }).ToList();
 
-                                    // Hiển thị thông tin
-                                    _GetInfo.showDiskBar(drivesDecrypted, diskBar, diskText);
-                                    _GetInfo.showMemoryBar(MemDecrypted, memoryBar, memoryText);
-                                    _GetInfo.showCPUBar(CPUDecrypted, cpuBar, cpuText);
+                                        // Cập nhật UI
+                                        Dispatcher.Invoke(() =>
+                                        {
+                                            _GetInfo.showDiskBar(drivesDecrypted, diskBar, diskText);
+                                            _GetInfo.showMemoryBar(memDecrypted, memoryBar, memoryText);
+                                            _GetInfo.showCPUBar(cpuDecrypted, cpuBar, cpuText);
+                                        });
+
+                                    }).Start();
                                 }
-
-
-
-
                             }
                             else
                             {
@@ -940,31 +925,28 @@ namespace RemoteMonitoringApplication.Views
 
                             if (payload.TryGetProperty("message", out var processList))
                             {
-                                var options = new JsonSerializerOptions
+                                new Thread(() =>
                                 {
-                                    PropertyNameCaseInsensitive = true
-                                };
+                                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                                    var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText(), options);
 
-                                var processListObj = JsonSerializer.Deserialize<ProcessList>(processList.GetRawText(), options);
+                                    processListObj.RealTime = CryptoService.Decrypt(processListObj.RealTime, SharedKey, SuperIV);
 
-                                // Giải mã RealTime
-                                processListObj.RealTime = CryptoService.Decrypt(processListObj.RealTime, SharedKey, SuperIV);
+                                    foreach (var proc in processListObj.ProcessInfo)
+                                    {
+                                        proc.ProcessName = CryptoService.Decrypt(proc.ProcessName, SharedKey, SuperIV);
+                                        proc.CPU = CryptoService.Decrypt(proc.CPU, SharedKey, SuperIV);
+                                        proc.Memory = CryptoService.Decrypt(proc.Memory, SharedKey, SuperIV);
+                                        proc.DiskRead = CryptoService.Decrypt(proc.DiskRead, SharedKey, SuperIV);
+                                        proc.DiskWrite = CryptoService.Decrypt(proc.DiskWrite, SharedKey, SuperIV);
+                                    }
 
-                                // Giải mã từng trường trong từng ProcessInfo
-                                foreach (var proc in processListObj.ProcessInfo)
-                                {
-                                    // PID có thể không cần giải mã nếu nó là số
-                                    proc.ProcessName = CryptoService.Decrypt(proc.ProcessName, SharedKey, SuperIV);
-                                    proc.CPU = CryptoService.Decrypt(proc.CPU, SharedKey, SuperIV);
-                                    proc.Memory = CryptoService.Decrypt(proc.Memory, SharedKey, SuperIV);
-                                    proc.DiskRead = CryptoService.Decrypt(proc.DiskRead, SharedKey, SuperIV);
-                                    proc.DiskWrite = CryptoService.Decrypt(proc.DiskWrite, SharedKey, SuperIV);
-                                }
-
-                                Console.WriteLine($"Process list getting");
-                                timeGetProcessList.SetValue(System.Windows.Controls.Label.ContentProperty, $"Monitor time: {processListObj.RealTime}");
-
-                                _viewModelProcess.BindProcessListToDataGrid(processListObj, ProcessDataGrid);
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        timeGetProcessList.Content = $"Monitor time: {processListObj.RealTime}";
+                                        _viewModelProcess.BindProcessListToDataGrid(processListObj, ProcessDataGrid);
+                                    });
+                                }).Start();
                             }
                             else
                             {
@@ -979,54 +961,52 @@ namespace RemoteMonitoringApplication.Views
                             if (root.TryGetProperty("payload", out var pay) &&
                                 pay.TryGetProperty("message", out var mess))
                             {
-                                var Mess = JsonSerializer.Deserialize<RequestPCDump>(mess.GetRawText());
-                                var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
-                                //var Data = _ProcessSerivce.getProcessList();
-                                var savePATH = CryptoService.Decrypt(Mess.savepath, SharedKey, SuperIV);
-                                var PID_decrypt = CryptoService.Decrypt(Mess.PID, SharedKey, SuperIV);
-
-                                if (!Directory.Exists(savePATH))
+                                new Thread(async () =>
                                 {
-                                    using (var dialog = new FolderBrowserDialog())
+                                    var Mess = JsonSerializer.Deserialize<RequestPCDump>(mess.GetRawText());
+                                    var Pair = JsonSerializer.Deserialize<PairID>(mess.GetRawText());
+                                    var savePATH = CryptoService.Decrypt(Mess.savepath, SharedKey, SuperIV);
+                                    var PID_decrypt = CryptoService.Decrypt(Mess.PID, SharedKey, SuperIV);
+
+                                    if (!Directory.Exists(savePATH))
                                     {
-                                        dialog.Description = "Choose folder to save dump file";
-                                        dialog.UseDescriptionForTitle = true;
-                                        dialog.ShowNewFolderButton = true;
-
-                                        DialogResult result = dialog.ShowDialog();
-
-                                        if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                                        Dispatcher.Invoke(() =>
                                         {
-                                            savePATH = dialog.SelectedPath;
+                                            using var dialog = new FolderBrowserDialog
+                                            {
+                                                Description = "Choose folder to save dump file",
+                                                UseDescriptionForTitle = true,
+                                                ShowNewFolderButton = true
+                                            };
 
-                                        }
+                                            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                                            {
+                                                savePATH = dialog.SelectedPath;
+                                            }
+                                        });
                                     }
-                                }
-                                Console.WriteLine($"Process dump start dumping.........");
 
-                                string infoDump = _viewModelPCdump.ProcessDump(PID_decrypt, savePATH);
+                                    string infoDump = _viewModelPCdump.ProcessDump(PID_decrypt, savePATH);
+                                    var infotoSentEncrypt = CryptoService.Encrypt("File dump completed: " + infoDump, SharedKey, SuperIV);
 
+                                    var Info = new
+                                    {
+                                        command = "SentprocessDumpInfo",
+                                        info = infotoSentEncrypt,
+                                        Monitor_id = Pair.id,
+                                        Remote_id = Pair.target_id
+                                    };
 
-                                var infotoSent = "File dump completed in partner side! " + infoDump;
-                                var infotoSentEncrypt = CryptoService.Encrypt(infotoSent, SharedKey, SuperIV);
-                                Console.WriteLine($"Process dump data length: {infoDump.Length} bytes");
-                                //await tcpClient.SendFileAsync("dumpTemp.dmp");
-                                //await tcpClient.SendFileAsync("dumpTemp.dmp", "SentprocessDumpInfo", Mess.id);
-                                var Info = new
+                                    await tcpClient.SendMessageAsync(clientId, targetId, Info);
+                                    Console.WriteLine("Sent process dump length to server, then to client (monitor) ", Pair.id);
+
+                                }).Start();
+                            }
+                        
+                                else
                                 {
-                                    command = "SentprocessDumpInfo",
-                                    info = infotoSentEncrypt,
-                                    Monitor_id = Pair.id,//theo doi
-                                    Remote_id = Pair.target_id// bị theo dõi ( dự liệu theo dõi là của máy này)
-                                };
-                                //string Infojson = JsonSerializer.Serialize(Info);
-                                await tcpClient.SendMessageAsync(clientId, targetId, Info);
-                                Console.WriteLine("Sent process dump length to server, then to client (monitor) ", Pair.id);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Received detail info error: id and target id not found!");
-                            }
+                                    Console.WriteLine("Received detail info error: id and target id not found!");
+                                }
                         }
                         else if (command == "SentprocessDumpInfo" && status == "success")
                         {
